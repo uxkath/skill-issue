@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>My 24h - Life Engine 2026</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,7 +11,6 @@
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* Light Mode (Default) - Toned-down subtle glows */
     :root {
       --bg: #f4f2ff;
       --card-bg: rgba(255, 255, 255, 0.92);
@@ -22,52 +21,67 @@
       --font-serif: 'Instrument Serif', serif;
       --font-mono: 'Geist Mono', monospace;
       
-      --color-work: #e6005c;     
-      --color-hobbies: #d97706;  
-      --color-media: #9d178c;    
-      --color-chores: #0099b8;   
-      --color-social: #d9006c;   
-      --color-other: #6200d9;    
-      --color-recovery: #00b4d8; 
+      --color-intellect: #008da8;
+      --color-creativity: #801072;
+      --color-discipline: #b35f00;
+      --color-empathy: #c2004d;
+
+      --color-work: #c2004d;     
+      --color-hobbies: #b35f00;  
+      --color-media: #801072;    
+      --color-chores: #007a93;   
+      --color-social: #b30059;   
+      --color-other: #5200b3;    
+      --color-recovery: #008da8; 
       
-      --nav-pink: #e60073;
+      --nav-pink: #c20060;
       --nav-pink-bg: rgba(230, 0, 115, 0.1);
-      --neon-cyan: #00b4d8;
+      --neon-cyan: #008da8;
       
-      /* Subtle, non-overwhelming shadows */
       --glow-intensity: 0 2px 8px rgba(0, 180, 216, 0.12);
       --card-inner-bg: rgba(255, 255, 255, 0.95);
       
       --bg-gradient-1: rgba(112, 0, 255, 0.04);
       --bg-gradient-2: rgba(255, 0, 127, 0.04);
       --bg-grid: rgba(0, 180, 216, 0.05);
+
+      --folder-tab-bg: rgba(0, 141, 168, 0.12);
+      --folder-border: rgba(0, 141, 168, 0.4);
     }
 
-    /* Dark Mode Theme */
+    /* PROBLEM 6: Softer, textured dark grey background for dark mode (no jet black) */
     [data-theme="dark"] {
-      --bg: #090717;
-      --card-bg: rgba(18, 12, 38, 0.85);
-      --card-border: rgba(0, 240, 255, 0.2);
-      --text: #ffffff;
-      --text-muted: #8e90b8;
+      --bg: #181623;
+      --card-bg: #232035;
+      --card-border: rgba(0, 240, 255, 0.25);
+      --text: #f0f2fe;
+      --text-muted: #a0a3cd;
       
-      --color-work: #ff0055;     
-      --color-hobbies: #ffb703;  
-      --color-media: #b5179e;    
-      --color-chores: #00f0ff;   
-      --color-social: #ff00a0;   
-      --color-other: #7000ff;    
-      --color-recovery: #00f0ff; 
+      --color-intellect: #00e5ff;
+      --color-creativity: #e040fb;
+      --color-discipline: #ffb300;
+      --color-empathy: #ff2a70;
+
+      --color-work: #ff2a70;     
+      --color-hobbies: #ffb300;  
+      --color-media: #e040fb;    
+      --color-chores: #00e5ff;   
+      --color-social: #ff40a0;   
+      --color-other: #9d4edd;    
+      --color-recovery: #00e5ff; 
       
       --nav-pink: #ff007f;
-      --nav-pink-bg: rgba(255, 0, 127, 0.12);
-      --neon-cyan: #00f0ff;
-      --glow-intensity: 0 2px 10px rgba(0, 240, 255, 0.15);
-      --card-inner-bg: rgba(14, 10, 32, 0.92);
+      --nav-pink-bg: rgba(255, 0, 127, 0.18);
+      --neon-cyan: #00e5ff;
+      --glow-intensity: 0 4px 12px rgba(0, 0, 0, 0.35);
+      --card-inner-bg: #2b2740;
 
-      --bg-gradient-1: rgba(112, 0, 255, 0.12);
-      --bg-gradient-2: rgba(255, 0, 127, 0.1);
-      --bg-grid: rgba(0, 240, 255, 0.02);
+      --bg-gradient-1: rgba(112, 0, 255, 0.15);
+      --bg-gradient-2: rgba(255, 0, 127, 0.12);
+      --bg-grid: rgba(0, 240, 255, 0.04);
+
+      --folder-tab-bg: rgba(0, 229, 255, 0.15);
+      --folder-border: rgba(0, 229, 255, 0.35);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-mono); }
@@ -90,523 +104,545 @@
       transition: background-color 0.2s ease, color 0.2s ease;
     }
 
+    /* PROBLEM 1: Responsive design for Mobile & Tablet */
     .app-container {
       width: 100%;
-      max-width: 414px;
+      max-width: 480px;
       padding: 12px 14px 100px 14px;
       display: flex;
       flex-direction: column;
       position: relative;
     }
 
-    /* Minimal Header */
+    @media (min-width: 768px) {
+      .app-container {
+        max-width: 720px;
+        padding-bottom: 110px;
+      }
+      .matrix-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+      }
+    }
+
+    .calming-bg-overlay {
+      position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0; transition: opacity 1s ease;
+    }
+    .calming-bg-overlay.active { opacity: 1; }
+    .calming-orb { position: absolute; border-radius: 50%; filter: blur(50px); animation: floatMotion 12s infinite ease-in-out alternate; }
+    .calming-orb-1 { width: 260px; height: 260px; background: rgba(0, 240, 255, 0.12); top: 10%; left: -10%; }
+    .calming-orb-2 { width: 300px; height: 300px; background: rgba(255, 0, 127, 0.1); bottom: 15%; right: -10%; animation-delay: -6s; }
+
+    @keyframes floatMotion {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(30px, -40px) scale(1.1); }
+      100% { transform: translate(-20px, 30px) scale(0.95); }
+    }
+
+    /* PROBLEM 3: Skill pop particles adjusted for white background visibility & no drop shadows */
+    .skill-pop-particle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 300;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-shadow: none; /* Drop shadow removed */
+      animation: floatUpAndFade 4s forwards ease-out;
+    }
+
+    @keyframes floatUpAndFade {
+      0% { opacity: 0; transform: translateY(10px) scale(0.8); }
+      20% { opacity: 1; transform: translateY(-10px) scale(1.1); }
+      80% { opacity: 1; transform: translateY(-40px) scale(1); }
+      100% { opacity: 0; transform: translateY(-60px) scale(0.9); }
+    }
+
     .top-bar-clean {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--neon-cyan);
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--neon-cyan);
+      position: relative; z-index: 2;
     }
     
-    .hamburger-btn-minimal {
-      background: transparent;
-      border: none;
-      color: var(--neon-cyan);
-      font-size: 1.3rem;
-      cursor: pointer;
-    }
+    .hamburger-btn-minimal { background: transparent; border: none; color: var(--neon-cyan); font-size: 1.3rem; cursor: pointer; }
+    .theme-toggle-btn { background: var(--card-bg); border: 1px solid var(--neon-cyan); color: var(--text); padding: 4px 10px; border-radius: 12px; font-size: 0.65rem; font-weight: 700; cursor: pointer; }
+    .top-bar-date { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; color: var(--neon-cyan); letter-spacing: 1.5px; text-transform: uppercase; }
 
-    .theme-toggle-btn {
-      background: var(--card-bg);
-      border: 1px solid var(--neon-cyan);
-      color: var(--text);
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 0.65rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .top-bar-date {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: var(--neon-cyan);
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-    }
-
-    /* Side Drawer */
     .drawer {
-      position: fixed;
-      top: 0; left: -100%;
-      width: 280px; height: 100%;
-      background: var(--bg);
-      border-right: 1px solid var(--neon-cyan);
-      box-shadow: 5px 0 20px rgba(0, 0, 0, 0.15);
-      z-index: 100;
-      padding: 24px;
-      transition: left 0.25s ease-out;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+      position: fixed; top: 0; left: -100%; width: 280px; height: 100%;
+      background: var(--bg); border-right: 1px solid var(--neon-cyan);
+      box-shadow: 5px 0 20px rgba(0, 0, 0, 0.2); z-index: 100; padding: 24px;
+      transition: left 0.25s ease-out; display: flex; flex-direction: column; gap: 16px;
     }
     .drawer.open { left: 0; }
-    .drawer-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.4);
-      z-index: 99;
-      display: none;
-    }
+    .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 99; display: none; }
     .drawer-overlay.show { display: block; }
 
-    /* Views */
-    .view { display: none; flex-direction: column; gap: 16px; }
+    .toast-notification {
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+      background: var(--card-inner-bg); border: 2px solid var(--neon-cyan); color: var(--text);
+      padding: 10px 18px; border-radius: 20px; font-size: 0.78rem; font-weight: 700;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25); z-index: 400; opacity: 0;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+      pointer-events: none; text-align: center; max-width: 90%;
+    }
+    .toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    .view { display: none; flex-direction: column; gap: 16px; position: relative; z-index: 2; }
     .view.active { display: flex; }
 
-    /* Hero Activity Deck */
     .hero-deck-section {
-      background: var(--card-bg);
-      border: 1px solid var(--neon-cyan);
-      box-shadow: var(--glow-intensity);
-      border-radius: 16px;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      position: relative;
+      background: var(--card-bg); border: 1px solid var(--neon-cyan); box-shadow: var(--glow-intensity);
+      border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 10px; position: relative;
     }
     .hero-deck-section::before {
-      content: 'DECK // ACTIVE';
-      position: absolute;
-      top: -8px; right: 14px;
-      font-size: 0.55rem;
-      background: var(--bg);
-      color: var(--neon-cyan);
-      padding: 0 6px;
-      border: 1px solid var(--neon-cyan);
-      letter-spacing: 1px;
+      content: 'DECK // ACTIVE'; position: absolute; top: -8px; right: 14px;
+      font-size: 0.55rem; background: var(--bg); color: var(--neon-cyan);
+      padding: 0 6px; border: 1px solid var(--neon-cyan); letter-spacing: 1px;
     }
 
-    .hero-deck-header {
-      font-family: var(--font-serif);
-      font-size: 1.3rem;
-      font-style: normal;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .hero-slots-scroll {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      padding: 6px 2px;
-    }
+    .hero-deck-header { font-family: var(--font-serif); font-size: 1.3rem; color: var(--text); display: flex; align-items: center; gap: 6px; }
+    .hero-slots-scroll { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; padding: 6px 2px; }
     .hero-slots-scroll::-webkit-scrollbar { display: none; }
 
-    .deck-slot-wrapper {
-      min-width: 124px;
-      max-width: 124px;
-      height: 188px;
-      flex-shrink: 0;
-      position: relative;
-    }
-
+    .deck-slot-wrapper { min-width: 124px; max-width: 124px; height: 188px; flex-shrink: 0; position: relative; }
     .deck-slot-empty {
-      width: 100%;
-      height: 100%;
-      border: 1px dashed var(--neon-cyan);
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0, 240, 255, 0.02);
-      color: var(--neon-cyan);
-      font-size: 1.5rem;
+      width: 100%; height: 100%; border: 1px dashed var(--neon-cyan); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; background: rgba(0, 240, 255, 0.02);
+      color: var(--neon-cyan); font-size: 1.2rem; font-weight: 700; opacity: 0.7;
     }
 
-    /* Category Rails */
     .rail-section { display: flex; flex-direction: column; gap: 8px; }
-    .rail-header {
-      font-family: var(--font-serif);
-      font-size: 1.25rem;
-      font-style: normal;
-      color: var(--neon-cyan);
-      letter-spacing: 0.5px;
-    }
-    .rail-container {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding-bottom: 6px;
-      scrollbar-width: none;
-    }
+    .rail-header { font-family: var(--font-serif); font-size: 1.25rem; color: var(--neon-cyan); letter-spacing: 0.5px; }
+    .rail-container { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
     .rail-container::-webkit-scrollbar { display: none; }
 
-    /* TRADING CARD AESTHETIC (Outer Compact Cards) */
     .trading-card-outer {
-      min-width: 124px;
-      max-width: 124px;
-      height: 188px;
-      position: relative;
-      border-radius: 12px;
-      flex-shrink: 0;
-      cursor: pointer;
-      background: var(--card-inner-bg);
+      min-width: 124px; max-width: 124px; height: 188px; position: relative; border-radius: 12px;
+      flex-shrink: 0; cursor: pointer; background: var(--card-inner-bg);
       border: 2px solid var(--card-color, var(--neon-cyan));
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      padding: 4px;
-      transition: transform 0.15s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1), inset 0 0 6px var(--card-color, var(--neon-cyan));
+      overflow: hidden; display: flex; flex-direction: column; padding: 5px;
+      transition: transform 0.15s ease, box-shadow 0.3s ease;
     }
-    .trading-card-outer:hover {
-      transform: translateY(-2px);
+    .trading-card-outer:hover { transform: translateY(-2px); }
+
+    /* PROBLEM 3: Calming slow border-rotation glow animation (8s instead of fast 4s) */
+    .trading-card-outer.is-active-running {
+      border-color: transparent;
+      background-image: linear-gradient(var(--card-inner-bg), var(--card-inner-bg)), 
+                        conic-gradient(from var(--border-angle, 0deg), transparent 70%, var(--card-color, var(--neon-cyan)) 100%);
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+      animation: rotateBorder 8s linear infinite; /* Slowed down for a calming effect */
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
     }
 
-    .trading-card-outer::after {
-      content: '';
-      position: absolute;
-      inset: 2px;
+    @property --border-angle {
+      syntax: '<angle>'; initial-value: 0deg; inherits: false;
+    }
+    @keyframes rotateBorder { to { --border-angle: 360deg; } }
+
+    .trading-card-outer::before {
+      content: ''; position: absolute; inset: 2px;
       border: 1px solid var(--card-color, var(--neon-cyan));
-      border-radius: 9px;
-      pointer-events: none;
-      opacity: 0.4;
+      border-radius: 9px; pointer-events: none; opacity: 0.5; z-index: 3;
     }
 
-    /* Fine Micro-Halftone Texture Canvas */
+    .trading-card-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 1px 4px 3px 4px; z-index: 4; }
+    .trading-card-hp-tag { font-size: 0.55rem; font-weight: 700; color: var(--card-color, var(--neon-cyan)); }
+
     .trading-card-halftone {
-      width: 100%;
-      height: 52%;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px 8px 0 0;
-      overflow: hidden;
-      background: rgba(0,0,0,0.03);
+      width: 100%; height: 48%; position: relative; display: flex; align-items: center; justify-content: center;
+      border-radius: 6px; overflow: hidden; background: rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.08);
     }
-
     .trading-card-halftone::before {
-      content: '';
-      position: absolute;
-      inset: 0;
+      content: ''; position: absolute; inset: 0;
       background-image: radial-gradient(var(--card-color, var(--neon-cyan)) 0.75px, transparent 0.75px);
-      background-size: 4px 4px;
-      opacity: 0.12;
+      background-size: 4px 4px; opacity: 0.18;
     }
 
-    /* Soft Faded Icon Shadow - NO HARSH GLOW */
-    .trading-card-icon {
-      font-size: 2.2rem;
-      z-index: 2;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
-    }
+    .trading-card-icon { font-size: 2.2rem; z-index: 2; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); }
 
-    /* Trading Card Bottom Data Panel */
     .trading-card-banner {
-      width: 100%;
-      height: 48%;
-      background: var(--card-bg);
-      border-top: 1px solid var(--card-color, var(--neon-cyan));
-      border-radius: 0 0 8px 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      padding: 4px 4px 6px 4px;
-      position: relative;
-      z-index: 2;
+      width: 100%; flex: 1; background: var(--card-bg);
+      border-top: 1px solid var(--card-color, var(--neon-cyan)); border-radius: 0 0 6px 6px;
+      display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+      padding: 4px 2px; position: relative; z-index: 2; margin-top: 3px;
     }
 
     .trading-card-name {
-      font-family: var(--font-mono);
-      font-size: 0.62rem;
-      font-weight: 700;
-      color: var(--text);
-      text-transform: uppercase;
-      text-align: center;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      width: 100%;
-      letter-spacing: 0.3px;
-      margin-top: 2px;
+      font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+      color: var(--text); text-transform: uppercase; text-align: center;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; letter-spacing: 0.3px;
     }
 
-    .trading-card-timer {
-      font-family: var(--font-mono);
-      font-size: 0.58rem;
-      color: var(--neon-cyan);
-      font-weight: 700;
-      margin-bottom: 2px;
-    }
+    .trading-card-timer-hero { font-family: var(--font-mono); font-size: 0.85rem; color: var(--neon-cyan); font-weight: 700; letter-spacing: 0.5px; }
 
-    /* NO GLOW LARGER BUTTON - 34px Diameter */
-    .trading-card-circle-btn {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      background: var(--card-color, var(--neon-cyan));
-      border: 2px solid #ffffff;
-      color: #ffffff;
-      font-size: 0.9rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      outline: none;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Flat crisp shadow, zero neon glow */
-      transition: transform 0.1s ease, background-color 0.15s ease;
+    .trading-card-circle-btn-lg {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--card-color, var(--neon-cyan)); border: 2px solid #ffffff; color: #ffffff;
+      font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; outline: none; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: transform 0.1s ease; margin-bottom: 2px;
     }
-    .trading-card-circle-btn:active {
-      transform: scale(0.92);
-    }
-    .trading-card-circle-btn.playing {
-      background: #e6005c;
-      border-color: #ffffff;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
+    .trading-card-circle-btn-lg:active { transform: scale(0.92); }
 
-    /* Strictly Japanese Tag */
-    .trading-card-jp-tag {
-      position: absolute;
-      top: 3px; left: 5px;
-      font-size: 0.45rem;
-      color: var(--text-muted);
-      font-weight: 700;
-      letter-spacing: 0.5px;
-    }
+    .trading-card-jp-tag { position: absolute; top: 3px; left: 4px; font-size: 0.45rem; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px; }
 
-    /* Empty Card Slot */
     .empty-add-card {
-      min-width: 124px;
-      height: 188px;
-      border: 1px dashed var(--neon-cyan);
-      border-radius: 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      flex-shrink: 0;
-      color: var(--text-muted);
-      background: rgba(0, 240, 255, 0.02);
+      min-width: 124px; height: 188px; border: 1px dashed var(--neon-cyan); border-radius: 12px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; color: var(--text-muted); background: rgba(0, 240, 255, 0.02); gap: 4px;
     }
 
-    /* RECOVERY TAB */
-    .hp-container {
-      background: var(--card-bg);
-      border: 1px solid var(--neon-cyan);
-      box-shadow: var(--glow-intensity);
-      border-radius: 14px;
-      padding: 14px;
-      margin-bottom: 6px;
-    }
-    .hp-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-family: var(--font-serif);
-      font-size: 1.2rem;
-      font-style: normal;
-      margin-bottom: 8px;
-    }
-    .hp-bar-bg {
-      width: 100%;
-      height: 14px;
-      background: rgba(0, 0, 0, 0.08);
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid var(--neon-cyan);
-      position: relative;
-    }
-    .hp-bar-fill {
-      height: 100%;
-      width: 100%;
-      background: var(--color-recovery);
-      border-radius: 7px;
-      transition: width 0.3s ease;
-    }
+    .hp-container { background: var(--card-bg); border: 1px solid var(--neon-cyan); box-shadow: var(--glow-intensity); border-radius: 14px; padding: 14px; margin-bottom: 6px; }
+    .hp-header { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-serif); font-size: 1.2rem; margin-bottom: 8px; }
+    .hp-bar-bg { width: 100%; height: 14px; background: rgba(0, 0, 0, 0.1); border-radius: 8px; overflow: hidden; border: 1px solid var(--neon-cyan); position: relative; }
+    .hp-bar-fill { height: 100%; width: 100%; background: var(--color-recovery); border-radius: 7px; transition: width 0.3s ease; }
 
     .matrix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .matrix-card-wrapper {
-      border-radius: 14px;
-      cursor: pointer;
-    }
+    .matrix-card-wrapper { border-radius: 14px; cursor: pointer; }
     .matrix-card {
-      background: var(--card-bg);
-      border: 1px solid var(--neon-cyan);
-      box-shadow: var(--glow-intensity);
-      border-radius: 14px;
-      padding: 16px 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      height: 130px;
+      background: var(--card-bg); border: 1px solid var(--neon-cyan); box-shadow: var(--glow-intensity);
+      border-radius: 14px; padding: 16px 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 130px;
     }
 
-    /* Tumbler Glass Containers */
     .tumbler-container { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 14px 0; }
-    .tumbler-item {
-      width: 40px; height: 64px;
-      border: 1px solid var(--neon-cyan);
-      border-radius: 4px 4px 10px 10px;
-      position: relative; overflow: hidden; cursor: pointer;
-      background: rgba(0,240,255,0.03);
-    }
+    .tumbler-item { width: 40px; height: 64px; border: 1px solid var(--neon-cyan); border-radius: 4px 4px 10px 10px; position: relative; overflow: hidden; cursor: pointer; background: rgba(0,240,255,0.03); }
     .tumbler-fill { position: absolute; bottom: 0; left: 0; right: 0; background: var(--color-recovery); }
 
-    /* Timeline & Profile */
-    .date-picker-bar {
-      display: flex; justify-content: space-between; align-items: center;
-      background: var(--card-bg); padding: 10px 14px;
-      border: 1px solid var(--neon-cyan); border-radius: 12px; font-family: var(--font-mono); font-size: 0.78rem;
-    }
+    .date-picker-bar { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 10px 14px; border: 1px solid var(--neon-cyan); border-radius: 12px; font-family: var(--font-mono); font-size: 0.78rem; }
     .timeline-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-    .timeline-item {
-      background: var(--card-bg);
-      border: 1px solid var(--neon-cyan); border-left: 3px solid var(--nav-pink);
-      padding: 12px 14px; border-radius: 0 12px 12px 0; display: flex; justify-content: space-between; align-items: center;
-    }
+    .timeline-item { background: var(--card-bg); border: 1px solid var(--neon-cyan); border-left: 3px solid var(--nav-pink); padding: 12px 14px; border-radius: 0 12px 12px 0; display: flex; justify-content: space-between; align-items: center; }
 
+    /* PROBLEM 7 & 8: Profile Tab Scrapbook aesthetic with Folder-shaped ID cards, tape, and decorative stickers */
     .profile-card {
-      background: var(--card-bg); border: 1px solid var(--neon-cyan); box-shadow: var(--glow-intensity); padding: 20px; text-align: center;
-      border-radius: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--glow-intensity);
+      padding: 24px 16px 18px 16px;
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
     }
 
-    /* FULL TRADING CARD DETAIL MODAL */
+    /* Decorative Tape elements */
+    .scrapbook-tape {
+      position: absolute;
+      width: 70px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.45);
+      border: 1px dashed rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(2px);
+      z-index: 10;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    }
+    .tape-top-left { top: -8px; left: 20px; transform: rotate(-5deg); }
+    .tape-top-right { top: -8px; right: 20px; transform: rotate(6deg); }
+    .tape-bottom-right { bottom: 10px; right: -10px; transform: rotate(-12deg); }
+
+    /* Decorative Stamp / Sticker */
+    .scrapbook-sticker {
+      position: absolute;
+      top: -12px;
+      right: 15px;
+      background: #ff0055;
+      color: #fff;
+      font-size: 0.55rem;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transform: rotate(8deg);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      letter-spacing: 1px;
+      border: 1px dashed #fff;
+      z-index: 11;
+    }
+
+    /* PROBLEM 5: Profile Share Button Styling */
+    .profile-share-btn {
+      position: absolute;
+      bottom: 12px;
+      right: 14px;
+      background: var(--card-bg);
+      border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      transition: transform 0.15s ease;
+    }
+    .profile-share-btn:active { transform: scale(0.94); }
+
+    /* Header ID Spec */
+    .profile-header-social {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border-bottom: 1px dashed var(--card-border);
+      padding-bottom: 14px;
+      position: relative;
+    }
+
+    .profile-avatar-container { position: relative; }
+    .profile-avatar {
+      width: 64px; height: 64px; border-radius: 50%;
+      border: 2px solid var(--neon-cyan);
+      background: linear-gradient(135deg, rgba(0,180,216,0.2), rgba(230,0,115,0.2));
+      display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+      box-shadow: 0 0 10px rgba(0,240,255,0.2);
+    }
+    .profile-live-badge {
+      position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px;
+      background: #00ff66; border: 2px solid var(--bg); border-radius: 50%;
+    }
+
+    .profile-identity-info { display: flex; flex-direction: column; gap: 2px; }
+    .profile-display-name { font-family: var(--font-serif); font-size: 1.4rem; font-weight: 700; color: var(--text); }
+    .profile-username { font-size: 0.72rem; color: var(--text-muted); }
+    .profile-archetype-tag {
+      font-size: 0.62rem; font-weight: 800; color: var(--neon-cyan);
+      background: rgba(0,240,255,0.08); border: 1px solid var(--neon-cyan);
+      padding: 2px 8px; border-radius: 6px; margin-top: 4px; align-self: flex-start; letter-spacing: 0.5px;
+    }
+
+    /* PROBLEM 7: Folder-shaped card containers with top-left tab flaps */
+    .folder-card-wrapper {
+      position: relative;
+      margin-top: 12px;
+    }
+    .folder-tab-flap {
+      display: inline-block;
+      background: var(--folder-tab-bg);
+      border: 1px solid var(--folder-border);
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      padding: 4px 12px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--neon-cyan);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      position: absolute;
+      top: -21px;
+      left: 10px;
+      z-index: 2;
+    }
+    .folder-card-body {
+      background: var(--card-bg);
+      border: 1px solid var(--folder-border);
+      border-radius: 0 10px 10px 10px;
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+
+    /* Personality Bar */
+    .personality-bar-container { display: flex; flex-direction: column; gap: 6px; }
+    .personality-bar-track { width: 100%; height: 12px; background: rgba(0, 0, 0, 0.1); border-radius: 6px; overflow: hidden; display: flex; }
+    .personality-segment { height: 100%; transition: width 0.3s ease; }
+    .personality-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.65rem; font-weight: 600; }
+    .legend-item { display: flex; align-items: center; gap: 4px; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* PROBLEM 4: Top 3 Activities in Profile rendered as actual Activity Trading Cards */
+    .top-activities-cards-rail {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .top-activities-cards-rail::-webkit-scrollbar { display: none; }
+
+    /* Privacy Form Controls */
+    .privacy-controls-grid { display: flex; flex-direction: column; gap: 6px; font-size: 0.7rem; }
+    .privacy-row { display: flex; justify-content: space-between; align-items: center; }
+
+    /* Scroll to Top Button - Positioned Center Above Bottom Nav */
+    .scroll-top-btn {
+      position: fixed;
+      bottom: 72px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      font-size: 1rem;
+      font-weight: bold;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 60;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .scroll-top-btn.show { display: flex; }
+    .scroll-top-btn:active { transform: translateX(-50%) scale(0.9); }
+
+    /* Modals & Trading Card Overlay */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(4, 2, 12, 0.65);
+      background: rgba(2, 1, 8, 0.82);
       z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px;
+      backdrop-filter: blur(4px);
     }
     .modal-overlay.active { display: flex; }
 
-    .modal-card-wrapper {
-      width: 100%; max-width: 320px;
-    }
+    .modal-card-wrapper { width: 100%; max-width: 320px; }
 
-    /* Authentic Trading Card Frame inside Modal */
     .full-trading-card {
       background: var(--card-inner-bg);
       border: 3px solid var(--modal-color, var(--neon-cyan));
       border-radius: 18px;
-      padding: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      padding: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
       position: relative;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      transition: border-color 0.3s ease;
+    }
+
+    /* PROBLEM 3: Slow 8s calming animation for active modal card glow */
+    .full-trading-card.card-active-glow {
+      box-shadow: 0 0 12px var(--modal-color, var(--neon-cyan));
+      border-color: transparent;
+      background-image: linear-gradient(var(--card-inner-bg), var(--card-inner-bg)), 
+                        conic-gradient(from var(--border-angle, 0deg), transparent 70%, var(--modal-color, var(--neon-cyan)) 100%);
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+      animation: rotateBorder 8s linear infinite;
     }
 
     .tc-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--modal-color, var(--neon-cyan));
-      padding-bottom: 6px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--modal-color, var(--neon-cyan)); padding-bottom: 6px;
     }
-    .tc-title {
-      font-family: var(--font-serif);
-      font-size: 1.4rem;
-      font-weight: bold;
-      color: var(--text);
-    }
+    .tc-title { font-family: var(--font-serif); font-size: 1.4rem; font-weight: bold; color: var(--text); }
     .tc-hp-badge {
-      font-family: var(--font-mono);
-      font-weight: 700;
-      font-size: 0.75rem;
-      background: var(--modal-color, var(--neon-cyan));
-      color: #fff;
-      padding: 2px 8px;
-      border-radius: 10px;
+      font-family: var(--font-mono); font-weight: 700; font-size: 0.75rem;
+      background: var(--modal-color, var(--neon-cyan)); color: #fff; padding: 2px 8px; border-radius: 10px;
     }
 
     .tc-art-frame {
-      width: 100%;
-      height: 120px;
-      border: 1px solid var(--modal-color, var(--neon-cyan));
-      border-radius: 10px;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      background: rgba(0, 0, 0, 0.04);
+      width: 100%; height: 120px; border: 1px solid var(--modal-color, var(--neon-cyan));
+      border-radius: 10px; position: relative; display: flex; align-items: center;
+      justify-content: center; overflow: hidden; background: rgba(0, 0, 0, 0.04);
     }
     .tc-art-frame::before {
       content: ''; position: absolute; inset: 0;
       background-image: radial-gradient(var(--modal-color, var(--neon-cyan)) 0.75px, transparent 0.75px);
       background-size: 5px 5px; opacity: 0.15;
     }
-    .tc-art-icon {
-      font-size: 3.5rem;
-      z-index: 2;
-      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
-    }
-    .tc-jp-sub {
-      position: absolute;
-      top: 6px; left: 8px;
-      font-size: 0.6rem;
-      color: var(--text-muted);
-      font-weight: 700;
-    }
+    .tc-art-icon { font-size: 3.5rem; z-index: 2; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); }
+    .tc-jp-sub { position: absolute; top: 6px; left: 8px; font-size: 0.6rem; color: var(--text-muted); font-weight: 700; }
 
-    /* Skills Box inside Modal */
     .tc-stats-box {
-      background: var(--card-bg);
-      border: 1px solid var(--modal-color, var(--neon-cyan));
-      border-radius: 10px;
-      padding: 10px 12px;
+      background: var(--card-bg); border: 1px solid var(--modal-color, var(--neon-cyan));
+      border-radius: 10px; padding: 8px 12px; display: flex; flex-direction: column; gap: 6px;
+    }
+    .tc-skills-title {
+      font-size: 0.68rem; font-weight: 700; color: var(--neon-cyan); letter-spacing: 0.5px;
+      border-bottom: 1px dashed rgba(0, 240, 255, 0.2); padding-bottom: 3px; text-transform: uppercase;
+    }
+    .tc-stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; font-weight: 600; }
+    .tc-stars-interactive { color: #ffb703; letter-spacing: 2px; font-size: 1.1rem; line-height: 1; cursor: pointer; user-select: none; }
+
+    .timer-display-modal { font-family: var(--font-mono); font-size: 2rem; font-weight: 700; text-align: center; color: var(--neon-cyan); margin: 2px 0; }
+
+    /* PROBLEM 2: Edit & Delete buttons positioned as square icons at bottom left corner next to smaller primary action button */
+    .tc-bottom-action-row {
       display: flex;
-      flex-direction: column;
       gap: 8px;
-    }
-    .tc-stat-row {
-      display: flex;
-      justify-content: space-between;
+      width: 100%;
       align-items: center;
-      font-size: 0.72rem;
-      font-weight: 600;
+      margin-top: 4px;
     }
-    .tc-stars {
-      color: #ffb703;
-      letter-spacing: 2px;
+
+    .btn-square-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .btn-square-icon:hover { border-color: var(--neon-cyan); }
+    .btn-square-icon.danger { color: #ff0055; }
+    .btn-square-icon.danger:hover { border-color: #ff0055; background: rgba(255, 0, 85, 0.1); }
+
+    .btn-action-primary-compact {
+      flex: 1;
+      height: 40px;
+      background: var(--nav-pink);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      cursor: pointer;
       font-size: 0.8rem;
-    }
-
-    .btn-action-primary {
-      width: 100%; padding: 12px; background: var(--nav-pink); border: none; border-radius: 10px;
-      color: #fff; font-family: var(--font-mono); font-weight: 700; font-style: normal; cursor: pointer;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 6px;
+      white-space: nowrap;
+    }
+    .btn-action-primary-compact:disabled { background: #7a7a8c; cursor: not-allowed; opacity: 0.6; box-shadow: none; }
+
+    .btn-dual-group-compact { display: flex; gap: 6px; flex: 1; height: 40px; }
+    .btn-action-pause-compact {
+      flex: 1; height: 100%; background: #d97706; border: none; border-radius: 10px;
+      color: #fff; font-family: var(--font-mono); font-weight: 700; cursor: pointer;
+      font-size: 0.72rem; display: flex; align-items: center; justify-content: center; gap: 4px;
+    }
+    .btn-action-stop-compact {
+      flex: 1; height: 100%; background: #e6005c; border: none; border-radius: 10px;
+      color: #fff; font-family: var(--font-mono); font-weight: 700; cursor: pointer;
+      font-size: 0.72rem; display: flex; align-items: center; justify-content: center; gap: 4px;
     }
 
-    /* Bottom Navigation Bar */
+    .form-input-clean {
+      background: transparent; border: none; border-bottom: 1px solid var(--text-muted);
+      color: var(--text); font-family: var(--font-mono); font-size: 0.8rem;
+      padding: 2px 4px; outline: none; width: 100%;
+    }
+    .form-input-clean:focus { border-bottom-color: var(--neon-cyan); }
+
     .bottom-nav-container {
       position: fixed; bottom: 18px; left: 0; right: 0;
       display: flex; justify-content: center; z-index: 50;
     }
-    .bottom-nav-wrapper {
-      border-radius: 20px;
-    }
+    .bottom-nav-wrapper { border-radius: 20px; }
     .bottom-nav {
-      background: var(--card-bg);
-      border: 1px solid var(--neon-cyan);
-      box-shadow: var(--glow-intensity);
-      padding: 5px 8px; border-radius: 20px; display: flex; gap: 4px;
+      background: var(--card-bg); border: 1px solid var(--neon-cyan);
+      box-shadow: var(--glow-intensity); padding: 5px 8px; border-radius: 20px; display: flex; gap: 4px;
     }
     .nav-btn {
       background: transparent; border: 1px solid transparent; color: var(--text-muted);
-      padding: 8px 12px; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600; font-style: normal;
+      padding: 8px 12px; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600;
       border-radius: 14px; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer;
     }
     .nav-btn.active { background: var(--nav-pink-bg); color: var(--text); border-color: var(--nav-pink); }
@@ -614,16 +650,21 @@
 </head>
 <body>
 
+  <div class="calming-bg-overlay" id="calmingBgOverlay">
+    <div class="calming-orb calming-orb-1"></div>
+    <div class="calming-orb calming-orb-2"></div>
+  </div>
+
+  <div class="toast-notification" id="toastNotice"></div>
+
   <div class="app-container">
     
-    <!-- Top Header Bar -->
     <div class="top-bar-clean">
       <button class="hamburger-btn-minimal" onclick="toggleDrawer()">☰</button>
       <span class="top-bar-date">MON // SEP 07 // 2026</span>
       <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()">☀️ LIGHT</button>
     </div>
 
-    <!-- Side Drawer -->
     <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
     <div class="drawer" id="sideDrawer">
       <div style="font-family: var(--font-serif); font-size: 1.4rem; border-bottom: 1px solid var(--neon-cyan); padding-bottom: 10px; color:var(--neon-cyan);">システム MENU</div>
@@ -632,16 +673,13 @@
 
     <!-- TAB 1: ACTION VIEW -->
     <div id="actionView" class="view active">
-      
-      <!-- Hero Activity Deck Section -->
-      <div class="hero-deck-section">
+      <div class="hero-deck-section" id="heroSection">
         <div class="hero-deck-header">
           <span>Activity Deck</span>
         </div>
         <div class="hero-slots-scroll" id="heroSlotsContainer"></div>
       </div>
 
-      <!-- Category Rails - 100% Japanese Translation -->
       <div class="rail-section">
         <div class="rail-header">Work // 作業</div>
         <div class="rail-container" id="railWork"></div>
@@ -700,24 +738,107 @@
       <div class="timeline-list" id="timelineList"></div>
     </div>
 
-    <!-- TAB 4: PROFILE VIEW -->
+    <!-- TAB 4: PROFILE VIEW (PROBLEM 5, 7 & 8: ID Folder Format + Scrapbook Aesthetic + Share Button) -->
     <div id="profileView" class="view">
-      <div class="profile-card">
-        <div style="font-size: 2.5rem;">📊</div>
-        <div style="font-family: var(--font-serif); font-size: 1.6rem; color: var(--nav-pink); margin-top: 4px;">Neural Architect</div>
-        <div style="font-size: 0.72rem; color: var(--neon-cyan); margin-top: 2px;">LV.100 MATRIX ID</div>
-        <div style="position: relative; display: flex; justify-content: center; margin: 12px 0;">
-          <canvas id="radarChart" width="230" height="230"></canvas>
+      <div class="profile-card" id="profileCardMain">
+        
+        <!-- Scrapbook Tape & Stickers -->
+        <div class="scrapbook-tape tape-top-left"></div>
+        <div class="scrapbook-tape tape-top-right"></div>
+        <div class="scrapbook-tape tape-bottom-right"></div>
+        <div class="scrapbook-sticker">OFFICIAL ID</div>
+
+        <!-- Social / ID Header -->
+        <div class="profile-header-social">
+          <div class="profile-avatar-container">
+            <div class="profile-avatar">⚡</div>
+            <div class="profile-live-badge" id="profileLiveSignal" title="Live Signal Active"></div>
+          </div>
+          <div class="profile-identity-info">
+            <div class="profile-display-name">Alex Vance</div>
+            <div class="profile-username">ID // @alex_vance2026</div>
+            <div class="profile-archetype-tag" id="profileArchetypeBadge">ZENITH CRAFTSMAN</div>
+          </div>
         </div>
+
+        <!-- Folder Section 1: Identity Matrix -->
+        <div class="folder-card-wrapper">
+          <div class="folder-tab-flap">Identity Matrix</div>
+          <div class="folder-card-body">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:0.65rem; color:var(--text-muted); font-weight:700;">30-DAY ATTRIBUTES</span>
+              <span id="profileHouseTitle" style="font-size:0.65rem; color:var(--neon-cyan); font-weight:800;">House of Artisans</span>
+            </div>
+
+            <div class="personality-bar-container">
+              <div class="personality-bar-track" id="personalityBarTrack"></div>
+              <div class="personality-legend" id="personalityLegend"></div>
+            </div>
+
+            <div style="position: relative; display: flex; justify-content: center; margin-top: 4px;">
+              <canvas id="radarChart" width="210" height="210"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Folder Section 2: Top 3 Activity Cards (PROBLEM 4: Rendered as Activity Trading Cards) -->
+        <div class="folder-card-wrapper" id="topActivitiesCard">
+          <div class="folder-tab-flap">Core Drivers</div>
+          <div class="folder-card-body">
+            <div style="font-size:0.62rem; color:var(--text-muted); font-weight:700;">TOP 3 LOGGED ACTIVITIES</div>
+            <div class="top-activities-cards-rail" id="topActivitiesList"></div>
+          </div>
+        </div>
+
+        <!-- Folder Section 3: House Breakdown -->
+        <div class="folder-card-wrapper">
+          <div class="folder-tab-flap">House Distribution</div>
+          <div class="folder-card-body">
+            <div id="houseDistributionList" style="display:flex; flex-direction:column; gap:6px; font-size:0.68rem;"></div>
+          </div>
+        </div>
+
+        <!-- Folder Section 4: Privacy Settings -->
+        <div class="folder-card-wrapper">
+          <div class="folder-tab-flap">Privacy Controls</div>
+          <div class="folder-card-body">
+            <div class="privacy-controls-grid">
+              <div class="privacy-row">
+                <span>Show Unlocked Archetype</span>
+                <input type="checkbox" id="privacyShowArchetype" checked onchange="togglePrivacySetting('archetype')">
+              </div>
+              <div class="privacy-row">
+                <span>Show Attribute Radar Web</span>
+                <input type="checkbox" id="privacyShowRadar" checked onchange="togglePrivacySetting('radar')">
+              </div>
+              <div class="privacy-row">
+                <span>Show Top 3 Activities</span>
+                <input type="checkbox" id="privacyShowTop3" checked onchange="togglePrivacySetting('top3')">
+              </div>
+              <div class="privacy-row">
+                <span>Show Live Signal</span>
+                <input type="checkbox" id="privacyShowLive" checked onchange="togglePrivacySetting('live')">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROBLEM 5: Profile Share Button -->
+        <button class="profile-share-btn" onclick="shareProfile()"><span style="font-size:0.8rem;">📤</span> SHARE ID</button>
+
       </div>
     </div>
 
+    <!-- Scroll To Top Button -->
+    <button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToHeroSection()">▲</button>
+
   </div>
 
-  <!-- Detail Modal - Trading Card Layout with RPG Skill Stars -->
+  <!-- Detail Modal - Trading Card Layout -->
   <div class="modal-overlay" id="cardDetailModal" onclick="closeCardModal(event)">
     <div class="modal-card-wrapper" id="modalCardWrapper">
       <div class="full-trading-card" id="tcModalCard">
+        
         <div class="tc-header">
           <span class="tc-title" id="modalTitle">Physics 2</span>
           <span class="tc-hp-badge" id="modalHpBadge">-10 HP</span>
@@ -726,15 +847,83 @@
           <span class="tc-jp-sub" id="modalJpCategory">作業 // WORK</span>
           <div class="tc-art-icon" id="modalIcon">🍎</div>
         </div>
-        <div class="tc-stats-box" id="modalSkillsContainer">
-          <!-- Skill rating rows with 5-star max rendered dynamically -->
+        
+        <div class="tc-stats-box">
+          <div class="tc-skills-title">SKILLS GAINED</div>
+          <div id="modalSkillsContainer" style="display:flex; flex-direction:column; gap:4px;"></div>
         </div>
+        
         <div id="modalInteractiveBody"></div>
       </div>
     </div>
   </div>
 
-  <!-- Bottom Navigation -->
+  <!-- Create / Edit Activity Card Modal -->
+  <div class="modal-overlay" id="cardFormModal" onclick="closeFormModal(event)">
+    <div class="modal-card-wrapper">
+      <div class="full-trading-card" id="createFormTradingCard" style="--modal-color: #888888;">
+        
+        <div class="tc-header">
+          <input type="text" id="createFormName" class="form-input-clean" placeholder="Activity Name..." oninput="validateCreateCardForm()" style="font-weight:bold; font-size:1.1rem;">
+          <select id="createFormHpCost" onchange="validateCreateCardForm()" style="background:transparent; border:1px solid var(--text-muted); color:var(--text); font-size:0.65rem; border-radius:6px; padding:2px;">
+            <option value="">HP Cost</option>
+            <option value="2">2 HP (Easy)</option>
+            <option value="5">5 HP (Mid)</option>
+            <option value="10">10 HP (Hard)</option>
+          </select>
+        </div>
+
+        <div class="tc-art-frame">
+          <span class="tc-jp-sub" id="createFormJpTag">CARD CREATION</span>
+          <input type="text" id="createFormIcon" class="form-input-clean" placeholder="Emoji" maxlength="2" style="width:45px; text-align:center; font-size:2rem;" oninput="validateCreateCardForm()">
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <label style="font-size:0.6rem; color:var(--neon-cyan); font-weight:700;">CATEGORY</label>
+          <select id="createFormCategory" onchange="onCategorySelectChange()" style="background:var(--card-bg); border:1px solid var(--card-border); color:var(--text); font-size:0.75rem; border-radius:6px; padding:4px;">
+            <option value="">-- Select Category --</option>
+            <option value="work">Work</option>
+            <option value="hobbies">Hobbies</option>
+            <option value="media">Media</option>
+            <option value="chores">Chores</option>
+            <option value="social">Social</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <!-- Skills Gained with Interactive Star Selection -->
+        <div class="tc-stats-box">
+          <div class="tc-skills-title">SKILLS GAINED</div>
+          
+          <div class="tc-stat-row">
+            <select id="createFormSkill1" onchange="validateCreateCardForm()" style="background:transparent; border:none; border-bottom:1px solid var(--text-muted); color:var(--text); font-size:0.7rem;">
+              <option value="">Select Skill 1</option>
+              <option value="Intellect">Intellect</option>
+              <option value="Creativity">Creativity</option>
+              <option value="Discipline">Discipline</option>
+              <option value="Empathy">Empathy</option>
+            </select>
+            <span class="tc-stars-interactive" id="starSelector1" onclick="handleStarClick(1, event)">☆☆☆☆☆</span>
+          </div>
+
+          <div class="tc-stat-row">
+            <select id="createFormSkill2" onchange="validateCreateCardForm()" style="background:transparent; border:none; border-bottom:1px solid var(--text-muted); color:var(--text); font-size:0.7rem;">
+              <option value="">Select Skill 2</option>
+              <option value="Intellect">Intellect</option>
+              <option value="Creativity">Creativity</option>
+              <option value="Discipline">Discipline</option>
+              <option value="Empathy">Empathy</option>
+            </select>
+            <span class="tc-stars-interactive" id="starSelector2" onclick="handleStarClick(2, event)">☆☆☆☆☆</span>
+          </div>
+        </div>
+
+        <button class="btn-action-primary-compact" id="btnSaveCard" disabled onclick="saveCardForm()" style="height:38px; width:100%;">SAVE CARD</button>
+        <button class="btn-square-icon" style="width:100%; height:28px; font-size:0.7rem;" onclick="closeFormModal(null, true)">CANCEL</button>
+      </div>
+    </div>
+  </div>
+
   <div class="bottom-nav-container">
     <div class="bottom-nav-wrapper">
       <div class="bottom-nav">
@@ -747,7 +936,6 @@
   </div>
 
   <script>
-    /* Exclusively Japanese Category Names & Japanese Character Sub-tags */
     const GROWTH_CATEGORIES = {
       work: { name: 'Work', color: 'var(--color-work)', jp: '作業' },
       hobbies: { name: 'Hobbies', color: 'var(--color-hobbies)', jp: '趣味' },
@@ -757,43 +945,61 @@
       other: { name: 'Other', color: 'var(--color-other)', jp: 'その他' }
     };
 
-    /* Activities configured with 2 specific skills & 1-5 star ratings */
+    const ARCHETYPE_TABLE = {
+      'Intellect-Intellect': { name: 'Pattern Master', house: 'House of Tacticians' },
+      'Intellect-Discipline': { name: 'Cyber-Architect', house: 'House of Tacticians' },
+      'Intellect-Creativity': { name: 'Vector One', house: 'House of Tacticians' },
+      'Intellect-Empathy': { name: 'Apex Lead', house: 'House of Tacticians' },
+      'Creativity-Creativity': { name: 'Deep Creator', house: 'House of Artisans' },
+      'Creativity-Discipline': { name: 'Zenith Craftsman', house: 'House of Artisans' },
+      'Creativity-Empathy': { name: 'Culture Shaper', house: 'House of Artisans' },
+      'Creativity-Intellect': { name: 'Polymath Prime', house: 'House of Artisans' },
+      'Discipline-Discipline': { name: 'Iron Mind', house: 'House of Monks' },
+      'Discipline-Intellect': { name: 'Grandmaster', house: 'House of Monks' },
+      'Discipline-Empathy': { name: 'Silent Sentinel', house: 'House of Monks' },
+      'Discipline-Creativity': { name: 'Forge Master', house: 'House of Monks' },
+      'Empathy-Empathy': { name: 'Beacon Prime', house: 'House of Beacons' },
+      'Empathy-Intellect': { name: 'Harmonic Guide', house: 'House of Beacons' },
+      'Empathy-Creativity': { name: 'Unity Weaver', house: 'House of Beacons' },
+      'Empathy-Discipline': { name: 'Vanguard Shield', house: 'House of Beacons' }
+    };
+
     let growthTasks = [
       { 
-        id: 'physics-2', name: 'Physics 2', icon: '🍎', category: 'work', hpCost: 10, diffLabel: 'Hard', 
-        customColor: 'var(--color-work)', secondsLogged: 7200, isPlaying: false,
+        id: 'physics-2', name: 'Physics 2', icon: '🍎', category: 'work', hpCost: 10,
+        customColor: 'var(--color-work)', secondsLogged: 14400, isPlaying: false,
         skills: [ { name: 'Intellect', stars: 5 }, { name: 'Discipline', stars: 4 } ]
       },
       { 
-        id: 'painting', name: 'Painting', icon: '🎨', category: 'hobbies', hpCost: 5, diffLabel: 'Mid', 
-        customColor: 'var(--color-hobbies)', secondsLogged: 5400, isPlaying: false,
+        id: 'painting', name: 'Painting', icon: '🎨', category: 'hobbies', hpCost: 5,
+        customColor: 'var(--color-hobbies)', secondsLogged: 21600, isPlaying: false,
         skills: [ { name: 'Creativity', stars: 5 }, { name: 'Discipline', stars: 3 } ]
       },
       { 
-        id: 'marvel', name: 'Marvel', icon: '🎬', category: 'media', hpCost: 2, diffLabel: 'Easy', 
-        customColor: 'var(--color-media)', secondsLogged: 4500, isPlaying: false,
+        id: 'marvel', name: 'Marvel', icon: '🎬', category: 'media', hpCost: 2,
+        customColor: 'var(--color-media)', secondsLogged: 3600, isPlaying: false,
         skills: [ { name: 'Empathy', stars: 3 }, { name: 'Creativity', stars: 2 } ]
       },
       { 
-        id: 'laundry', name: 'Laundry', icon: '🧺', category: 'chores', hpCost: 5, diffLabel: 'Mid', 
-        customColor: 'var(--color-chores)', secondsLogged: 2700, isPlaying: false,
+        id: 'laundry', name: 'Laundry', icon: '🧺', category: 'chores', hpCost: 5,
+        customColor: 'var(--color-chores)', secondsLogged: 1800, isPlaying: false,
         skills: [ { name: 'Discipline', stars: 3 }, { name: 'Intellect', stars: 1 } ]
       },
       { 
-        id: 'uni-friends', name: 'Uni Friends', icon: '👩‍❤️‍👩', category: 'social', hpCost: 5, diffLabel: 'Mid', 
-        customColor: 'var(--color-social)', secondsLogged: 3600, isPlaying: false,
+        id: 'uni-friends', name: 'Uni Friends', icon: '👩‍❤️‍👩', category: 'social', hpCost: 5,
+        customColor: 'var(--color-social)', secondsLogged: 7200, isPlaying: false,
         skills: [ { name: 'Empathy', stars: 5 }, { name: 'Creativity', stars: 3 } ]
       },
       { 
-        id: 'phone', name: 'Phone', icon: '📱', category: 'other', hpCost: 2, diffLabel: 'Easy', 
-        customColor: 'var(--color-other)', secondsLogged: 1800, isPlaying: false,
+        id: 'phone', name: 'Phone', icon: '📱', category: 'other', hpCost: 2,
+        customColor: 'var(--color-other)', secondsLogged: 900, isPlaying: false,
         skills: [ { name: 'Intellect', stars: 2 }, { name: 'Empathy', stars: 2 } ]
       }
     ];
 
     let recoveryTasks = [
-      { id: 'sleep', name: 'Sleep & Rest', icon: '🌙', type: 'timer', secondsLogged: 25200, hpCost: -30, skills: [{ name: 'Discipline', stars: 4 }, { name: 'Intellect', stars: 3 }] },
-      { id: 'mind', name: 'Mind Reset', icon: '🧘', type: 'timer', secondsLogged: 900, hpCost: -15, skills: [{ name: 'Empathy', stars: 4 }, { name: 'Discipline', stars: 4 }] },
+      { id: 'sleep', name: 'Sleep & Rest', icon: '🌙', type: 'timer', secondsLogged: 0, hpCost: -30, skills: [{ name: 'Discipline', stars: 4 }, { name: 'Intellect', stars: 3 }] },
+      { id: 'mind', name: 'Mind Reset', icon: '🧘', type: 'timer', secondsLogged: 0, hpCost: -15, skills: [{ name: 'Empathy', stars: 4 }, { name: 'Discipline', stars: 4 }] },
       { id: 'hydration', name: 'Hydration', icon: '🥛', type: 'fluid', targetML: 2700, containerML: 500, currentML: 1250, hpCost: -10, skills: [{ name: 'Discipline', stars: 3 }, { name: 'Intellect', stars: 2 }] },
       { id: 'nutrition', name: 'Nutrition', icon: '🥗', type: 'fluid', targetML: 2000, containerML: 400, currentML: 800, hpCost: -15, skills: [{ name: 'Discipline', stars: 4 }, { name: 'Creativity', stars: 2 }] }
     ];
@@ -801,26 +1007,108 @@
     let heroDeckSlots = [ growthTasks[0] ];
     let currentHP = 100;
     let activeSelectedTask = null;
+    let nextSkillPopTime = 10;
+    let popTimerCounter = 0;
+    let selectedStarRating1 = 0;
+    let selectedStarRating2 = 0;
 
-    /* Single Timer Loop updating DOM directly to prevent reflow lags */
+    let privacySettings = { archetype: true, radar: true, top3: true, live: true };
+
+    // Scroll to Top Button Visibility
+    window.addEventListener('scroll', () => {
+      const scrollBtn = document.getElementById('scrollTopBtn');
+      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 30) {
+        scrollBtn.classList.add('show');
+      } else {
+        scrollBtn.classList.remove('show');
+      }
+    });
+
     setInterval(() => {
-      heroDeckSlots.forEach((task, idx) => {
+      let anyTaskActive = false;
+      
+      growthTasks.concat(recoveryTasks).forEach(task => {
         if (task.isPlaying) {
           task.secondsLogged++;
-          const timerEl = document.getElementById(`timer-hero-${idx}`);
-          if (timerEl) timerEl.innerText = formatTime(task.secondsLogged);
+          anyTaskActive = true;
+          
+          if (activeSelectedTask && activeSelectedTask.id === task.id) {
+            const timerEl = document.getElementById('modalTimerDisplay');
+            if (timerEl) timerEl.innerText = formatTime(task.secondsLogged);
+          }
         }
       });
+
+      heroDeckSlots.forEach((task, idx) => {
+        const timerHeroEl = document.getElementById(`timer-hero-${idx}`);
+        if (timerHeroEl) timerHeroEl.innerText = formatTime(task.secondsLogged);
+      });
+
+      const bgOverlay = document.getElementById('calmingBgOverlay');
+      if (anyTaskActive) {
+        bgOverlay.classList.add('active');
+        popTimerCounter++;
+        if (popTimerCounter >= nextSkillPopTime) {
+          triggerRandomSkillPop();
+          popTimerCounter = 0;
+          nextSkillPopTime = Math.floor(Math.random() * 11) + 10;
+        }
+      } else {
+        bgOverlay.classList.remove('active');
+        popTimerCounter = 0;
+      }
     }, 1000);
+
+    /* PROBLEM 3: Visually readable colors on both dark and white backgrounds + NO drop shadows */
+    function triggerRandomSkillPop() {
+      const activeTasks = growthTasks.concat(recoveryTasks).filter(t => t.isPlaying);
+      if (activeTasks.length === 0) return;
+
+      const randomTask = activeTasks[Math.floor(Math.random() * activeTasks.length)];
+      if (!randomTask.skills || randomTask.skills.length === 0) return;
+
+      const randomSkill = randomTask.skills[Math.floor(Math.random() * randomTask.skills.length)];
+      const gainAmount = Math.floor(Math.random() * 2) + 1;
+
+      const popEl = document.createElement('div');
+      popEl.className = 'skill-pop-particle';
+      popEl.innerText = `+${gainAmount} ${randomSkill.name}`;
+
+      // High contrast readable colors
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const popColors = isDark 
+        ? ['#00e5ff', '#ff2a70', '#ffb300', '#00ff66', '#e040fb'] 
+        : ['#007a93', '#b30047', '#b35f00', '#008a3b', '#7300a8'];
+
+      popEl.style.color = popColors[Math.floor(Math.random() * popColors.length)];
+
+      const randomX = Math.floor(Math.random() * (window.innerWidth - 140)) + 20;
+      const randomY = Math.floor(Math.random() * (window.innerHeight - 250)) + 120;
+
+      popEl.style.left = `${randomX}px`;
+      popEl.style.top = `${randomY}px`;
+
+      document.body.appendChild(popEl);
+      setTimeout(() => popEl.remove(), 4000);
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toastNotice');
+      toast.innerText = message;
+      toast.classList.add('show');
+      setTimeout(() => { toast.classList.remove('show'); }, 2500);
+    }
+
+    function scrollToHeroSection() {
+      document.getElementById('heroSection').scrollIntoView({ behavior: 'smooth' });
+    }
 
     function toggleTheme() {
       const currentTheme = document.documentElement.getAttribute('data-theme');
       const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', newTheme);
       document.getElementById('themeToggleBtn').innerText = newTheme === 'dark' ? '🌙 DARK' : '☀️ LIGHT';
-      if (document.getElementById('profileView').classList.contains('active')) {
-        renderRadarChart();
-      }
+      if (document.getElementById('profileView').classList.contains('active')) renderProfileTab();
     }
 
     function toggleDrawer() {
@@ -835,7 +1123,7 @@
       document.getElementById(`${tab}View`).classList.add('active');
       document.getElementById(`btnNav${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add('active');
 
-      if (tab === 'profile') renderRadarChart();
+      if (tab === 'profile') renderProfileTab();
       if (tab === 'stats') renderTimelineStats();
     }
 
@@ -849,17 +1137,12 @@
         currentHP = Math.max(0, currentHP - task.hpCost);
         document.getElementById('hpPercentageText').innerText = `${currentHP}%`;
         document.getElementById('hpBarFill').style.width = `${currentHP}%`;
+        showToast(`${task.name} added to deck!`);
+      } else {
+        showToast(`${task.name} is already in the deck!`);
       }
       renderHeroSlots();
-    }
-
-    function togglePlayTimer(taskId, event) {
-      if (event) event.stopPropagation();
-      const task = growthTasks.find(t => t.id === taskId);
-      if (task) {
-        task.isPlaying = !task.isPlaying;
-        renderHeroSlots();
-      }
+      updateUI();
     }
 
     function removeFromPlayDeck(index, event) {
@@ -867,12 +1150,12 @@
       heroDeckSlots[index].isPlaying = false;
       heroDeckSlots.splice(index, 1);
       renderHeroSlots();
+      updateUI();
     }
 
     function renderHeroSlots() {
       const container = document.getElementById('heroSlotsContainer');
       container.innerHTML = '';
-
       const totalSlotsToRender = Math.max(4, heroDeckSlots.length + 1);
 
       for (let i = 0; i < totalSlotsToRender; i++) {
@@ -883,25 +1166,26 @@
           const task = heroDeckSlots[i];
           const color = task.customColor || GROWTH_CATEGORIES[task.category]?.color;
           const jpTag = GROWTH_CATEGORIES[task.category]?.jp || '能力';
+          const activeClass = task.isPlaying ? 'is-active-running' : '';
           
           slotWrapper.innerHTML = `
-            <div class="trading-card-outer" style="--card-color: ${color}; width:100%; height:100%;" onclick="openCardModal(growthTasks.find(t=>t.id==='${task.id}'))">
-              <button style="position:absolute; top:4px; right:6px; z-index:20; background:none; border:none; color:var(--text); font-size:0.75rem; cursor:pointer;" onclick="removeFromPlayDeck(${i}, event)">✕</button>
+            <div class="trading-card-outer ${activeClass}" style="--card-color: ${color}; width:100%; height:100%;" onclick="openCardModal(growthTasks.find(t=>t.id==='${task.id}'))">
+              <button style="position:absolute; top:3px; right:5px; z-index:20; background:none; border:none; color:var(--text); font-size:0.75rem; cursor:pointer;" onclick="removeFromPlayDeck(${i}, event)">✕</button>
+              <div class="trading-card-top-bar">
+                <span class="trading-card-hp-tag">-${task.hpCost} HP</span>
+              </div>
               <div class="trading-card-halftone">
                 <span class="trading-card-jp-tag">${jpTag}</span>
                 <div class="trading-card-icon">${task.icon}</div>
               </div>
               <div class="trading-card-banner">
                 <div class="trading-card-name">${task.name}</div>
-                <div class="trading-card-timer" id="timer-hero-${i}">${formatTime(task.secondsLogged)}</div>
-                <div class="trading-card-circle-btn ${task.isPlaying ? 'playing' : ''}" onclick="togglePlayTimer('${task.id}', event)">
-                  ${task.isPlaying ? '⏸' : '▶'}
-                </div>
+                <div class="trading-card-timer-hero" id="timer-hero-${i}">${formatTime(task.secondsLogged)}</div>
               </div>
             </div>
           `;
         } else {
-          slotWrapper.innerHTML = `<div class="deck-slot-empty">+</div>`;
+          slotWrapper.innerHTML = `<div class="deck-slot-empty">${i + 1}</div>`;
         }
         container.appendChild(slotWrapper);
       }
@@ -910,7 +1194,6 @@
     function updateUI() {
       renderHeroSlots();
 
-      // Render Category Rails with purely Japanese Sub-tags
       Object.keys(GROWTH_CATEGORIES).forEach(cat => {
         const railEl = document.getElementById(`rail${cat.charAt(0).toUpperCase() + cat.slice(1)}`);
         if (!railEl) return;
@@ -923,21 +1206,21 @@
           const jpTag = GROWTH_CATEGORIES[cat]?.jp || '能力';
           const wrapper = document.createElement('div');
           wrapper.className = 'trading-card-outer';
+          if (task.isPlaying) wrapper.classList.add('is-active-running');
           wrapper.style.setProperty('--card-color', color);
           wrapper.onclick = () => openCardModal(task);
 
-          const isEquipped = heroDeckSlots.some(s => s.id === task.id);
-
           wrapper.innerHTML = `
+            <div class="trading-card-top-bar">
+              <span class="trading-card-hp-tag">-${task.hpCost} HP</span>
+            </div>
             <div class="trading-card-halftone">
               <span class="trading-card-jp-tag">${jpTag}</span>
               <div class="trading-card-icon">${task.icon}</div>
             </div>
             <div class="trading-card-banner">
               <div class="trading-card-name">${task.name}</div>
-              <div class="trading-card-circle-btn" onclick="${isEquipped ? `togglePlayTimer('${task.id}', event)` : `addToPlayDeck('${task.id}', event)`}">
-                ${isEquipped ? (task.isPlaying ? '⏸' : '▶') : '+'}
-              </div>
+              <div class="trading-card-circle-btn-lg" onclick="addToPlayDeck('${task.id}', event)">+</div>
             </div>
           `;
           railEl.appendChild(wrapper);
@@ -945,12 +1228,11 @@
 
         const emptyAddCard = document.createElement('div');
         emptyAddCard.className = 'empty-add-card';
-        emptyAddCard.onclick = () => alert(`Add card to ${cat}`);
+        emptyAddCard.onclick = () => openNewCardModal(cat);
         emptyAddCard.innerHTML = `<span style="font-size:1.4rem; color:var(--neon-cyan);">+</span><span style="font-size:0.6rem; font-family:var(--font-mono); color:var(--neon-cyan);">NEW CARD</span>`;
         railEl.appendChild(emptyAddCard);
       });
 
-      // Render Recovery Grid
       const recGrid = document.getElementById('recoveryGrid');
       recGrid.innerHTML = '';
       recoveryTasks.forEach(t => {
@@ -970,19 +1252,22 @@
       });
     }
 
-    /* TRADING CARD MODAL (Includes Skill Rating Stars + HP Value) */
     function openCardModal(task, isRecovery = false) {
       activeSelectedTask = task;
       const cardColor = isRecovery ? 'var(--color-recovery)' : (task.customColor || GROWTH_CATEGORIES[task.category]?.color);
       const categoryJp = isRecovery ? '回復 // RECOVERY' : `${GROWTH_CATEGORIES[task.category]?.jp} // ${GROWTH_CATEGORIES[task.category]?.name.toUpperCase()}`;
       
-      document.getElementById('tcModalCard').style.setProperty('--modal-color', cardColor);
+      const tcCard = document.getElementById('tcModalCard');
+      tcCard.style.setProperty('--modal-color', cardColor);
+
+      if (task.isPlaying) tcCard.classList.add('card-active-glow');
+      else tcCard.classList.remove('card-active-glow');
+
       document.getElementById('modalIcon').innerText = task.icon;
       document.getElementById('modalTitle').innerText = task.name;
       document.getElementById('modalJpCategory').innerText = categoryJp;
       document.getElementById('modalHpBadge').innerText = task.hpCost > 0 ? `-${task.hpCost} HP` : `+${Math.abs(task.hpCost)} HP`;
 
-      // Render 5-Star Skill Rating Rows
       const skillsContainer = document.getElementById('modalSkillsContainer');
       skillsContainer.innerHTML = '';
       if (task.skills && task.skills.length > 0) {
@@ -991,53 +1276,110 @@
           const emptyStars = '☆'.repeat(5 - skill.stars);
           const row = document.createElement('div');
           row.className = 'tc-stat-row';
-          row.innerHTML = `
-            <span>${skill.name.toUpperCase()}</span>
-            <span class="tc-stars">${filledStars}${emptyStars}</span>
-          `;
+          row.innerHTML = `<span>${skill.name.toUpperCase()}</span><span class="tc-stars-interactive">${filledStars}${emptyStars}</span>`;
           skillsContainer.appendChild(row);
         });
       }
 
+      renderModalInteractiveBody(isRecovery);
+      document.getElementById('cardDetailModal').classList.add('active');
+    }
+
+    /* PROBLEM 2: Action button row with bottom-left Edit (✏️) and Delete (🗑️) square icons + precise short main label */
+    function renderModalInteractiveBody(isRecovery = false) {
+      const task = activeSelectedTask;
       const body = document.getElementById('modalInteractiveBody');
       body.innerHTML = '';
 
-      if (isRecovery) {
-        if (task.type === 'timer') {
-          body.innerHTML = `
-            <div style="text-align:center; margin-top:8px;">
-              <div style="font-family:var(--font-mono); font-size:1.6rem; color:var(--neon-cyan); margin-bottom:8px;">${formatTime(task.secondsLogged)}</div>
-              <button class="btn-action-primary" style="background:var(--color-recovery); color:#fff;" onclick="alert('Timer Started')">START RECOVERY TIMER</button>
-            </div>
-          `;
-        } else {
-          const numTumblers = Math.ceil(task.targetML / task.containerML);
-          let tumblersHTML = '<div class="tumbler-container">';
-          for (let i = 0; i < numTumblers; i++) {
-            const filledInTumbler = Math.max(0, Math.min(task.containerML, task.currentML - (i * task.containerML)));
-            const fillPct = (filledInTumbler / task.containerML) * 100;
-            tumblersHTML += `<div class="tumbler-item" onclick="setFluidLevel(${i})"><div class="tumbler-fill" style="height: ${fillPct}%;"></div></div>`;
-          }
-          tumblersHTML += '</div>';
-
-          body.innerHTML = `
-            <div style="text-align:center; font-size:0.75rem; color:var(--text-muted); margin-top:6px;">
-              Container: 
-              <select onchange="updateContainerSize(this.value)" style="background:var(--card-bg); color:var(--text); border:1px solid var(--neon-cyan); border-radius:4px; padding:2px 4px;">
-                <option value="250" ${task.containerML === 250 ? 'selected' : ''}>250 mL Glass</option>
-                <option value="500" ${task.containerML === 500 ? 'selected' : ''}>500 mL Tumbler</option>
-              </select>
-            </div>
-            ${tumblersHTML}
-            <div style="text-align:center; font-family:var(--font-mono); font-size:0.85rem; color:var(--color-recovery); font-weight:700;">${task.currentML} / ${task.targetML} mL</div>
-          `;
+      if (isRecovery && task.type === 'fluid') {
+        const numTumblers = Math.ceil(task.targetML / task.containerML);
+        let tumblersHTML = '<div class="tumbler-container">';
+        for (let i = 0; i < numTumblers; i++) {
+          const filledInTumbler = Math.max(0, Math.min(task.containerML, task.currentML - (i * task.containerML)));
+          const fillPct = (filledInTumbler / task.containerML) * 100;
+          tumblersHTML += `<div class="tumbler-item" onclick="setFluidLevel(${i})"><div class="tumbler-fill" style="height: ${fillPct}%;"></div></div>`;
         }
-      } else {
+        tumblersHTML += '</div>';
+
         body.innerHTML = `
-          <button class="btn-action-primary" style="margin-top:10px;" onclick="addToPlayDeck('${task.id}'); closeCardModal(null, true);">EQUIP TO ACTION DECK</button>
+          <div style="text-align:center; font-size:0.75rem; color:var(--text-muted); margin-top:6px;">
+            Container: 
+            <select onchange="updateContainerSize(this.value)" style="background:var(--card-bg); color:var(--text); border:1px solid var(--neon-cyan); border-radius:4px; padding:2px 4px;">
+              <option value="250" ${task.containerML === 250 ? 'selected' : ''}>250 mL Glass</option>
+              <option value="500" ${task.containerML === 500 ? 'selected' : ''}>500 mL Tumbler</option>
+            </select>
+          </div>
+          ${tumblersHTML}
+          <div style="text-align:center; font-family:var(--font-mono); font-size:0.85rem; color:var(--color-recovery); font-weight:700;">${task.currentML} / ${task.targetML} mL</div>
+        `;
+        return;
+      }
+
+      const isEquippedInDeck = heroDeckSlots.some(t => t.id === task.id);
+      if (!isEquippedInDeck && !isRecovery) {
+        heroDeckSlots.push(task);
+        renderHeroSlots();
+      }
+
+      const timerDisplay = `<div class="timer-display-modal" id="modalTimerDisplay">${formatTime(task.secondsLogged)}</div>`;
+
+      let mainButtonArea = '';
+      if (!task.isPlaying) {
+        mainButtonArea = `<button class="btn-action-primary-compact" onclick="activateTaskTimer('${task.id}')">${task.secondsLogged > 0 ? 'RESUME' : 'START'}</button>`;
+      } else {
+        mainButtonArea = `
+          <div class="btn-dual-group-compact">
+            <button class="btn-action-pause-compact" onclick="pauseTaskTimer('${task.id}')">PAUSE</button>
+            <button class="btn-action-stop-compact" onclick="stopTaskTimer('${task.id}')">STOP</button>
+          </div>
         `;
       }
-      document.getElementById('cardDetailModal').classList.add('active');
+
+      // Bottom action row putting ✏️ Edit and 🗑️ Delete at bottom left corner
+      const editDeleteSquares = isRecovery ? '' : `
+        <button class="btn-square-icon" title="Edit Card" onclick="openEditCardModal()">✏️</button>
+        <button class="btn-square-icon danger" title="Delete Card" onclick="deleteCurrentCard()">🗑️</button>
+      `;
+
+      body.innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:2px;">
+          ${timerDisplay}
+          <div class="tc-bottom-action-row">
+            ${editDeleteSquares}
+            ${mainButtonArea}
+          </div>
+        </div>
+      `;
+    }
+
+    function activateTaskTimer(taskId) {
+      const task = growthTasks.concat(recoveryTasks).find(t => t.id === taskId);
+      if (task) {
+        task.isPlaying = true;
+        document.getElementById('tcModalCard').classList.add('card-active-glow');
+        renderModalInteractiveBody(recoveryTasks.some(r => r.id === taskId));
+        renderHeroSlots();
+      }
+    }
+
+    function pauseTaskTimer(taskId) {
+      const task = growthTasks.concat(recoveryTasks).find(t => t.id === taskId);
+      if (task) {
+        task.isPlaying = false;
+        document.getElementById('tcModalCard').classList.remove('card-active-glow');
+        renderModalInteractiveBody(recoveryTasks.some(r => r.id === taskId));
+        renderHeroSlots();
+      }
+    }
+
+    function stopTaskTimer(taskId) {
+      const task = growthTasks.concat(recoveryTasks).find(t => t.id === taskId);
+      if (task) {
+        task.isPlaying = false;
+        document.getElementById('tcModalCard').classList.remove('card-active-glow');
+        renderModalInteractiveBody(recoveryTasks.some(r => r.id === taskId));
+        renderHeroSlots();
+      }
     }
 
     function setFluidLevel(tumblerIndex) {
@@ -1057,8 +1399,166 @@
     }
 
     function closeCardModal(e, force = false) {
+      if (activeSelectedTask && activeSelectedTask.isPlaying && !force) {
+        showToast("Pause or Stop the activity timer before closing!");
+        return;
+      }
       if (force || (e && e.target.id === 'cardDetailModal')) {
         document.getElementById('cardDetailModal').classList.remove('active');
+        activeSelectedTask = null;
+      }
+    }
+
+    function openNewCardModal(defaultCat = '') {
+      activeSelectedTask = null;
+      selectedStarRating1 = 0;
+      selectedStarRating2 = 0;
+
+      document.getElementById('createFormName').value = '';
+      document.getElementById('createFormIcon').value = '';
+      document.getElementById('createFormHpCost').value = '';
+      document.getElementById('createFormCategory').value = defaultCat || '';
+      document.getElementById('createFormSkill1').value = '';
+      document.getElementById('createFormSkill2').value = '';
+
+      document.getElementById('starSelector1').innerText = '☆☆☆☆☆';
+      document.getElementById('starSelector2').innerText = '☆☆☆☆☆';
+
+      onCategorySelectChange();
+      validateCreateCardForm();
+      document.getElementById('cardFormModal').classList.add('active');
+    }
+
+    function openEditCardModal() {
+      if (!activeSelectedTask) return;
+      const t = activeSelectedTask;
+
+      document.getElementById('createFormName').value = t.name;
+      document.getElementById('createFormIcon').value = t.icon;
+      document.getElementById('createFormHpCost').value = t.hpCost.toString();
+      document.getElementById('createFormCategory').value = t.category;
+
+      if (t.skills && t.skills.length >= 2) {
+        document.getElementById('createFormSkill1').value = t.skills[0].name;
+        document.getElementById('createFormSkill2').value = t.skills[1].name;
+        selectedStarRating1 = t.skills[0].stars;
+        selectedStarRating2 = t.skills[1].stars;
+        updateStarDisplay(1, selectedStarRating1);
+        updateStarDisplay(2, selectedStarRating2);
+      }
+
+      onCategorySelectChange();
+      validateCreateCardForm();
+
+      document.getElementById('cardDetailModal').classList.remove('active');
+      document.getElementById('cardFormModal').classList.add('active');
+    }
+
+    function onCategorySelectChange() {
+      const catVal = document.getElementById('createFormCategory').value;
+      const formCard = document.getElementById('createFormTradingCard');
+      const jpTagEl = document.getElementById('createFormJpTag');
+
+      if (catVal && GROWTH_CATEGORIES[catVal]) {
+        formCard.style.setProperty('--modal-color', GROWTH_CATEGORIES[catVal].color);
+        jpTagEl.innerText = `${GROWTH_CATEGORIES[catVal].jp} // ${GROWTH_CATEGORIES[catVal].name.toUpperCase()}`;
+      } else {
+        formCard.style.setProperty('--modal-color', '#888888');
+        jpTagEl.innerText = 'SELECT CATEGORY';
+      }
+      validateCreateCardForm();
+    }
+
+    function handleStarClick(skillIndex, event) {
+      const rect = event.target.getBoundingClientRect();
+      const clickX = event.clientX - rect.left;
+      const starWidth = rect.width / 5;
+      const clickedStars = Math.min(5, Math.max(1, Math.ceil(clickX / starWidth)));
+
+      if (skillIndex === 1) {
+        selectedStarRating1 = clickedStars;
+        updateStarDisplay(1, selectedStarRating1);
+      } else {
+        selectedStarRating2 = clickedStars;
+        updateStarDisplay(2, selectedStarRating2);
+      }
+      validateCreateCardForm();
+    }
+
+    function updateStarDisplay(skillIndex, starCount) {
+      const filled = '★'.repeat(starCount);
+      const empty = '☆'.repeat(5 - starCount);
+      document.getElementById(`starSelector${skillIndex}`).innerText = filled + empty;
+    }
+
+    function validateCreateCardForm() {
+      const name = document.getElementById('createFormName').value.trim();
+      const icon = document.getElementById('createFormIcon').value.trim();
+      const hp = document.getElementById('createFormHpCost').value;
+      const cat = document.getElementById('createFormCategory').value;
+      const sk1 = document.getElementById('createFormSkill1').value;
+      const sk2 = document.getElementById('createFormSkill2').value;
+
+      const isComplete = name && icon && hp && cat && sk1 && sk2 && selectedStarRating1 > 0 && selectedStarRating2 > 0;
+      document.getElementById('btnSaveCard').disabled = !isComplete;
+    }
+
+    function saveCardForm() {
+      const name = document.getElementById('createFormName').value.trim();
+      const icon = document.getElementById('createFormIcon').value.trim();
+      const hpCost = parseInt(document.getElementById('createFormHpCost').value);
+      const category = document.getElementById('createFormCategory').value;
+      const skill1Name = document.getElementById('createFormSkill1').value;
+      const skill2Name = document.getElementById('createFormSkill2').value;
+
+      if (activeSelectedTask) {
+        activeSelectedTask.name = name;
+        activeSelectedTask.icon = icon;
+        activeSelectedTask.category = category;
+        activeSelectedTask.hpCost = hpCost;
+        activeSelectedTask.customColor = GROWTH_CATEGORIES[category]?.color;
+        activeSelectedTask.skills = [
+          { name: skill1Name, stars: selectedStarRating1 },
+          { name: skill2Name, stars: selectedStarRating2 }
+        ];
+        showToast(`${name} updated!`);
+      } else {
+        const newCard = {
+          id: 'custom-' + Date.now(),
+          name: name,
+          icon: icon,
+          category: category,
+          hpCost: hpCost,
+          customColor: GROWTH_CATEGORIES[category]?.color,
+          secondsLogged: 0,
+          isPlaying: false,
+          skills: [
+            { name: skill1Name, stars: selectedStarRating1 },
+            { name: skill2Name, stars: selectedStarRating2 }
+          ]
+        };
+        growthTasks.push(newCard);
+        showToast(`${name} created!`);
+      }
+
+      closeFormModal(null, true);
+      updateUI();
+    }
+
+    function deleteCurrentCard() {
+      if (!activeSelectedTask) return;
+      if (confirm(`Delete "${activeSelectedTask.name}"?`)) {
+        growthTasks = growthTasks.filter(t => t.id !== activeSelectedTask.id);
+        heroDeckSlots = heroDeckSlots.filter(t => t.id !== activeSelectedTask.id);
+        closeCardModal(null, true);
+        updateUI();
+        showToast("Card deleted.");
+      }
+    }
+
+    function closeFormModal(e, force = false) {
+      if (force || (e && e.target.id === 'cardFormModal')) {
+        document.getElementById('cardFormModal').classList.remove('active');
       }
     }
 
@@ -1076,26 +1576,168 @@
         if (t.secondsLogged > 0) {
           const item = document.createElement('div');
           item.className = 'timeline-item';
-          item.innerHTML = `<div><div style="font-family:var(--font-mono);">${t.icon} ${t.name}</div></div><div style="font-family:var(--font-mono); color:var(--neon-cyan); font-weight:700;">${(t.secondsLogged / 3600).toFixed(1)}h</div>`;
+          item.innerHTML = `<div><div style="font-family:var(--font-mono);">${t.icon} ${t.name}</div></div><div style="font-family:var(--font-mono); color:var(--neon-cyan); font-weight:700;">${(t.secondsLogged / 3600).toFixed(2)}h</div>`;
           list.appendChild(item);
         }
       });
     }
 
+    /* PROBLEM 5: Profile Share Functionality */
+    function shareProfile() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'Alex Vance - Life Engine ID',
+          text: 'Check out my Archetype Identity Record on My 24h Life Engine!',
+          url: window.location.href,
+        }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+        showToast("Profile ID Link copied to clipboard!");
+      }
+    }
+
+    function calculateIdentityMatrix() {
+      const totals = { Intellect: 0, Creativity: 0, Discipline: 0, Empathy: 0 };
+
+      growthTasks.forEach(task => {
+        const hoursLogged = task.secondsLogged / 3600;
+        if (task.skills) {
+          task.skills.forEach(skill => {
+            if (totals[skill.name] !== undefined) {
+              totals[skill.name] += skill.stars * hoursLogged * 10;
+            }
+          });
+        }
+      });
+
+      const sortedAttributes = Object.keys(totals).sort((a, b) => totals[b] - totals[a]);
+      const dominant = sortedAttributes[0];
+      const auxiliary = sortedAttributes[1];
+
+      const lookupKey = `${dominant}-${auxiliary}`;
+      const archetypeInfo = ARCHETYPE_TABLE[lookupKey] || { name: 'Pattern Master', house: 'House of Tacticians' };
+
+      return { totals, dominant, auxiliary, archetype: archetypeInfo.name, house: archetypeInfo.house };
+    }
+
+    function togglePrivacySetting(key) {
+      privacySettings[key] = document.getElementById(`privacyShow${key.charAt(0).toUpperCase() + key.slice(1)}`).checked;
+      renderProfileTab();
+    }
+
+    function renderProfileTab() {
+      const matrix = calculateIdentityMatrix();
+
+      document.getElementById('profileArchetypeBadge').style.display = privacySettings.archetype ? 'block' : 'none';
+      document.getElementById('profileArchetypeBadge').innerText = matrix.archetype.toUpperCase();
+      document.getElementById('profileHouseTitle').innerText = matrix.house;
+
+      document.getElementById('profileLiveSignal').style.display = privacySettings.live ? 'block' : 'none';
+
+      const grandTotal = Object.values(matrix.totals).reduce((a, b) => a + b, 0) || 1;
+      const track = document.getElementById('personalityBarTrack');
+      const legend = document.getElementById('personalityLegend');
+      track.innerHTML = '';
+      legend.innerHTML = '';
+
+      const attrColors = {
+        Intellect: 'var(--color-intellect)',
+        Creativity: 'var(--color-creativity)',
+        Discipline: 'var(--color-discipline)',
+        Empathy: 'var(--color-empathy)'
+      };
+
+      Object.keys(matrix.totals).forEach(attr => {
+        const pct = ((matrix.totals[attr] / grandTotal) * 100).toFixed(1);
+        
+        const seg = document.createElement('div');
+        seg.className = 'personality-segment';
+        seg.style.width = `${pct}%`;
+        seg.style.background = attrColors[attr];
+        track.appendChild(seg);
+
+        const legItem = document.createElement('div');
+        legItem.className = 'legend-item';
+        legItem.innerHTML = `<div class="legend-dot" style="background:${attrColors[attr]};"></div><span>${attr}: ${pct}%</span>`;
+        legend.appendChild(legItem);
+      });
+
+      document.getElementById('radarChart').style.display = privacySettings.radar ? 'block' : 'none';
+      if (privacySettings.radar) renderRadarChart(matrix.totals);
+
+      /* PROBLEM 4: Top 3 Activities in Profile tab render as actual Trading Cards */
+      const top3Container = document.getElementById('topActivitiesCard');
+      top3Container.style.display = privacySettings.top3 ? 'block' : 'none';
+      
+      const top3List = document.getElementById('topActivitiesList');
+      top3List.innerHTML = '';
+
+      const sortedActivities = [...growthTasks].sort((a, b) => b.secondsLogged - a.secondsLogged).slice(0, 3);
+      sortedActivities.forEach(act => {
+        const color = act.customColor || GROWTH_CATEGORIES[act.category]?.color;
+        const jpTag = GROWTH_CATEGORIES[act.category]?.jp || '能力';
+        
+        const cardWrapper = document.createElement('div');
+        cardWrapper.className = 'trading-card-outer';
+        cardWrapper.style.setProperty('--card-color', color);
+        cardWrapper.onclick = () => openCardModal(act);
+
+        cardWrapper.innerHTML = `
+          <div class="trading-card-top-bar">
+            <span class="trading-card-hp-tag">-${act.hpCost} HP</span>
+          </div>
+          <div class="trading-card-halftone">
+            <span class="trading-card-jp-tag">${jpTag}</span>
+            <div class="trading-card-icon">${act.icon}</div>
+          </div>
+          <div class="trading-card-banner">
+            <div class="trading-card-name">${act.name}</div>
+            <div class="trading-card-timer-hero">${(act.secondsLogged / 3600).toFixed(1)}h</div>
+          </div>
+        `;
+        top3List.appendChild(cardWrapper);
+      });
+
+      const houseList = document.getElementById('houseDistributionList');
+      houseList.innerHTML = '';
+      
+      const houseScores = {
+        'House of Tacticians': matrix.totals.Intellect,
+        'House of Artisans': matrix.totals.Creativity,
+        'House of Monks': matrix.totals.Discipline,
+        'House of Beacons': matrix.totals.Empathy
+      };
+
+      Object.keys(houseScores).forEach(h => {
+        const hPct = ((houseScores[h] / grandTotal) * 100).toFixed(1);
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.justifyContent = 'space-between';
+        row.innerHTML = `<span>${h}</span><span style="font-weight:700; color:var(--neon-cyan);">${hPct}%</span>`;
+        houseList.appendChild(row);
+      });
+    }
+
     let radarChartInstance = null;
-    function renderRadarChart() {
+    function renderRadarChart(totals) {
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       const gridColor = isDark ? 'rgba(0, 240, 255, 0.2)' : 'rgba(0, 180, 216, 0.25)';
       const ctx = document.getElementById('radarChart').getContext('2d');
+      
       if (radarChartInstance) radarChartInstance.destroy();
       radarChartInstance = new Chart(ctx, {
         type: 'radar',
         data: {
-          labels: ['Work', 'Hobbies', 'Media', 'Chores', 'Social', 'Other'],
-          datasets: [{ data: [85, 70, 60, 75, 80, 50], backgroundColor: 'rgba(230, 0, 115, 0.2)', borderColor: '#e60073', pointBackgroundColor: '#00b4d8' }]
+          labels: ['Intellect', 'Creativity', 'Discipline', 'Empathy'],
+          datasets: [{
+            data: [totals.Intellect, totals.Creativity, totals.Discipline, totals.Empathy],
+            backgroundColor: 'rgba(230, 0, 115, 0.2)',
+            borderColor: '#e60073',
+            pointBackgroundColor: '#00b4d8'
+          }]
         },
         options: { 
-          animation: false, // Disabling chart animations prevents UI lag
+          animation: false,
           scales: { r: { angleLines: { color: gridColor }, grid: { color: gridColor }, ticks: { display: false } } }, 
           plugins: { legend: { display: false } } 
         }
