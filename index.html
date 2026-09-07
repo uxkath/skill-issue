@@ -18,14 +18,16 @@
       --font-tech-head: 'Orbitron', sans-serif;
       --font-tech-body: 'Rajdhani', sans-serif;
       
-      /* Updated Category Colors */
-      --color-work: #f97316;     /* Red Orange */
+      --color-work: #dc2626;     /* Deep Red Red-Orange */
       --color-hobbies: #f59e0b;  /* Amber */
       --color-media: #8b5cf6;    /* Purple */
       --color-chores: #10b981;   /* Mint Green */
       --color-social: #ec4899;   /* Pink */
       --color-other: #94a3b8;    /* Silver */
       --color-recovery: #06b6d4; /* Cyan */
+      
+      --nav-pink: #ec4899;
+      --nav-pink-bg: rgba(236, 72, 153, 0.25);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-tech-body); }
@@ -37,8 +39,8 @@
       justify-content: center;
       min-height: 100vh;
       background-image: 
-        radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.15), transparent 50%),
-        radial-gradient(circle at 50% 100%, rgba(219, 39, 119, 0.18), transparent 60%);
+        radial-gradient(circle at 50% 0%, rgba(236, 72, 153, 0.12), transparent 50%),
+        radial-gradient(circle at 50% 100%, rgba(139, 92, 246, 0.15), transparent 60%);
       background-attachment: fixed;
       overflow-x: hidden;
     }
@@ -46,77 +48,62 @@
     .app-container {
       width: 100%;
       max-width: 414px;
-      padding: 16px 16px 100px 16px;
+      padding: 12px 16px 100px 16px;
       display: flex;
       flex-direction: column;
       position: relative;
     }
 
+    /* Top Bar */
     .top-bar-clean {
       display: flex;
       align-items: center;
-      justify-content: flex-start;
-      margin-bottom: 4px;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
     
     .hamburger-btn-minimal {
       background: transparent;
       border: none;
       color: var(--text);
-      font-size: 1.5rem;
-      padding: 4px 8px;
+      font-size: 1.4rem;
+      padding: 4px 6px;
       cursor: pointer;
       opacity: 0.85;
-      transition: opacity 0.2s ease;
     }
-    .hamburger-btn-minimal:hover { opacity: 1; }
 
-    /* Hero Center Section (Action Tab Only) */
-    .hero-section {
+    .top-bar-info {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      text-align: center;
-      margin-bottom: 18px;
-      gap: 2px;
-    }
-    
-    .hero-day {
-      font-family: var(--font-tech-head);
-      font-size: 1.8rem;
-      font-weight: 900;
-      background: linear-gradient(135deg, #f97316, #ec4899);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      line-height: 1.1;
+      align-items: flex-end;
+      text-align: right;
     }
 
-    .hero-date-sub {
+    .top-bar-date {
       font-family: var(--font-tech-head);
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      font-weight: 600;
-      letter-spacing: 1px;
-      margin-bottom: 4px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--nav-pink);
+      letter-spacing: 0.5px;
     }
 
-    .hero-quote {
-      font-size: 0.8rem;
+    .top-bar-quote {
+      font-size: 0.65rem;
       color: var(--text-muted);
       font-style: italic;
-      max-width: 90%;
-      line-height: 1.2;
+      max-width: 220px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    /* Left Side Drawer Menu */
+    /* Side Drawer */
     .drawer {
       position: fixed;
-      top: 0;
-      left: -100%;
-      width: 280px;
-      height: 100%;
+      top: 0; left: -100%;
+      width: 280px; height: 100%;
       background: #090714;
       border-right: 1px solid var(--card-border);
       z-index: 100;
@@ -135,56 +122,64 @@
       display: none;
     }
     .drawer-overlay.show { display: block; }
-    .drawer-header {
-      font-family: var(--font-tech-head);
-      font-size: 1.1rem;
-      border-bottom: 1px solid var(--card-border);
-      padding-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .drawer-item {
-      padding: 12px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      font-family: var(--font-tech-head);
-      font-size: 0.85rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
 
     /* Views */
     .view { display: none; flex-direction: column; gap: 14px; }
     .view.active { display: flex; }
 
-    /* Sub Tabs (Growth / Recovery) */
-    .sub-tabs {
+    /* Hero Playing Deck Container Matching Sketch */
+    .hero-deck-section {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px dashed rgba(236, 72, 153, 0.4);
+      padding: 12px 8px;
+      clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
       display: flex;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--card-border);
-      padding: 3px;
+      flex-direction: column;
+      gap: 8px;
     }
-    .sub-tab-btn {
-      flex: 1;
-      padding: 8px;
-      border: none;
-      background: transparent;
-      color: var(--text-muted);
+    .hero-deck-header {
       font-family: var(--font-tech-head);
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      font-size: 0.7rem;
+      color: var(--nav-pink);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding-left: 4px;
     }
-    .sub-tab-btn.active {
-      background: rgba(249, 115, 22, 0.35);
-      color: #f97316;
+    
+    /* Horizontal Scroll Slot Area showing 3 full slots + 4th peek */
+    .hero-slots-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+    .hero-slots-scroll::-webkit-scrollbar { display: none; }
+
+    /* Vertical Slot Card */
+    .deck-slot {
+      min-width: 96px;
+      max-width: 96px;
+      height: 135px;
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+      background: rgba(11, 9, 22, 0.5);
+    }
+    .deck-slot.filled {
+      border: 1.5px solid var(--slot-color, var(--nav-pink));
+      background: var(--card-bg);
+      clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+      justify-content: space-between;
+      padding: 6px;
     }
 
-    /* Activity Cards */
+    /* Category Rails */
     .rail-section { display: flex; flex-direction: column; gap: 6px; }
     .rail-header {
       font-family: var(--font-tech-head);
@@ -203,125 +198,113 @@
     }
     .rail-container::-webkit-scrollbar { display: none; }
 
+    /* Vertical Trading Activity Card Styling */
     .rail-card-wrapper {
-      min-width: 110px;
-      max-width: 110px;
+      min-width: 100px;
+      max-width: 100px;
+      height: 140px;
       position: relative;
-      background: var(--accent-border);
+      background: var(--card-color, var(--color-work));
       padding: 1.5px;
       cursor: pointer;
-      filter: drop-shadow(0 0 6px var(--accent-glow));
-      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+      filter: drop-shadow(0 0 4px var(--card-color, var(--color-work)));
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
       flex-shrink: 0;
       transition: transform 0.2s ease;
     }
     .rail-card-wrapper:hover { transform: translateY(-2px); }
 
     .rail-card {
-      background: linear-gradient(180deg, rgba(20, 16, 38, 0.9) 0%, #0a0814 100%);
+      background: linear-gradient(180deg, rgba(20, 16, 38, 0.95) 0%, #0a0814 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      height: 110px;
-      clip-path: polygon(0 0, calc(100% - 11px) 0, 100% 11px, 100% 100%, 11px 100%, 0 calc(100% - 11px));
+      height: 100%;
+      padding: 6px 4px;
+      clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
     }
 
-    .rail-card-top {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      flex-grow: 1;
-      position: relative;
+    .card-hp-badge {
+      font-family: var(--font-tech-head);
+      font-size: 0.55rem;
+      font-weight: 800;
+      padding: 2px 4px;
+      border-radius: 3px;
+      background: rgba(0,0,0,0.6);
+      color: #f43f5e;
+      border: 1px solid #f43f5e;
     }
-    .rail-card-icon-bg {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background-image: radial-gradient(var(--accent-border) 24%, transparent 26%);
-      background-size: 6px 6px;
-      background-position: center;
-      opacity: 0.25;
-      mask-image: radial-gradient(circle at 50% 40%, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 90%);
-      -webkit-mask-image: radial-gradient(circle at 50% 40%, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 90%);
-    }
-    .rail-card-icon { font-size: 1.8rem; z-index: 1; }
 
-    .rail-card-ribbon {
+    .card-add-btn {
       width: 100%;
-      padding: 6px 2px;
-      background: var(--accent-border);
-      clip-path: polygon(0 0, 100% 0, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-      text-align: center;
-    }
-    .rail-card-title {
+      padding: 3px 0;
+      background: var(--card-color, var(--color-work));
+      border: none;
+      color: #fff;
       font-family: var(--font-tech-head);
       font-size: 0.65rem;
-      font-weight: 700;
-      color: #fff;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
+      font-weight: 900;
+      cursor: pointer;
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 6px 100%, 0 calc(100% - 6px));
     }
 
-    .rail-card-wrapper.add-new-card-wrapper {
-      background: rgba(255, 255, 255, 0.15);
-      filter: none;
+    /* Empty Add Card Box Placeholder */
+    .empty-add-card {
+      min-width: 100px;
+      height: 140px;
+      border: 2px dashed rgba(255, 255, 255, 0.25);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      color: var(--text-muted);
+      transition: border-color 0.2s ease;
     }
-    .rail-card-wrapper.add-new-card-wrapper:hover {
-      background: var(--accent-border);
-      filter: drop-shadow(0 0 6px var(--accent-glow));
-    }
-    .add-new-card {
-      background: rgba(15, 12, 28, 0.6);
-      border: 1px dashed rgba(255, 255, 255, 0.2);
-    }
+    .empty-add-card:hover { border-color: var(--nav-pink); color: var(--nav-pink); }
 
-    /* Recovery Matrix Grid & Cards */
-    .vitality-gauge-card-wrapper {
-      background: var(--color-recovery);
-      padding: 1.5px;
-      clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
-      filter: drop-shadow(0 0 6px rgba(6, 182, 212, 0.4));
-    }
-    .vitality-gauge-card {
+    /* Recovery Tab: HP / System Vitality Bar */
+    .hp-container {
       background: var(--card-bg);
-      padding: 16px;
-      text-align: center;
-      clip-path: polygon(0 0, calc(100% - 13px) 0, 100% 13px, 100% 100%, 13px 100%, 0 calc(100% - 13px));
+      border: 1px solid var(--card-border);
+      padding: 12px;
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+      margin-bottom: 8px;
     }
-    .vitality-bar-bg {
+    .hp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-tech-head);
+      font-size: 0.8rem;
+      margin-bottom: 6px;
+    }
+    .hp-bar-bg {
       width: 100%;
-      height: 12px;
-      background: rgba(255,255,255,0.1);
-      margin: 10px 0 4px 0;
+      height: 14px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 7px;
       overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
-    .vitality-bar-fill {
+    .hp-bar-fill {
       height: 100%;
-      background: var(--color-recovery);
-      box-shadow: 0 0 10px var(--color-recovery);
+      width: 100%;
+      background: linear-gradient(90deg, #ef4444 0%, #10b981 100%);
       transition: width 0.3s ease;
     }
 
-    .matrix-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
+    /* Recovery Cards Grid */
+    .matrix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .matrix-card-wrapper {
       background: var(--card-border);
       padding: 1.5px;
       clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
-      transition: all 0.2s ease;
-      position: relative;
+      cursor: pointer;
     }
-    .matrix-card-wrapper:hover {
-      background: var(--color-recovery);
-      filter: drop-shadow(0 0 8px var(--color-recovery));
-    }
-
     .matrix-card {
       background: var(--card-bg);
       padding: 12px 8px;
@@ -329,401 +312,220 @@
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      height: 140px;
+      height: 125px;
       clip-path: polygon(0 0, calc(100% - 11px) 0, 100% 11px, 100% 100%, 11px 100%, 0 calc(100% - 11px));
     }
-    .matrix-icon { font-size: 1.8rem; }
-    .matrix-title { font-family: var(--font-tech-head); font-size: 0.8rem; font-weight: 700; text-align: center; }
 
-    .matrix-meta-box {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 4px 8px;
-      margin-top: 4px;
+    /* Tumbler Tracker */
+    .tumbler-container { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 12px 0; }
+    .tumbler-item {
+      width: 40px; height: 65px;
+      border: 2px solid var(--color-recovery);
+      border-radius: 4px 4px 8px 8px;
+      position: relative; overflow: hidden; cursor: pointer;
+      background: rgba(255,255,255,0.05);
     }
-    .matrix-counter {
-      font-family: var(--font-tech-head);
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: #fff;
+    .tumbler-fill { position: absolute; bottom: 0; left: 0; right: 0; background: var(--color-recovery); }
+
+    /* Timeline & Profile */
+    .date-picker-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(255, 255, 255, 0.04); padding: 8px 12px;
+      border: 1px solid var(--card-border); font-family: var(--font-tech-head); font-size: 0.8rem;
     }
-    .btn-inc {
-      background: rgba(6, 182, 212, 0.2);
-      border: 1px solid var(--color-recovery);
-      color: #06b6d4;
-      font-family: var(--font-tech-head);
-      font-weight: 800;
-      width: 22px;
-      height: 22px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .timeline-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+    .timeline-item {
+      background: var(--card-bg); border-left: 3px solid var(--nav-pink);
+      padding: 10px 12px; display: flex; justify-content: space-between; align-items: center;
     }
 
-    .matrix-card-wrapper.recovery-add-wrapper {
-      background: rgba(255, 255, 255, 0.15);
-    }
-    .matrix-card-wrapper.recovery-add-wrapper:hover {
-      background: var(--color-recovery);
-    }
-    .matrix-card.recovery-add-card {
-      background: rgba(15, 12, 28, 0.6);
-      border: 1px dashed rgba(255, 255, 255, 0.2);
-      justify-content: center;
-      gap: 6px;
-      cursor: pointer;
+    .profile-card {
+      background: var(--card-bg); border: 1px solid var(--card-border); padding: 16px; text-align: center;
+      clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
     }
 
-    /* Trading Card Modal View */
+    /* Modal */
     .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(5, 4, 10, 0.88);
-      backdrop-filter: blur(10px);
-      z-index: 200;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(5, 4, 10, 0.88); backdrop-filter: blur(10px);
+      z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px;
     }
     .modal-overlay.active { display: flex; }
 
     .trading-card-wrapper {
-      width: 100%;
-      max-width: 310px;
-      background: var(--trading-border, #f97316);
-      padding: 2px;
+      width: 100%; max-width: 310px;
+      background: var(--trading-border, #dc2626); padding: 2px;
       clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 22px 100%, 0 calc(100% - 22px));
-      filter: drop-shadow(0 0 20px var(--trading-border, #f97316));
     }
     .trading-card {
       background: linear-gradient(180deg, #141026 0%, #080612 100%);
-      padding: 20px 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      padding: 18px 16px; display: flex; flex-direction: column; align-items: center;
       clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
-      position: relative;
     }
 
-    .trading-card-header {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-      border-bottom: 1px solid var(--card-border);
-      padding-bottom: 6px;
-    }
-    .trading-card-cat {
-      font-family: var(--font-tech-head);
-      font-size: 0.7rem;
-      font-weight: 800;
-      letter-spacing: 1px;
-      color: var(--trading-border);
-      text-transform: uppercase;
-    }
-    .trading-card-rarity {
-      font-family: var(--font-tech-head);
-      font-size: 0.65rem;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 2px 6px;
-      color: var(--text-muted);
+    .btn-action-primary {
+      width: 100%; padding: 10px; background: var(--nav-pink); border: none;
+      color: #fff; font-family: var(--font-tech-head); font-weight: 800; cursor: pointer; margin-top: 10px;
     }
 
-    .trading-card-image-box {
-      width: 100%;
-      height: 160px;
-      background: #0b0916;
-      border: 1px solid var(--card-border);
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 14px;
-      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-    }
-    .trading-card-halftone {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background-image: radial-gradient(var(--trading-border) 24%, transparent 26%);
-      background-size: 8px 8px;
-      opacity: 0.3;
-      mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 90%);
-      -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 90%);
-    }
-    .trading-card-icon { font-size: 4.5rem; z-index: 2; }
-
-    .trading-card-title {
-      font-family: var(--font-tech-head);
-      font-size: 1.2rem;
-      font-weight: 900;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-    }
-
-    .trading-card-stats {
-      width: 100%;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--card-border);
-      padding: 10px;
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 14px;
-    }
-    .trading-stat { display: flex; flex-direction: column; align-items: center; }
-    .trading-stat-val { font-family: var(--font-tech-head); font-size: 1rem; font-weight: 800; color: var(--trading-border); }
-    .trading-stat-lbl { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; }
-
-    /* History View Drawer Modal */
-    .history-feed { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-    .history-item {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--card-border);
-      padding: 8px 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    /* Stats View Styling */
-    .profile-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      padding: 16px;
-      text-align: center;
-      clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
-    }
-    .archetype-title {
-      font-family: var(--font-tech-head);
-      font-size: 1.2rem;
-      color: var(--color-work);
-      font-weight: 800;
-      margin-top: 4px;
-    }
-    .radar-container {
-      position: relative;
-      display: flex;
-      justify-content: center;
-      margin: 10px 0;
-    }
-
-    /* Bottom Nav (2 Tabs: Action & Stats) */
+    /* Bottom Nav */
     .bottom-nav-container {
-      position: fixed;
-      bottom: 16px;
-      left: 0; right: 0;
-      display: flex;
-      justify-content: center;
-      z-index: 50;
+      position: fixed; bottom: 16px; left: 0; right: 0;
+      display: flex; justify-content: center; z-index: 50;
     }
-
     .bottom-nav-wrapper {
-      background: rgba(255, 255, 255, 0.25);
-      padding: 1.5px;
+      background: rgba(255, 255, 255, 0.2); padding: 1.5px;
       clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
-      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
     }
-
     .bottom-nav {
-      background: rgba(12, 10, 24, 0.95);
-      backdrop-filter: blur(20px);
-      padding: 4px;
-      display: flex;
-      gap: 6px;
+      background: rgba(12, 10, 24, 0.95); backdrop-filter: blur(20px);
+      padding: 4px 8px; display: flex; gap: 4px;
       clip-path: polygon(0 0, calc(100% - 13px) 0, 100% 13px, 100% 100%, 13px 100%, 0 calc(100% - 13px));
     }
-
     .nav-btn {
-      background: transparent;
-      border: 1px solid transparent;
-      color: var(--text-muted);
-      padding: 8px 24px;
-      font-family: var(--font-tech-head);
-      font-size: 0.8rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
-      transition: all 0.2s ease;
+      background: transparent; border: 1px solid transparent; color: var(--text-muted);
+      padding: 8px 12px; font-family: var(--font-tech-head); font-size: 0.7rem; font-weight: 700;
+      display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer;
     }
-
-    .nav-btn.active {
-      background: rgba(249, 115, 22, 0.35);
-      color: #f97316;
-      border-color: rgba(249, 115, 22, 0.5);
-    }
+    .nav-btn.active { background: var(--nav-pink-bg); color: var(--nav-pink); border-color: rgba(236, 72, 153, 0.4); }
   </style>
 </head>
 <body>
 
   <div class="app-container">
+    
+    <!-- Top Bar -->
     <div class="top-bar-clean">
       <button class="hamburger-btn-minimal" onclick="toggleDrawer()">☰</button>
+      <div class="top-bar-info">
+        <span class="top-bar-date">MON, SEP 7, 2026</span>
+        <span class="top-bar-quote">"Small steps each day lead to extraordinary growth."</span>
+      </div>
     </div>
 
-    <!-- Hero Section (Action Tab Only) -->
-    <div class="hero-section" id="heroSection">
-      <div class="hero-day">SUNDAY</div>
-      <div class="hero-date-sub">SEP 6, 2026</div>
-      <div class="hero-quote">"Small steps each day lead to extraordinary growth."</div>
-    </div>
-
-    <!-- Left Drawer (Contains History Log) -->
+    <!-- Drawer Menu -->
     <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
     <div class="drawer" id="sideDrawer">
-      <div class="drawer-header">
-        <span>MENU & LOGS</span>
-        <button class="hamburger-btn-minimal" onclick="toggleDrawer()">✕</button>
-      </div>
-
-      <div class="drawer-item" onclick="openHistoryModal()">
-        <span>📜</span> Activity History Log
-      </div>
-      <div class="drawer-item" onclick="alert('Manage Habits')">⚙️ Manage Habits</div>
-      <div class="drawer-item" onclick="alert('Health Targets')">🎯 Health Targets</div>
-      <div class="drawer-item" onclick="alert('Archetype Library')">🏛️ Archetype Library</div>
+      <div style="font-family: var(--font-tech-head); font-size: 1rem; border-bottom: 1px solid var(--card-border); padding-bottom: 10px;">SYSTEM LOGS</div>
+      <div style="padding:10px; background:rgba(255,255,255,0.05); cursor:pointer;" onclick="toggleDrawer()">📜 Close Menu</div>
     </div>
 
     <!-- TAB 1: ACTION VIEW -->
     <div id="actionView" class="view active">
-      <div class="sub-tabs">
-        <button class="sub-tab-btn active" id="btnSubGrowth" onclick="switchSubTab('growth')">GROWTH</button>
-        <button class="sub-tab-btn" id="btnSubRecovery" onclick="switchSubTab('recovery')">RECOVERY</button>
-      </div>
-
-      <!-- Growth Tab -->
-      <div id="growthContent" style="display: flex; flex-direction: column; gap: 14px;">
-        <div class="rail-section">
-          <div class="rail-header"><span>Work</span></div>
-          <div class="rail-container" id="railWork"></div>
-        </div>
-
-        <div class="rail-section">
-          <div class="rail-header"><span>Hobbies</span></div>
-          <div class="rail-container" id="railHobbies"></div>
-        </div>
-
-        <div class="rail-section">
-          <div class="rail-header"><span>Media</span></div>
-          <div class="rail-container" id="railMedia"></div>
-        </div>
-
-        <div class="rail-section">
-          <div class="rail-header"><span>Chores</span></div>
-          <div class="rail-container" id="railChores"></div>
-        </div>
-
-        <div class="rail-section">
-          <div class="rail-header"><span>Social</span></div>
-          <div class="rail-container" id="railSocial"></div>
-        </div>
-
-        <div class="rail-section">
-          <div class="rail-header"><span>Other</span></div>
-          <div class="rail-container" id="railOther"></div>
+      
+      <!-- Sketch-Matching Hero Playing Deck Area -->
+      <div class="hero-deck-section">
+        <div class="hero-deck-header">⚡ DAILY PLAYING DECK SLOTS</div>
+        <div class="hero-slots-scroll" id="heroSlotsContainer">
+          <!-- Rendered dynamically -->
         </div>
       </div>
 
-      <!-- Recovery Tab -->
-      <div id="recoveryContent" style="display: none; flex-direction: column; gap: 14px;">
-        <div class="vitality-gauge-card-wrapper">
-          <div class="vitality-gauge-card">
-            <div style="font-family: var(--font-tech-head); font-size: 0.8rem; color: var(--text-muted);">SYSTEM VITALITY CAPACITY</div>
-            <div class="vitality-bar-bg">
-              <div class="vitality-bar-fill" id="vitalityBarFill" style="width: 85%;"></div>
-            </div>
-            <div style="font-family: var(--font-tech-head); font-size: 1.1rem; font-weight: 800; color: #06b6d4;" id="vitalityPercentage">85% CHARGED</div>
-          </div>
-        </div>
+      <!-- Horizontal Category Rails with Vertical Trading Cards -->
+      <div class="rail-section">
+        <div class="rail-header">Work</div>
+        <div class="rail-container" id="railWork"></div>
+      </div>
 
-        <div class="matrix-grid" id="recoveryGrid"></div>
+      <div class="rail-section">
+        <div class="rail-header">Hobbies</div>
+        <div class="rail-container" id="railHobbies"></div>
+      </div>
+
+      <div class="rail-section">
+        <div class="rail-header">Media</div>
+        <div class="rail-container" id="railMedia"></div>
+      </div>
+
+      <div class="rail-section">
+        <div class="rail-header">Chores</div>
+        <div class="rail-container" id="railChores"></div>
+      </div>
+
+      <div class="rail-section">
+        <div class="rail-header">Social</div>
+        <div class="rail-container" id="railSocial"></div>
+      </div>
+
+      <div class="rail-section">
+        <div class="rail-header">Other</div>
+        <div class="rail-container" id="railOther"></div>
       </div>
     </div>
 
-    <!-- TAB 2: STATS VIEW -->
+    <!-- TAB 2: RECOVERY VIEW -->
+    <div id="recoveryView" class="view">
+      <!-- HP / System Vitality Capacity Progress Bar -->
+      <div class="hp-container">
+        <div class="hp-header">
+          <span style="color: #10b981;">💚 SYSTEM VITALITY (HP)</span>
+          <span id="hpPercentageText" style="color: var(--text);">100%</span>
+        </div>
+        <div class="hp-bar-bg">
+          <div class="hp-bar-fill" id="hpBarFill"></div>
+        </div>
+        <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px;">Auto-depletes 1% every 10 min. Depleted by playing cards.</div>
+      </div>
+
+      <div style="font-family: var(--font-tech-head); font-size: 0.85rem; color: var(--color-recovery); text-align: center;">RECOVERY & RECHARGING ENGINE</div>
+      <div class="matrix-grid" id="recoveryGrid"></div>
+    </div>
+
+    <!-- TAB 3: STATS VIEW -->
     <div id="statsView" class="view">
+      <div class="date-picker-bar">
+        <button style="background:none; border:none; color:#fff; cursor:pointer;">◄</button>
+        <span>TODAY: SEP 7, 2026</span>
+        <button style="background:none; border:none; color:#fff; cursor:pointer;">►</button>
+      </div>
+      <div style="font-family: var(--font-tech-head); font-size: 0.8rem; color: var(--text-muted); margin-top: 6px;">24-HOUR ACTIVITY TIMELINE</div>
+      <div class="timeline-list" id="timelineList"></div>
+    </div>
+
+    <!-- TAB 4: PROFILE VIEW -->
+    <div id="profileView" class="view">
       <div class="profile-card">
         <div style="font-size: 2.5rem;">📊</div>
-        <div class="archetype-title">NEURAL ARCHITECT</div>
-        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">Identity Matrix (30-Day Rolling)</div>
-
-        <div class="radar-container">
-          <canvas id="radarChart" width="260" height="260"></canvas>
+        <div style="font-family: var(--font-tech-head); font-size: 1.1rem; color: var(--nav-pink); font-weight: 800; margin-top: 4px;">NEURAL ARCHITECT</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">Identity Matrix</div>
+        <div style="position: relative; display: flex; justify-content: center; margin: 10px 0;">
+          <canvas id="radarChart" width="230" height="230"></canvas>
         </div>
       </div>
     </div>
 
   </div>
 
-  <!-- Trading Card Detail Pop-up Modal -->
+  <!-- Detail Modal -->
   <div class="modal-overlay" id="cardDetailModal" onclick="closeCardModal(event)">
     <div class="trading-card-wrapper" id="modalCardWrapper">
       <div class="trading-card">
-        <div class="trading-card-header">
-          <span class="trading-card-cat" id="modalCategory">WORK</span>
-          <span class="trading-card-rarity">LVL 1 CORE</span>
+        <div style="width:100%; display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="font-family: var(--font-tech-head); font-size:0.7rem; color:var(--trading-border);" id="modalCategory">WORK</span>
+          <button style="background:none; border:none; color:var(--text-muted); cursor:pointer;" onclick="closeCardModal(null, true)">✕</button>
         </div>
-
-        <div class="trading-card-image-box">
-          <div class="trading-card-halftone"></div>
-          <div class="trading-card-icon" id="modalIcon">🍎</div>
-        </div>
-
-        <div class="trading-card-title" id="modalTitle">Physics 2</div>
-
-        <div class="trading-card-stats">
-          <div class="trading-stat">
-            <span class="trading-stat-val" id="modalYield">1.0x</span>
-            <span class="trading-stat-lbl">Yield</span>
-          </div>
-          <div class="trading-stat">
-            <span class="trading-stat-val" id="modalTime">2.5h</span>
-            <span class="trading-stat-lbl">Logged</span>
-          </div>
-        </div>
-
-        <button class="btn-modal-close" onclick="closeCardModal(null, true)">CLOSE CARD</button>
+        <div style="font-size: 3rem; margin: 6px 0;" id="modalIcon">🍎</div>
+        <div style="font-family: var(--font-tech-head); font-size: 1.1rem; font-weight: 900;" id="modalTitle">Physics 2</div>
+        <div id="modalInteractiveBody" style="width:100%; margin-top: 10px;"></div>
       </div>
     </div>
   </div>
 
-  <!-- History Log Drawer Modal -->
-  <div class="modal-overlay" id="historyModal" onclick="closeHistoryModal(event)">
-    <div class="trading-card-wrapper" style="--trading-border: #8b5cf6;">
-      <div class="trading-card" style="align-items: stretch;">
-        <div style="font-family: var(--font-tech-head); font-size: 1rem; font-weight: 800; border-bottom: 1px solid var(--card-border); padding-bottom: 8px;">📜 DAILY HISTORY LOG</div>
-        <div class="history-feed" id="historyFeed"></div>
-        <button class="btn-modal-close" style="margin-top: 14px;" onclick="closeHistoryModal(null, true)">CLOSE LOG</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Bottom Navigation Bar (Action & Stats) -->
+  <!-- Bottom Navigation -->
   <div class="bottom-nav-container">
     <div class="bottom-nav-wrapper">
       <div class="bottom-nav">
-        <button class="nav-btn active" id="btnNavAction" onclick="switchMainTab('action')">
-          <span>⚡</span> Action
-        </button>
-        <button class="nav-btn" id="btnNavStats" onclick="switchMainTab('stats')">
-          <span>📊</span> Stats
-        </button>
+        <button class="nav-btn active" id="btnNavAction" onclick="switchMainTab('action')"><span>⚡</span> Action</button>
+        <button class="nav-btn" id="btnNavRecovery" onclick="switchMainTab('recovery')"><span>🌿</span> Recovery</button>
+        <button class="nav-btn" id="btnNavStats" onclick="switchMainTab('stats')"><span>📊</span> Stats</button>
+        <button class="nav-btn" id="btnNavProfile" onclick="switchMainTab('profile')"><span>👤</span> Profile</button>
       </div>
     </div>
   </div>
 
   <script>
     const GROWTH_CATEGORIES = {
-      work: { name: 'Work', color: '#f97316' },
+      work: { name: 'Work', color: '#dc2626' },
       hobbies: { name: 'Hobbies', color: '#f59e0b' },
       media: { name: 'Media', color: '#8b5cf6' },
       chores: { name: 'Chores', color: '#10b981' },
@@ -731,25 +533,40 @@
       other: { name: 'Other', color: '#94a3b8' }
     };
 
+    // Card difficulty & HP costs
     let growthTasks = [
-      { id: 'physics-2', name: 'Physics 2', icon: '🍎', category: 'work', secondsLogged: 7200 },
-      { id: 'painting', name: 'Painting', icon: '🎨', category: 'hobbies', secondsLogged: 5400 },
-      { id: 'marvel', name: 'Marvel', icon: '🎬', category: 'media', secondsLogged: 4500 },
-      { id: 'laundry', name: 'Laundry', icon: '🧺', category: 'chores', secondsLogged: 2700 },
-      { id: 'uni-friends', name: 'Uni Friends', icon: '👩‍❤️‍👩', category: 'social', secondsLogged: 3600 },
-      { id: 'phone', name: 'Phone', icon: '📱', category: 'other', secondsLogged: 1800 }
+      { id: 'physics-2', name: 'Physics 2', icon: '🍎', category: 'work', hpCost: 10, diffLabel: 'Hard (-10%)', customColor: '#dc2626', secondsLogged: 7200 },
+      { id: 'painting', name: 'Painting', icon: '🎨', category: 'hobbies', hpCost: 5, diffLabel: 'Mid (-5%)', customColor: '#f59e0b', secondsLogged: 5400 },
+      { id: 'marvel', name: 'Marvel', icon: '🎬', category: 'media', hpCost: 2, diffLabel: 'Easy (-2%)', customColor: '#8b5cf6', secondsLogged: 4500 },
+      { id: 'laundry', name: 'Laundry', icon: '🧺', category: 'chores', hpCost: 5, diffLabel: 'Mid (-5%)', customColor: '#10b981', secondsLogged: 2700 },
+      { id: 'uni-friends', name: 'Uni Friends', icon: '👩‍❤️‍👩', category: 'social', hpCost: 5, diffLabel: 'Mid (-5%)', customColor: '#ec4899', secondsLogged: 3600 },
+      { id: 'phone', name: 'Phone', icon: '📱', category: 'other', hpCost: 2, diffLabel: 'Easy (-2%)', customColor: '#94a3b8', secondsLogged: 1800 }
     ];
 
     let recoveryTasks = [
-      { id: 'nutrition', name: 'Nutrition', icon: '🥗', yield: 10, current: 2, target: 3 },
-      { id: 'hydration', name: 'Hydration', icon: '🥛', yield: 10, current: 4, target: 8 },
-      { id: 'shower', name: 'Shower', icon: '🚿', yield: 10, current: 1, target: 1 },
-      { id: 'toothbrush', name: 'Toothbrush', icon: '🪥', yield: 10, current: 1, target: 2 },
-      { id: 'sleep', name: 'Sleep & Rest', icon: '🌙', yield: 15, current: 7, target: 8 },
-      { id: 'mind', name: 'Mind Reset', icon: '🧘', yield: 10, current: 1, target: 2 }
+      { id: 'sleep', name: 'Sleep & Rest', icon: '🌙', type: 'timer', secondsLogged: 25200 },
+      { id: 'mind', name: 'Mind Reset', icon: '🧘', type: 'timer', secondsLogged: 900 },
+      { id: 'hydration', name: 'Hydration', icon: '🥛', type: 'fluid', targetML: 2700, containerML: 500, currentML: 1250 },
+      { id: 'nutrition', name: 'Nutrition', icon: '🥗', type: 'fluid', targetML: 2000, containerML: 400, currentML: 800 }
     ];
 
-    let systemVitality = 85;
+    let heroDeckSlots = [
+      growthTasks[0] // Pre-equipped default card
+    ];
+
+    let currentHP = 100;
+    let activeSelectedTask = null;
+
+    // Auto-deplete HP: 1% per 10 minutes (600,000 ms)
+    setInterval(() => {
+      depleteHP(1);
+    }, 600000);
+
+    function depleteHP(amount) {
+      currentHP = Math.max(0, currentHP - amount);
+      document.getElementById('hpPercentageText').innerText = `${currentHP}%`;
+      document.getElementById('hpBarFill').style.width = `${currentHP}%`;
+    }
 
     function toggleDrawer() {
       document.getElementById('sideDrawer').classList.toggle('open');
@@ -763,33 +580,184 @@
       document.getElementById(`${tab}View`).classList.add('active');
       document.getElementById(`btnNav${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add('active');
 
-      // Hero only visible in Action View
-      document.getElementById('heroSection').style.display = (tab === 'action') ? 'flex' : 'none';
-
-      if (tab === 'stats') renderRadarChart();
+      if (tab === 'profile') renderRadarChart();
+      if (tab === 'stats') renderTimelineStats();
     }
 
-    function switchSubTab(sub) {
-      document.getElementById('btnSubGrowth').classList.toggle('active', sub === 'growth');
-      document.getElementById('btnSubRecovery').classList.toggle('active', sub === 'recovery');
-      
-      document.getElementById('growthContent').style.display = (sub === 'growth') ? 'flex' : 'none';
-      document.getElementById('recoveryContent').style.display = (sub === 'recovery') ? 'flex' : 'none';
+    function addToPlayDeck(taskId) {
+      const task = growthTasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      heroDeckSlots.push(task);
+      depleteHP(task.hpCost);
+      renderHeroSlots();
     }
 
-    function openCardModal(task) {
-      const catObj = GROWTH_CATEGORIES[task.category] || { name: 'Growth', color: '#f97316' };
+    function removeFromPlayDeck(index) {
+      heroDeckSlots.splice(index, 1);
+      renderHeroSlots();
+    }
+
+    function renderHeroSlots() {
+      const container = document.getElementById('heroSlotsContainer');
+      container.innerHTML = '';
+
+      // Total slots rendered: current slots + empty slot placeholders (minimum 4 to ensure scrollable peek)
+      const totalSlotsToRender = Math.max(4, heroDeckSlots.length + 1);
+
+      for (let i = 0; i < totalSlotsToRender; i++) {
+        const slotEl = document.createElement('div');
+        
+        if (i < heroDeckSlots.length) {
+          const task = heroDeckSlots[i];
+          const color = task.customColor || GROWTH_CATEGORIES[task.category]?.color;
+          slotEl.className = 'deck-slot filled';
+          slotEl.style.setProperty('--slot-color', color);
+          slotEl.innerHTML = `
+            <div style="width:100%; display:flex; justify-size:space-between; justify-content:space-between; align-items:center;">
+              <span class="card-hp-badge">-${task.hpCost}%</span>
+              <button style="background:none; border:none; color:var(--text-muted); font-size:0.75rem; cursor:pointer;" onclick="removeFromPlayDeck(${i})">✕</button>
+            </div>
+            <div style="font-size: 1.8rem; margin:2px 0;">${task.icon}</div>
+            <div style="font-family:var(--font-tech-head); font-size:0.65rem; text-align:center; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%;">${task.name}</div>
+            <div style="font-size:0.55rem; color:var(--nav-pink); font-family:var(--font-tech-head);">ACTIVE</div>
+          `;
+        } else {
+          slotEl.className = 'deck-slot';
+          slotEl.innerHTML = `<span style="font-size: 1.5rem; color: rgba(255,255,255,0.3);">+</span>`;
+        }
+        container.appendChild(slotEl);
+      }
+    }
+
+    function updateUI() {
+      renderHeroSlots();
+
+      // Render Rails
+      Object.keys(GROWTH_CATEGORIES).forEach(cat => {
+        const railEl = document.getElementById(`rail${cat.charAt(0).toUpperCase() + cat.slice(1)}`);
+        if (!railEl) return;
+        railEl.innerHTML = '';
+
+        const catTasks = growthTasks.filter(t => t.category === cat);
+        
+        // Render activity cards
+        catTasks.forEach(task => {
+          const color = task.customColor || GROWTH_CATEGORIES[cat].color;
+          const wrapper = document.createElement('div');
+          wrapper.className = 'rail-card-wrapper';
+          wrapper.style.setProperty('--card-color', color);
+
+          wrapper.innerHTML = `
+            <div class="rail-card">
+              <div style="width:100%; display:flex; justify-content:space-between; align-items:center;" onclick="openCardModal(growthTasks.find(t=>t.id==='${task.id}'))">
+                <span class="card-hp-badge">-${task.hpCost}%</span>
+                <span style="font-size:0.6rem; color:var(--text-muted);">i</span>
+              </div>
+              <div style="font-size: 1.8rem;" onclick="openCardModal(growthTasks.find(t=>t.id==='${task.id}'))">${task.icon}</div>
+              <div style="font-family: var(--font-tech-head); font-size: 0.65rem; font-weight: 700; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%;" onclick="openCardModal(growthTasks.find(t=>t.id==='${task.id}'))">${task.name}</div>
+              <button class="card-add-btn" onclick="addToPlayDeck('${task.id}')">+ ADD</button>
+            </div>
+          `;
+          railEl.appendChild(wrapper);
+        });
+
+        // Add Empty [+] Add Card Placeholder
+        const emptyAddCard = document.createElement('div');
+        emptyAddCard.className = 'empty-add-card';
+        emptyAddCard.onclick = () => alert(`Create custom card under ${cat}`);
+        emptyAddCard.innerHTML = `<span style="font-size:1.8rem;">+</span><span style="font-size:0.65rem; font-family:var(--font-tech-head);">NEW CARD</span>`;
+        railEl.appendChild(emptyAddCard);
+      });
+
+      // Render Recovery Grid
+      const recGrid = document.getElementById('recoveryGrid');
+      recGrid.innerHTML = '';
+      recoveryTasks.forEach(t => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'matrix-card-wrapper';
+        wrapper.onclick = () => openCardModal(t, true);
+        let subVal = t.type === 'timer' ? formatTime(t.secondsLogged) : `${t.currentML} / ${t.targetML} mL`;
+
+        wrapper.innerHTML = `
+          <div class="matrix-card">
+            <div style="font-size: 1.8rem;">${t.icon}</div>
+            <div style="font-family: var(--font-tech-head); font-size: 0.8rem; text-align:center;">${t.name}</div>
+            <div style="font-family: var(--font-tech-head); font-size: 0.7rem; color: var(--color-recovery);">${subVal}</div>
+          </div>
+        `;
+        recGrid.appendChild(wrapper);
+      });
+    }
+
+    function openCardModal(task, isRecovery = false) {
+      activeSelectedTask = task;
+      const color = task.customColor || (isRecovery ? '#06b6d4' : (GROWTH_CATEGORIES[task.category]?.color || '#dc2626'));
       
       document.getElementById('modalIcon').innerText = task.icon;
       document.getElementById('modalTitle').innerText = task.name;
-      document.getElementById('modalCategory').innerText = catObj.name;
-      document.getElementById('modalYield').innerText = '1.0x';
-      document.getElementById('modalTime').innerText = `${(task.secondsLogged / 3600).toFixed(1)}h`;
+      document.getElementById('modalCategory').innerText = isRecovery ? 'RECOVERY' : (GROWTH_CATEGORIES[task.category]?.name || 'CUSTOM');
       
-      const wrapper = document.getElementById('modalCardWrapper');
-      wrapper.style.setProperty('--trading-border', catObj.color);
+      document.getElementById('modalCardWrapper').style.setProperty('--trading-border', color);
+      const body = document.getElementById('modalInteractiveBody');
+      body.innerHTML = '';
 
+      if (isRecovery) {
+        if (task.type === 'timer') {
+          body.innerHTML = `
+            <div style="text-align:center; margin:10px 0;">
+              <div style="font-family:var(--font-tech-head); font-size:1.8rem;">${formatTime(task.secondsLogged)}</div>
+              <button class="btn-action-primary" style="background:#10b981;" onclick="alert('Timer Started')">START TIMER</button>
+            </div>
+          `;
+        } else {
+          const numTumblers = Math.ceil(task.targetML / task.containerML);
+          let tumblersHTML = '<div class="tumbler-container">';
+          for (let i = 0; i < numTumblers; i++) {
+            const filledInTumbler = Math.max(0, Math.min(task.containerML, task.currentML - (i * task.containerML)));
+            const fillPct = (filledInTumbler / task.containerML) * 100;
+            tumblersHTML += `<div class="tumbler-item" onclick="setFluidLevel(${i})"><div class="tumbler-fill" style="height: ${fillPct}%;"></div></div>`;
+          }
+          tumblersHTML += '</div>';
+
+          body.innerHTML = `
+            <div style="text-align:center; font-size:0.75rem; color:var(--text-muted);">
+              Container: 
+              <select onchange="updateContainerSize(this.value)" style="background:#1e1b2e; color:#fff; border:1px solid var(--card-border);">
+                <option value="250" ${task.containerML === 250 ? 'selected' : ''}>250 mL Glass</option>
+                <option value="500" ${task.containerML === 500 ? 'selected' : ''}>500 mL Tumbler</option>
+              </select>
+            </div>
+            ${tumblersHTML}
+            <div style="text-align:center; font-family:var(--font-tech-head); font-size:0.85rem; color:var(--color-recovery);">${task.currentML} / ${task.targetML} mL</div>
+          `;
+        }
+      } else {
+        body.innerHTML = `
+          <div style="text-align:center; font-size:0.8rem; color:var(--text-muted); margin: 8px 0;">
+            Difficulty: <strong style="color:#fff;">${task.diffLabel}</strong><br>
+            HP Depletion Cost: <strong style="color:#f43f5e;">-${task.hpCost}% HP</strong>
+          </div>
+          <button class="btn-action-primary" onclick="addToPlayDeck('${task.id}'); closeCardModal(null, true);">ADD TO PLAY DECK</button>
+        `;
+      }
       document.getElementById('cardDetailModal').classList.add('active');
+    }
+
+    function setFluidLevel(tumblerIndex) {
+      if (!activeSelectedTask) return;
+      const t = activeSelectedTask;
+      const currentFill = t.currentML - (tumblerIndex * t.containerML);
+      if (currentFill >= t.containerML) t.currentML = tumblerIndex * t.containerML + (t.containerML / 2);
+      else if (currentFill >= (t.containerML / 2)) t.currentML = tumblerIndex * t.containerML;
+      else t.currentML = (tumblerIndex + 1) * t.containerML;
+      openCardModal(t, true);
+    }
+
+    function updateContainerSize(val) {
+      if (!activeSelectedTask) return;
+      activeSelectedTask.containerML = parseInt(val);
+      openCardModal(activeSelectedTask, true);
     }
 
     function closeCardModal(e, force = false) {
@@ -798,167 +766,21 @@
       }
     }
 
-    function openHistoryModal() {
-      toggleDrawer();
-      renderHistory();
-      document.getElementById('historyModal').classList.add('active');
+    function formatTime(sec) {
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
     }
 
-    function closeHistoryModal(e, force = false) {
-      if (force || (e && e.target.id === 'historyModal')) {
-        document.getElementById('historyModal').classList.remove('active');
-      }
-    }
-
-    function addNewActivity(categoryKey) {
-      const name = prompt(`Add new activity under ${GROWTH_CATEGORIES[categoryKey].name}:`);
-      if (!name) return;
-      const icon = prompt("Enter an emoji icon for this activity:", "⚡") || "⚡";
-      
-      growthTasks.push({
-        id: 'task-' + Date.now(),
-        name: name,
-        icon: icon,
-        category: categoryKey,
-        secondsLogged: 0
-      });
-
-      updateUI();
-    }
-
-    function addNewRecoveryActivity() {
-      const name = prompt("Add new recovery activity:");
-      if (!name) return;
-      const icon = prompt("Enter an emoji icon:", "🌿") || "🌿";
-      const target = prompt("Target amount/times daily:", "1") || "1";
-
-      recoveryTasks.push({
-        id: 'rec-' + Date.now(),
-        name: name,
-        icon: icon,
-        yield: 10,
-        current: 0,
-        target: parseInt(target)
-      });
-
-      updateUI();
-    }
-
-    function incrementRecovery(id) {
-      const task = recoveryTasks.find(t => t.id === id);
-      if (task) {
-        task.current++;
-        systemVitality = Math.min(100, systemVitality + task.yield);
-        document.getElementById('vitalityBarFill').style.width = `${systemVitality}%`;
-        document.getElementById('vitalityPercentage').innerText = `${systemVitality}% CHARGED`;
-        updateUI();
-      }
-    }
-
-    function updateUI() {
-      // Render Growth Activity Rails
-      Object.keys(GROWTH_CATEGORIES).forEach(cat => {
-        const railEl = document.getElementById(`rail${cat.charAt(0).toUpperCase() + cat.slice(1)}`);
-        if (!railEl) return;
-        railEl.innerHTML = '';
-
-        const catTasks = growthTasks.filter(t => t.category === cat);
-        catTasks.forEach(task => {
-          const color = GROWTH_CATEGORIES[cat].color;
-          const wrapper = document.createElement('div');
-          wrapper.className = 'rail-card-wrapper';
-          wrapper.style.setProperty('--accent-glow', `${color}66`);
-          wrapper.style.setProperty('--accent-border', color);
-          wrapper.onclick = () => openCardModal(task);
-
-          wrapper.innerHTML = `
-            <div class="rail-card">
-              <div class="rail-card-top">
-                <div class="rail-card-icon-bg"></div>
-                <div class="rail-card-icon">${task.icon}</div>
-              </div>
-              <div class="rail-card-ribbon">
-                <div class="rail-card-title">${task.name}</div>
-              </div>
-            </div>
-          `;
-          railEl.appendChild(wrapper);
-        });
-
-        // Add New Activity Card
-        const catColor = GROWTH_CATEGORIES[cat].color;
-        const addCardWrapper = document.createElement('div');
-        addCardWrapper.className = 'rail-card-wrapper add-new-card-wrapper';
-        addCardWrapper.style.setProperty('--accent-glow', `${catColor}44`);
-        addCardWrapper.style.setProperty('--accent-border', catColor);
-        addCardWrapper.onclick = () => addNewActivity(cat);
-
-        addCardWrapper.innerHTML = `
-          <div class="rail-card add-new-card">
-            <div class="rail-card-top">
-              <div class="rail-card-icon" style="color: var(--text-muted); font-size: 2rem;">+</div>
-            </div>
-            <div class="rail-card-ribbon" style="background: rgba(255, 255, 255, 0.1);">
-              <div class="rail-card-title" style="color: var(--text-muted);">Add New</div>
-            </div>
-          </div>
-        `;
-        railEl.appendChild(addCardWrapper);
-      });
-
-      // Render Recovery Grid
-      const recGrid = document.getElementById('recoveryGrid');
-      recGrid.innerHTML = '';
-
-      recoveryTasks.forEach(t => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'matrix-card-wrapper';
-
-        wrapper.innerHTML = `
-          <div class="matrix-card">
-            <div class="matrix-icon">${t.icon}</div>
-            <div class="matrix-title">${t.name}</div>
-            <span style="font-size: 0.65rem; color: var(--color-recovery);">+${t.yield}% Vitality</span>
-            
-            <div class="matrix-meta-box">
-              <span class="matrix-counter">${t.current} / ${t.target}</span>
-              <button class="btn-inc" onclick="incrementRecovery('${t.id}')">+</button>
-            </div>
-          </div>
-        `;
-        recGrid.appendChild(wrapper);
-      });
-
-      // Add New Recovery Card
-      const addRecWrapper = document.createElement('div');
-      addRecWrapper.className = 'matrix-card-wrapper recovery-add-wrapper';
-      addRecWrapper.onclick = addNewRecoveryActivity;
-
-      addRecWrapper.innerHTML = `
-        <div class="matrix-card recovery-add-card">
-          <div style="font-size: 2rem; color: var(--text-muted);">+</div>
-          <div class="matrix-title" style="color: var(--text-muted);">Add New</div>
-        </div>
-      `;
-      recGrid.appendChild(addRecWrapper);
-    }
-
-    function renderHistory() {
-      const feed = document.getElementById('historyFeed');
-      feed.innerHTML = '';
-
+    function renderTimelineStats() {
+      const list = document.getElementById('timelineList');
+      list.innerHTML = '';
       growthTasks.forEach(t => {
         if (t.secondsLogged > 0) {
           const item = document.createElement('div');
-          item.className = 'history-item';
-          item.innerHTML = `
-            <div>
-              <div style="font-family: var(--font-tech-head); font-size: 0.8rem; font-weight: 700;">${t.icon} ${t.name}</div>
-              <div style="font-size: 0.65rem; color: var(--text-muted);">${GROWTH_CATEGORIES[t.category]?.name || 'Activity'}</div>
-            </div>
-            <div style="font-family: var(--font-tech-head); font-size: 0.85rem; color: var(--color-work);">${(t.secondsLogged / 3600).toFixed(1)}h</div>
-          `;
-          feed.appendChild(item);
+          item.className = 'timeline-item';
+          item.innerHTML = `<div><div style="font-family:var(--font-tech-head);">${t.icon} ${t.name}</div></div><div style="font-family:var(--font-tech-head); color:var(--nav-pink);">${(t.secondsLogged / 3600).toFixed(1)}h</div>`;
+          list.appendChild(item);
         }
       });
     }
@@ -967,30 +789,13 @@
     function renderRadarChart() {
       const ctx = document.getElementById('radarChart').getContext('2d');
       if (radarChartInstance) radarChartInstance.destroy();
-
       radarChartInstance = new Chart(ctx, {
         type: 'radar',
         data: {
           labels: ['Work', 'Hobbies', 'Media', 'Chores', 'Social', 'Other'],
-          datasets: [{
-            data: [85, 70, 60, 75, 80, 50],
-            backgroundColor: 'rgba(249, 115, 22, 0.2)',
-            borderColor: '#f97316',
-            pointBackgroundColor: '#f97316'
-          }]
+          datasets: [{ data: [85, 70, 60, 75, 80, 50], backgroundColor: 'rgba(236, 72, 153, 0.2)', borderColor: '#ec4899' }]
         },
-        options: {
-          scales: {
-            r: {
-              angleLines: { color: 'rgba(255,255,255,0.1)' },
-              grid: { color: 'rgba(255,255,255,0.1)' },
-              ticks: { display: false },
-              suggestedMin: 0,
-              suggestedMax: 100
-            }
-          },
-          plugins: { legend: { display: false } }
-        }
+        options: { scales: { r: { angleLines: { color: 'rgba(255,255,255,0.1)' }, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { display: false } } }, plugins: { legend: { display: false } } }
       });
     }
 
