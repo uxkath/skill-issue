@@ -1,36 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My 24h - Life Engine</title>
+  <title>My 24h - Life Engine 2026</title>
+  
+  <!-- Modern Typography: Instrument Serif & Geist Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=Instrument+Serif&display=swap" rel="stylesheet">
+  
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    /* Light Mode (Default) */
     :root {
-      --bg: #05040a;
-      --card-bg: #0b0916;
-      --card-border: rgba(255, 255, 255, 0.18);
-      --text: #ffffff;
-      --text-muted: #8e9bb0;
-      --font-tech-head: 'Orbitron', sans-serif;
-      --font-tech-body: 'Rajdhani', sans-serif;
+      --bg: #f2efff;
+      --card-bg: rgba(255, 255, 255, 0.82);
+      --card-border: rgba(0, 180, 216, 0.4);
+      --text: #0d0926;
+      --text-muted: #5a577d;
       
-      --color-work: #dc2626;     /* Deep Red Red-Orange */
-      --color-hobbies: #f59e0b;  /* Amber */
-      --color-media: #8b5cf6;    /* Purple */
-      --color-chores: #10b981;   /* Mint Green */
-      --color-social: #ec4899;   /* Pink */
-      --color-other: #94a3b8;    /* Silver */
-      --color-recovery: #06b6d4; /* Cyan */
+      --font-serif: 'Instrument Serif', serif;
+      --font-mono: 'Geist Mono', monospace;
       
-      --nav-pink: #ec4899;
-      --nav-pink-bg: rgba(236, 72, 153, 0.25);
+      --color-work: #e6005c;     
+      --color-hobbies: #d97706;  
+      --color-media: #9d178c;    
+      --color-chores: #0099b8;   
+      --color-social: #d9006c;   
+      --color-other: #6200d9;    
+      --color-recovery: #00b4d8; 
+      
+      --nav-pink: #e60073;
+      --nav-pink-bg: rgba(230, 0, 115, 0.15);
+      --neon-cyan: #00b4d8;
+      --glow-intensity: 0 0 10px rgba(0, 180, 216, 0.4);
+      --card-inner-bg: rgba(255, 255, 255, 0.9);
+      
+      --bg-gradient-1: rgba(112, 0, 255, 0.08);
+      --bg-gradient-2: rgba(255, 0, 127, 0.08);
+      --bg-grid: rgba(0, 180, 216, 0.08);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-tech-body); }
+    /* Dark Mode Theme Overrides */
+    [data-theme="dark"] {
+      --bg: #070514;
+      --card-bg: rgba(18, 12, 38, 0.65);
+      --card-border: rgba(0, 240, 255, 0.25);
+      --text: #ffffff;
+      --text-muted: #8e90b8;
+      
+      --color-work: #ff0055;     
+      --color-hobbies: #ffb703;  
+      --color-media: #b5179e;    
+      --color-chores: #00f0ff;   
+      --color-social: #ff00a0;   
+      --color-other: #7000ff;    
+      --color-recovery: #00f0ff; 
+      
+      --nav-pink: #ff007f;
+      --nav-pink-bg: rgba(255, 0, 127, 0.18);
+      --neon-cyan: #00f0ff;
+      --glow-intensity: 0 0 12px rgba(0, 240, 255, 0.35);
+      --card-inner-bg: rgba(14, 10, 32, 0.85);
+
+      --bg-gradient-1: rgba(112, 0, 255, 0.25);
+      --bg-gradient-2: rgba(255, 0, 127, 0.2);
+      --bg-grid: rgba(0, 240, 255, 0.03);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-mono); }
     
     body {
       background-color: var(--bg);
@@ -39,64 +78,66 @@
       justify-content: center;
       min-height: 100vh;
       background-image: 
-        radial-gradient(circle at 50% 0%, rgba(236, 72, 153, 0.12), transparent 50%),
-        radial-gradient(circle at 50% 100%, rgba(139, 92, 246, 0.15), transparent 60%);
+        radial-gradient(circle at 50% 0%, var(--bg-gradient-1), transparent 60%),
+        radial-gradient(circle at 85% 90%, var(--bg-gradient-2), transparent 50%),
+        linear-gradient(var(--bg-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 20px 20px, 20px 20px;
       background-attachment: fixed;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     .app-container {
       width: 100%;
       max-width: 414px;
-      padding: 12px 16px 100px 16px;
+      padding: 12px 14px 100px 14px;
       display: flex;
       flex-direction: column;
       position: relative;
     }
 
-    /* Top Bar */
+    /* Minimal Header */
     .top-bar-clean {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 12px;
       padding-bottom: 8px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid var(--neon-cyan);
     }
     
     .hamburger-btn-minimal {
       background: transparent;
       border: none;
-      color: var(--text);
-      font-size: 1.4rem;
-      padding: 4px 6px;
+      color: var(--neon-cyan);
+      font-size: 1.3rem;
       cursor: pointer;
-      opacity: 0.85;
+      text-shadow: var(--glow-intensity);
     }
 
-    .top-bar-info {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      text-align: right;
+    .theme-toggle-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--neon-cyan);
+      color: var(--text);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--glow-intensity);
+      transition: all 0.2s ease;
     }
 
     .top-bar-date {
-      font-family: var(--font-tech-head);
-      font-size: 0.75rem;
-      font-weight: 800;
-      color: var(--nav-pink);
-      letter-spacing: 0.5px;
-    }
-
-    .top-bar-quote {
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      font-style: italic;
-      max-width: 220px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--neon-cyan);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-shadow: var(--glow-intensity);
     }
 
     /* Side Drawer */
@@ -104,11 +145,13 @@
       position: fixed;
       top: 0; left: -100%;
       width: 280px; height: 100%;
-      background: #090714;
-      border-right: 1px solid var(--card-border);
+      background: var(--bg);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid var(--neon-cyan);
+      box-shadow: 10px 0 30px rgba(0, 240, 255, 0.2);
       z-index: 100;
       padding: 24px;
-      transition: left 0.3s ease;
+      transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -117,144 +160,248 @@
     .drawer-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
       z-index: 99;
       display: none;
     }
     .drawer-overlay.show { display: block; }
 
     /* Views */
-    .view { display: none; flex-direction: column; gap: 14px; }
+    .view { display: none; flex-direction: column; gap: 16px; }
     .view.active { display: flex; }
 
-    /* Hero Playing Deck Container Matching Sketch */
+    /* Hero Activity Deck */
     .hero-deck-section {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px dashed rgba(236, 72, 153, 0.4);
-      padding: 12px 8px;
-      clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--neon-cyan);
+      box-shadow: var(--glow-intensity);
+      border-radius: 16px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
+      position: relative;
     }
-    .hero-deck-header {
-      font-family: var(--font-tech-head);
-      font-size: 0.7rem;
-      color: var(--nav-pink);
+    .hero-deck-section::before {
+      content: 'DECK // ACTIVE';
+      position: absolute;
+      top: -8px; right: 14px;
+      font-size: 0.55rem;
+      background: var(--bg);
+      color: var(--neon-cyan);
+      padding: 0 6px;
+      border: 1px solid var(--neon-cyan);
       letter-spacing: 1px;
-      text-transform: uppercase;
-      padding-left: 4px;
     }
-    
-    /* Horizontal Scroll Slot Area showing 3 full slots + 4th peek */
+
+    .hero-deck-header {
+      font-family: var(--font-serif);
+      font-size: 1.3rem;
+      font-style: normal;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     .hero-slots-scroll {
       display: flex;
-      gap: 8px;
+      gap: 12px;
       overflow-x: auto;
       scrollbar-width: none;
-      padding-bottom: 4px;
+      padding: 6px 2px;
     }
     .hero-slots-scroll::-webkit-scrollbar { display: none; }
 
-    /* Vertical Slot Card */
-    .deck-slot {
-      min-width: 96px;
-      max-width: 96px;
-      height: 135px;
-      border: 2px dashed rgba(255, 255, 255, 0.2);
-      border-radius: 6px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+    .deck-slot-wrapper {
+      min-width: 124px;
+      max-width: 124px;
+      height: 184px;
       flex-shrink: 0;
       position: relative;
-      background: rgba(11, 9, 22, 0.5);
     }
-    .deck-slot.filled {
-      border: 1.5px solid var(--slot-color, var(--nav-pink));
-      background: var(--card-bg);
-      clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
-      justify-content: space-between;
-      padding: 6px;
+
+    .deck-slot-empty {
+      width: 100%;
+      height: 100%;
+      border: 1px dashed var(--neon-cyan);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 240, 255, 0.03);
+      color: var(--neon-cyan);
+      font-size: 1.5rem;
     }
 
     /* Category Rails */
-    .rail-section { display: flex; flex-direction: column; gap: 6px; }
+    .rail-section { display: flex; flex-direction: column; gap: 8px; }
     .rail-header {
-      font-family: var(--font-tech-head);
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      letter-spacing: 1px;
-      text-transform: uppercase;
+      font-family: var(--font-serif);
+      font-size: 1.25rem;
+      font-style: normal;
+      color: var(--neon-cyan);
+      letter-spacing: 0.5px;
+      text-shadow: var(--glow-intensity);
     }
     .rail-container {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       overflow-x: auto;
       padding-bottom: 6px;
       scrollbar-width: none;
     }
     .rail-container::-webkit-scrollbar { display: none; }
 
-    /* Vertical Trading Activity Card Styling */
-    .rail-card-wrapper {
-      min-width: 100px;
-      max-width: 100px;
-      height: 140px;
+    /* AUTHENTIC TRADING CARD AESTHETIC */
+    .trading-card-outer {
+      min-width: 124px;
+      max-width: 124px;
+      height: 184px;
       position: relative;
-      background: var(--card-color, var(--color-work));
-      padding: 1.5px;
-      cursor: pointer;
-      filter: drop-shadow(0 0 4px var(--card-color, var(--color-work)));
-      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+      border-radius: 12px;
       flex-shrink: 0;
-      transition: transform 0.2s ease;
+      cursor: pointer;
+      background: var(--card-inner-bg);
+      backdrop-filter: blur(16px);
+      border: 2px solid var(--card-color, var(--neon-cyan));
+      box-shadow: 0 0 14px var(--card-color-glow, rgba(0, 240, 255, 0.3));
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 4px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .rail-card-wrapper:hover { transform: translateY(-2px); }
+    .trading-card-outer:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 22px var(--card-color, var(--neon-cyan));
+    }
 
-    .rail-card {
-      background: linear-gradient(180deg, rgba(20, 16, 38, 0.95) 0%, #0a0814 100%);
+    /* Trading Card Outer Foil Frame Line */
+    .trading-card-outer::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border: 1px solid var(--card-color, var(--neon-cyan));
+      border-radius: 9px;
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    /* Fine Micro-Halftone Texture Canvas */
+    .trading-card-halftone {
+      width: 100%;
+      height: 58%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px 8px 0 0;
+      overflow: hidden;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.15), transparent 80%);
+    }
+
+    /* Subtle Fine Halftone Overlay */
+    .trading-card-halftone::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(var(--card-color, var(--neon-cyan)) 0.75px, transparent 0.75px);
+      background-size: 4px 4px;
+      opacity: 0.18;
+    }
+
+    .trading-card-icon {
+      font-size: 2.2rem;
+      z-index: 2;
+      filter: drop-shadow(0 0 8px var(--card-color, var(--neon-cyan)));
+    }
+
+    /* Trading Card Bottom Data Panel */
+    .trading-card-banner {
+      width: 100%;
+      height: 42%;
+      background: var(--card-bg);
+      border-top: 1px solid var(--card-color, var(--neon-cyan));
+      border-radius: 0 0 8px 8px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      height: 100%;
-      padding: 6px 4px;
-      clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
+      padding: 4px 4px 6px 4px;
+      position: relative;
+      z-index: 2;
     }
 
-    .card-hp-badge {
-      font-family: var(--font-tech-head);
-      font-size: 0.55rem;
-      font-weight: 800;
-      padding: 2px 4px;
-      border-radius: 3px;
-      background: rgba(0,0,0,0.6);
-      color: #f43f5e;
-      border: 1px solid #f43f5e;
-    }
-
-    .card-add-btn {
+    /* Fix: Activity Name & Details Placement */
+    .trading-card-name {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: var(--text);
+      text-transform: uppercase;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       width: 100%;
-      padding: 3px 0;
-      background: var(--card-color, var(--color-work));
-      border: none;
-      color: #fff;
-      font-family: var(--font-tech-head);
-      font-size: 0.65rem;
-      font-weight: 900;
-      cursor: pointer;
-      clip-path: polygon(0 0, 100% 0, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+      letter-spacing: 0.3px;
+      margin-top: 2px;
     }
 
-    /* Empty Add Card Box Placeholder */
+    .trading-card-timer {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--neon-cyan);
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    /* Action Button Positioned Safely in Lower Banner */
+    .trading-card-circle-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--card-color, var(--neon-cyan));
+      border: 1px solid #ffffff;
+      color: #ffffff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0 8px var(--card-color, var(--neon-cyan));
+      outline: none;
+      transition: transform 0.1s ease;
+    }
+    .trading-card-circle-btn:active {
+      transform: scale(0.9);
+    }
+    .trading-card-circle-btn.playing {
+      background: #ff0055;
+      border-color: #ff0055;
+      box-shadow: 0 0 8px #ff0055;
+    }
+
+    /* Strictly Japanese Sub-label Tag */
+    .trading-card-jp-tag {
+      position: absolute;
+      top: 3px; left: 5px;
+      font-size: 0.45rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    /* Empty Card Slot */
     .empty-add-card {
-      min-width: 100px;
-      height: 140px;
-      border: 2px dashed rgba(255, 255, 255, 0.25);
-      border-radius: 6px;
+      min-width: 124px;
+      height: 184px;
+      border: 1px dashed var(--neon-cyan);
+      border-radius: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -262,223 +409,238 @@
       cursor: pointer;
       flex-shrink: 0;
       color: var(--text-muted);
-      transition: border-color 0.2s ease;
+      background: rgba(0, 240, 255, 0.02);
     }
-    .empty-add-card:hover { border-color: var(--nav-pink); color: var(--nav-pink); }
 
-    /* Recovery Tab: HP / System Vitality Bar */
+    /* RECOVERY TAB - Glowing Cyan Bar */
     .hp-container {
       background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      padding: 12px;
-      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
-      margin-bottom: 8px;
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--neon-cyan);
+      box-shadow: var(--glow-intensity);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 6px;
     }
     .hp-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-family: var(--font-tech-head);
-      font-size: 0.8rem;
-      margin-bottom: 6px;
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      font-style: normal;
+      margin-bottom: 8px;
     }
     .hp-bar-bg {
       width: 100%;
       height: 14px;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 8px;
+      overflow: visible;
+      border: 1px solid var(--neon-cyan);
+      position: relative;
+    }
+    .hp-bar-fill-container {
+      width: 100%;
+      height: 100%;
       border-radius: 7px;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     .hp-bar-fill {
       height: 100%;
       width: 100%;
-      background: linear-gradient(90deg, #ef4444 0%, #10b981 100%);
-      transition: width 0.3s ease;
+      background: var(--color-recovery);
+      border-radius: 7px;
+      box-shadow: var(--glow-intensity);
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* Recovery Cards Grid */
-    .matrix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    /* Recovery Matrix Grid */
+    .matrix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .matrix-card-wrapper {
-      background: var(--card-border);
-      padding: 1.5px;
-      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+      border-radius: 14px;
       cursor: pointer;
     }
     .matrix-card {
       background: var(--card-bg);
-      padding: 12px 8px;
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--neon-cyan);
+      box-shadow: var(--glow-intensity);
+      border-radius: 14px;
+      padding: 16px 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      height: 125px;
-      clip-path: polygon(0 0, calc(100% - 11px) 0, 100% 11px, 100% 100%, 11px 100%, 0 calc(100% - 11px));
+      height: 130px;
     }
 
-    /* Tumbler Tracker */
-    .tumbler-container { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 12px 0; }
+    /* Tumbler Glass Containers */
+    .tumbler-container { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 14px 0; }
     .tumbler-item {
-      width: 40px; height: 65px;
-      border: 2px solid var(--color-recovery);
-      border-radius: 4px 4px 8px 8px;
+      width: 40px; height: 64px;
+      border: 1px solid var(--neon-cyan);
+      box-shadow: inset 0 0 6px rgba(0, 240, 255, 0.2);
+      border-radius: 4px 4px 10px 10px;
       position: relative; overflow: hidden; cursor: pointer;
-      background: rgba(255,255,255,0.05);
+      background: rgba(0,240,255,0.03);
     }
-    .tumbler-fill { position: absolute; bottom: 0; left: 0; right: 0; background: var(--color-recovery); }
+    .tumbler-fill { position: absolute; bottom: 0; left: 0; right: 0; background: var(--color-recovery); box-shadow: 0 0 8px var(--color-recovery); }
 
     /* Timeline & Profile */
     .date-picker-bar {
       display: flex; justify-content: space-between; align-items: center;
-      background: rgba(255, 255, 255, 0.04); padding: 8px 12px;
-      border: 1px solid var(--card-border); font-family: var(--font-tech-head); font-size: 0.8rem;
+      background: var(--card-bg); padding: 10px 14px;
+      border: 1px solid var(--neon-cyan); border-radius: 12px; font-family: var(--font-mono); font-size: 0.78rem;
     }
     .timeline-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
     .timeline-item {
       background: var(--card-bg); border-left: 3px solid var(--nav-pink);
-      padding: 10px 12px; display: flex; justify-content: space-between; align-items: center;
+      border: 1px solid var(--neon-cyan); border-left-width: 3px;
+      padding: 12px 14px; border-radius: 0 12px 12px 0; display: flex; justify-content: space-between; align-items: center;
     }
 
     .profile-card {
-      background: var(--card-bg); border: 1px solid var(--card-border); padding: 16px; text-align: center;
-      clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+      background: var(--card-bg); border: 1px solid var(--neon-cyan); box-shadow: var(--glow-intensity); padding: 20px; text-align: center;
+      border-radius: 16px; backdrop-filter: blur(16px);
     }
 
-    /* Modal */
+    /* Detail Modal */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(5, 4, 10, 0.88); backdrop-filter: blur(10px);
+      background: rgba(4, 2, 12, 0.6); backdrop-filter: blur(16px);
       z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px;
     }
     .modal-overlay.active { display: flex; }
 
-    .trading-card-wrapper {
-      width: 100%; max-width: 310px;
-      background: var(--trading-border, #dc2626); padding: 2px;
-      clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 22px 100%, 0 calc(100% - 22px));
+    .modal-card-wrapper {
+      width: 100%; max-width: 320px;
     }
-    .trading-card {
-      background: linear-gradient(180deg, #141026 0%, #080612 100%);
-      padding: 18px 16px; display: flex; flex-direction: column; align-items: center;
-      clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+    .modal-card {
+      background: var(--card-inner-bg);
+      border: 1px solid var(--neon-cyan);
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.3);
+      border-radius: 18px; padding: 20px 18px; display: flex; flex-direction: column; align-items: center;
     }
 
     .btn-action-primary {
-      width: 100%; padding: 10px; background: var(--nav-pink); border: none;
-      color: #fff; font-family: var(--font-tech-head); font-weight: 800; cursor: pointer; margin-top: 10px;
+      width: 100%; padding: 12px; background: var(--nav-pink); border: none; border-radius: 10px;
+      color: #fff; font-family: var(--font-mono); font-weight: 700; font-style: normal; cursor: pointer; margin-top: 12px;
+      box-shadow: 0 0 12px var(--nav-pink);
     }
 
-    /* Bottom Nav */
+    /* Bottom Navigation Bar */
     .bottom-nav-container {
-      position: fixed; bottom: 16px; left: 0; right: 0;
+      position: fixed; bottom: 18px; left: 0; right: 0;
       display: flex; justify-content: center; z-index: 50;
     }
     .bottom-nav-wrapper {
-      background: rgba(255, 255, 255, 0.2); padding: 1.5px;
-      clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+      border-radius: 20px;
     }
     .bottom-nav {
-      background: rgba(12, 10, 24, 0.95); backdrop-filter: blur(20px);
-      padding: 4px 8px; display: flex; gap: 4px;
-      clip-path: polygon(0 0, calc(100% - 13px) 0, 100% 13px, 100% 100%, 13px 100%, 0 calc(100% - 13px));
+      background: var(--card-bg); backdrop-filter: blur(20px);
+      border: 1px solid var(--neon-cyan);
+      box-shadow: var(--glow-intensity);
+      padding: 5px 8px; border-radius: 20px; display: flex; gap: 4px;
     }
     .nav-btn {
       background: transparent; border: 1px solid transparent; color: var(--text-muted);
-      padding: 8px 12px; font-family: var(--font-tech-head); font-size: 0.7rem; font-weight: 700;
-      display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer;
+      padding: 8px 12px; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600; font-style: normal;
+      border-radius: 14px; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer;
     }
-    .nav-btn.active { background: var(--nav-pink-bg); color: var(--nav-pink); border-color: rgba(236, 72, 153, 0.4); }
+    .nav-btn.active { background: var(--nav-pink-bg); color: var(--text); border-color: var(--nav-pink); box-shadow: 0 0 8px var(--nav-pink); }
   </style>
 </head>
 <body>
 
   <div class="app-container">
     
-    <!-- Top Bar -->
+    <!-- Top Header Bar -->
     <div class="top-bar-clean">
       <button class="hamburger-btn-minimal" onclick="toggleDrawer()">☰</button>
-      <div class="top-bar-info">
-        <span class="top-bar-date">MON, SEP 7, 2026</span>
-        <span class="top-bar-quote">"Small steps each day lead to extraordinary growth."</span>
-      </div>
+      <span class="top-bar-date">MON // SEP 07 // 2026</span>
+      <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()">☀️ LIGHT</button>
     </div>
 
     <!-- Drawer Menu -->
     <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
     <div class="drawer" id="sideDrawer">
-      <div style="font-family: var(--font-tech-head); font-size: 1rem; border-bottom: 1px solid var(--card-border); padding-bottom: 10px;">SYSTEM LOGS</div>
-      <div style="padding:10px; background:rgba(255,255,255,0.05); cursor:pointer;" onclick="toggleDrawer()">📜 Close Menu</div>
+      <div style="font-family: var(--font-serif); font-size: 1.4rem; font-style: normal; border-bottom: 1px solid var(--neon-cyan); padding-bottom: 10px; color:var(--neon-cyan);">システム MENU</div>
+      <div style="padding:10px; background:rgba(0, 240, 255, 0.05); border:1px solid var(--neon-cyan); cursor:pointer; border-radius:8px; font-size:0.8rem;" onclick="toggleDrawer()">✕ Close Menu</div>
     </div>
 
     <!-- TAB 1: ACTION VIEW -->
     <div id="actionView" class="view active">
       
-      <!-- Sketch-Matching Hero Playing Deck Area -->
+      <!-- Hero Activity Deck Section -->
       <div class="hero-deck-section">
-        <div class="hero-deck-header">⚡ DAILY PLAYING DECK SLOTS</div>
+        <div class="hero-deck-header">
+          <span>Activity Deck</span>
+        </div>
         <div class="hero-slots-scroll" id="heroSlotsContainer">
           <!-- Rendered dynamically -->
         </div>
       </div>
 
-      <!-- Horizontal Category Rails with Vertical Trading Cards -->
+      <!-- Category Rails with Cyberpunk Japanese Trading Cards -->
       <div class="rail-section">
-        <div class="rail-header">Work</div>
+        <div class="rail-header">Work // 作業</div>
         <div class="rail-container" id="railWork"></div>
       </div>
 
       <div class="rail-section">
-        <div class="rail-header">Hobbies</div>
+        <div class="rail-header">Hobbies // 趣味</div>
         <div class="rail-container" id="railHobbies"></div>
       </div>
 
       <div class="rail-section">
-        <div class="rail-header">Media</div>
+        <div class="rail-header">Media // 映像</div>
         <div class="rail-container" id="railMedia"></div>
       </div>
 
       <div class="rail-section">
-        <div class="rail-header">Chores</div>
+        <div class="rail-header">Chores // 家事</div>
         <div class="rail-container" id="railChores"></div>
       </div>
 
       <div class="rail-section">
-        <div class="rail-header">Social</div>
+        <div class="rail-header">Social // 社交</div>
         <div class="rail-container" id="railSocial"></div>
       </div>
 
       <div class="rail-section">
-        <div class="rail-header">Other</div>
+        <div class="rail-header">Other // その他</div>
         <div class="rail-container" id="railOther"></div>
       </div>
     </div>
 
     <!-- TAB 2: RECOVERY VIEW -->
     <div id="recoveryView" class="view">
-      <!-- HP / System Vitality Capacity Progress Bar -->
+      <!-- HP Bar Container with Glowing Cyan Progress Bar -->
       <div class="hp-container">
         <div class="hp-header">
-          <span style="color: #10b981;">💚 SYSTEM VITALITY (HP)</span>
-          <span id="hpPercentageText" style="color: var(--text);">100%</span>
+          <span style="color: var(--text);">System Vitality (HP)</span>
+          <span id="hpPercentageText" style="color: var(--color-recovery); font-family: var(--font-mono); font-weight:700; text-shadow:var(--glow-intensity);">100%</span>
         </div>
         <div class="hp-bar-bg">
-          <div class="hp-bar-fill" id="hpBarFill"></div>
+          <div class="hp-bar-fill-container">
+            <div class="hp-bar-fill" id="hpBarFill"></div>
+          </div>
         </div>
-        <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px;">Auto-depletes 1% every 10 min. Depleted by playing cards.</div>
       </div>
 
-      <div style="font-family: var(--font-tech-head); font-size: 0.85rem; color: var(--color-recovery); text-align: center;">RECOVERY & RECHARGING ENGINE</div>
+      <div style="font-family: var(--font-serif); font-size: 1.3rem; font-style: normal; color: var(--neon-cyan); text-align: center; text-shadow: var(--glow-intensity);">RECOVERY MATRIX // 回復</div>
       <div class="matrix-grid" id="recoveryGrid"></div>
     </div>
 
     <!-- TAB 3: STATS VIEW -->
     <div id="statsView" class="view">
       <div class="date-picker-bar">
-        <button style="background:none; border:none; color:#fff; cursor:pointer;">◄</button>
-        <span>TODAY: SEP 7, 2026</span>
-        <button style="background:none; border:none; color:#fff; cursor:pointer;">►</button>
+        <button style="background:none; border:none; color:var(--neon-cyan); cursor:pointer;">◄</button>
+        <span>LOG // SEP 07, 2026</span>
+        <button style="background:none; border:none; color:var(--neon-cyan); cursor:pointer;">►</button>
       </div>
-      <div style="font-family: var(--font-tech-head); font-size: 0.8rem; color: var(--text-muted); margin-top: 6px;">24-HOUR ACTIVITY TIMELINE</div>
+      <div style="font-family: var(--font-serif); font-size: 1.2rem; font-style: normal; color: var(--neon-cyan); margin-top: 6px;">24-Hour Timeline Analytics</div>
       <div class="timeline-list" id="timelineList"></div>
     </div>
 
@@ -486,9 +648,9 @@
     <div id="profileView" class="view">
       <div class="profile-card">
         <div style="font-size: 2.5rem;">📊</div>
-        <div style="font-family: var(--font-tech-head); font-size: 1.1rem; color: var(--nav-pink); font-weight: 800; margin-top: 4px;">NEURAL ARCHITECT</div>
-        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">Identity Matrix</div>
-        <div style="position: relative; display: flex; justify-content: center; margin: 10px 0;">
+        <div style="font-family: var(--font-serif); font-size: 1.6rem; font-style: normal; color: var(--nav-pink); text-shadow:0 0 8px var(--nav-pink); margin-top: 4px;">Neural Architect</div>
+        <div style="font-size: 0.72rem; color: var(--neon-cyan); margin-top: 2px;">LV.100 MATRIX ID</div>
+        <div style="position: relative; display: flex; justify-content: center; margin: 12px 0;">
           <canvas id="radarChart" width="230" height="230"></canvas>
         </div>
       </div>
@@ -498,14 +660,14 @@
 
   <!-- Detail Modal -->
   <div class="modal-overlay" id="cardDetailModal" onclick="closeCardModal(event)">
-    <div class="trading-card-wrapper" id="modalCardWrapper">
-      <div class="trading-card">
+    <div class="modal-card-wrapper" id="modalCardWrapper">
+      <div class="modal-card">
         <div style="width:100%; display:flex; justify-content:space-between; margin-bottom:8px;">
-          <span style="font-family: var(--font-tech-head); font-size:0.7rem; color:var(--trading-border);" id="modalCategory">WORK</span>
-          <button style="background:none; border:none; color:var(--text-muted); cursor:pointer;" onclick="closeCardModal(null, true)">✕</button>
+          <span style="font-family: var(--font-mono); font-size:0.7rem; color:var(--neon-cyan);" id="modalCategory">WORK</span>
+          <button style="background:none; border:none; color:var(--neon-cyan); cursor:pointer;" onclick="closeCardModal(null, true)">✕</button>
         </div>
         <div style="font-size: 3rem; margin: 6px 0;" id="modalIcon">🍎</div>
-        <div style="font-family: var(--font-tech-head); font-size: 1.1rem; font-weight: 900;" id="modalTitle">Physics 2</div>
+        <div style="font-family: var(--font-serif); font-size: 1.6rem; font-style: normal; color:var(--text);" id="modalTitle">Physics 2</div>
         <div id="modalInteractiveBody" style="width:100%; margin-top: 10px;"></div>
       </div>
     </div>
@@ -524,23 +686,23 @@
   </div>
 
   <script>
+    /* Exclusively Japanese Characters */
     const GROWTH_CATEGORIES = {
-      work: { name: 'Work', color: '#dc2626' },
-      hobbies: { name: 'Hobbies', color: '#f59e0b' },
-      media: { name: 'Media', color: '#8b5cf6' },
-      chores: { name: 'Chores', color: '#10b981' },
-      social: { name: 'Social', color: '#ec4899' },
-      other: { name: 'Other', color: '#94a3b8' }
+      work: { name: 'Work', color: 'var(--color-work)', jp: '作業' },
+      hobbies: { name: 'Hobbies', color: 'var(--color-hobbies)', jp: '趣味' },
+      media: { name: 'Media', color: 'var(--color-media)', jp: '映像' },
+      chores: { name: 'Chores', color: 'var(--color-chores)', jp: '家事' },
+      social: { name: 'Social', color: 'var(--color-social)', jp: '社交' },
+      other: { name: 'Other', color: 'var(--color-other)', jp: '他' }
     };
 
-    // Card difficulty & HP costs
     let growthTasks = [
-      { id: 'physics-2', name: 'Physics 2', icon: '🍎', category: 'work', hpCost: 10, diffLabel: 'Hard (-10%)', customColor: '#dc2626', secondsLogged: 7200 },
-      { id: 'painting', name: 'Painting', icon: '🎨', category: 'hobbies', hpCost: 5, diffLabel: 'Mid (-5%)', customColor: '#f59e0b', secondsLogged: 5400 },
-      { id: 'marvel', name: 'Marvel', icon: '🎬', category: 'media', hpCost: 2, diffLabel: 'Easy (-2%)', customColor: '#8b5cf6', secondsLogged: 4500 },
-      { id: 'laundry', name: 'Laundry', icon: '🧺', category: 'chores', hpCost: 5, diffLabel: 'Mid (-5%)', customColor: '#10b981', secondsLogged: 2700 },
-      { id: 'uni-friends', name: 'Uni Friends', icon: '👩‍❤️‍👩', category: 'social', hpCost: 5, diffLabel: 'Mid (-5%)', customColor: '#ec4899', secondsLogged: 3600 },
-      { id: 'phone', name: 'Phone', icon: '📱', category: 'other', hpCost: 2, diffLabel: 'Easy (-2%)', customColor: '#94a3b8', secondsLogged: 1800 }
+      { id: 'physics-2', name: 'Physics 2', icon: '🍎', category: 'work', hpCost: 10, diffLabel: 'Hard', customColor: 'var(--color-work)', secondsLogged: 7200, isPlaying: false },
+      { id: 'painting', name: 'Painting', icon: '🎨', category: 'hobbies', hpCost: 5, diffLabel: 'Mid', customColor: 'var(--color-hobbies)', secondsLogged: 5400, isPlaying: false },
+      { id: 'marvel', name: 'Marvel', icon: '🎬', category: 'media', hpCost: 2, diffLabel: 'Easy', customColor: 'var(--color-media)', secondsLogged: 4500, isPlaying: false },
+      { id: 'laundry', name: 'Laundry', icon: '🧺', category: 'chores', hpCost: 5, diffLabel: 'Mid', customColor: 'var(--color-chores)', secondsLogged: 2700, isPlaying: false },
+      { id: 'uni-friends', name: 'Uni Friends', icon: '👩‍❤️‍👩', category: 'social', hpCost: 5, diffLabel: 'Mid', customColor: 'var(--color-social)', secondsLogged: 3600, isPlaying: false },
+      { id: 'phone', name: 'Phone', icon: '📱', category: 'other', hpCost: 2, diffLabel: 'Easy', customColor: 'var(--color-other)', secondsLogged: 1800, isPlaying: false }
     ];
 
     let recoveryTasks = [
@@ -551,22 +713,31 @@
     ];
 
     let heroDeckSlots = [
-      growthTasks[0] // Pre-equipped default card
+      growthTasks[0]
     ];
 
     let currentHP = 100;
     let activeSelectedTask = null;
 
-    // Auto-deplete HP: 1% per 10 minutes (600,000 ms)
-    setInterval(() => {
-      depleteHP(1);
-    }, 600000);
-
-    function depleteHP(amount) {
-      currentHP = Math.max(0, currentHP - amount);
-      document.getElementById('hpPercentageText').innerText = `${currentHP}%`;
-      document.getElementById('hpBarFill').style.width = `${currentHP}%`;
+    /* Light / Dark Mode Toggle Functionality */
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      document.getElementById('themeToggleBtn').innerText = newTheme === 'dark' ? '🌙 DARK' : '☀️ LIGHT';
+      if (document.getElementById('profileView').classList.contains('active')) {
+        renderRadarChart();
+      }
     }
+
+    setInterval(() => {
+      heroDeckSlots.forEach(task => {
+        if (task.isPlaying) {
+          task.secondsLogged++;
+        }
+      });
+      renderHeroSlots();
+    }, 1000);
 
     function toggleDrawer() {
       document.getElementById('sideDrawer').classList.toggle('open');
@@ -584,16 +755,32 @@
       if (tab === 'stats') renderTimelineStats();
     }
 
-    function addToPlayDeck(taskId) {
+    function addToPlayDeck(taskId, event) {
+      if (event) event.stopPropagation();
       const task = growthTasks.find(t => t.id === taskId);
       if (!task) return;
 
-      heroDeckSlots.push(task);
-      depleteHP(task.hpCost);
+      if (!heroDeckSlots.some(t => t.id === taskId)) {
+        heroDeckSlots.push(task);
+        currentHP = Math.max(0, currentHP - task.hpCost);
+        document.getElementById('hpPercentageText').innerText = `${currentHP}%`;
+        document.getElementById('hpBarFill').style.width = `${currentHP}%`;
+      }
       renderHeroSlots();
     }
 
-    function removeFromPlayDeck(index) {
+    function togglePlayTimer(taskId, event) {
+      if (event) event.stopPropagation();
+      const task = growthTasks.find(t => t.id === taskId);
+      if (task) {
+        task.isPlaying = !task.isPlaying;
+        renderHeroSlots();
+      }
+    }
+
+    function removeFromPlayDeck(index, event) {
+      if (event) event.stopPropagation();
+      heroDeckSlots[index].isPlaying = false;
       heroDeckSlots.splice(index, 1);
       renderHeroSlots();
     }
@@ -602,38 +789,44 @@
       const container = document.getElementById('heroSlotsContainer');
       container.innerHTML = '';
 
-      // Total slots rendered: current slots + empty slot placeholders (minimum 4 to ensure scrollable peek)
       const totalSlotsToRender = Math.max(4, heroDeckSlots.length + 1);
 
       for (let i = 0; i < totalSlotsToRender; i++) {
-        const slotEl = document.createElement('div');
-        
+        const slotWrapper = document.createElement('div');
+        slotWrapper.className = 'deck-slot-wrapper';
+
         if (i < heroDeckSlots.length) {
           const task = heroDeckSlots[i];
           const color = task.customColor || GROWTH_CATEGORIES[task.category]?.color;
-          slotEl.className = 'deck-slot filled';
-          slotEl.style.setProperty('--slot-color', color);
-          slotEl.innerHTML = `
-            <div style="width:100%; display:flex; justify-size:space-between; justify-content:space-between; align-items:center;">
-              <span class="card-hp-badge">-${task.hpCost}%</span>
-              <button style="background:none; border:none; color:var(--text-muted); font-size:0.75rem; cursor:pointer;" onclick="removeFromPlayDeck(${i})">✕</button>
+          const jpTag = GROWTH_CATEGORIES[task.category]?.jp || '能力';
+          
+          slotWrapper.innerHTML = `
+            <div class="trading-card-outer" style="--card-color: ${color}; width:100%; height:100%;" onclick="openCardModal(growthTasks.find(t=>t.id==='${task.id}'))">
+              <button style="position:absolute; top:4px; right:6px; z-index:20; background:none; border:none; color:var(--text); font-size:0.75rem; cursor:pointer;" onclick="removeFromPlayDeck(${i}, event)">✕</button>
+              <div class="trading-card-halftone">
+                <span class="trading-card-jp-tag">${jpTag}</span>
+                <div class="trading-card-icon">${task.icon}</div>
+              </div>
+              <div class="trading-card-banner">
+                <div class="trading-card-name">${task.name}</div>
+                <div class="trading-card-timer">${formatTime(task.secondsLogged)}</div>
+                <div class="trading-card-circle-btn ${task.isPlaying ? 'playing' : ''}" onclick="togglePlayTimer('${task.id}', event)">
+                  ${task.isPlaying ? '⏸' : '▶'}
+                </div>
+              </div>
             </div>
-            <div style="font-size: 1.8rem; margin:2px 0;">${task.icon}</div>
-            <div style="font-family:var(--font-tech-head); font-size:0.65rem; text-align:center; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%;">${task.name}</div>
-            <div style="font-size:0.55rem; color:var(--nav-pink); font-family:var(--font-tech-head);">ACTIVE</div>
           `;
         } else {
-          slotEl.className = 'deck-slot';
-          slotEl.innerHTML = `<span style="font-size: 1.5rem; color: rgba(255,255,255,0.3);">+</span>`;
+          slotWrapper.innerHTML = `<div class="deck-slot-empty">+</div>`;
         }
-        container.appendChild(slotEl);
+        container.appendChild(slotWrapper);
       }
     }
 
     function updateUI() {
       renderHeroSlots();
 
-      // Render Rails
+      // Render Category Rails
       Object.keys(GROWTH_CATEGORIES).forEach(cat => {
         const railEl = document.getElementById(`rail${cat.charAt(0).toUpperCase() + cat.slice(1)}`);
         if (!railEl) return;
@@ -641,32 +834,36 @@
 
         const catTasks = growthTasks.filter(t => t.category === cat);
         
-        // Render activity cards
         catTasks.forEach(task => {
           const color = task.customColor || GROWTH_CATEGORIES[cat].color;
+          const jpTag = GROWTH_CATEGORIES[cat]?.jp || '能力';
           const wrapper = document.createElement('div');
-          wrapper.className = 'rail-card-wrapper';
+          wrapper.className = 'trading-card-outer';
           wrapper.style.setProperty('--card-color', color);
+          wrapper.onclick = () => openCardModal(task);
+
+          const isEquipped = heroDeckSlots.some(s => s.id === task.id);
 
           wrapper.innerHTML = `
-            <div class="rail-card">
-              <div style="width:100%; display:flex; justify-content:space-between; align-items:center;" onclick="openCardModal(growthTasks.find(t=>t.id==='${task.id}'))">
-                <span class="card-hp-badge">-${task.hpCost}%</span>
-                <span style="font-size:0.6rem; color:var(--text-muted);">i</span>
+            <div class="trading-card-halftone">
+              <span class="trading-card-jp-tag">${jpTag}</span>
+              <div class="trading-card-icon">${task.icon}</div>
+            </div>
+            <div class="trading-card-banner">
+              <div class="trading-card-name">${task.name}</div>
+              <div class="trading-card-circle-btn" onclick="${isEquipped ? `togglePlayTimer('${task.id}', event)` : `addToPlayDeck('${task.id}', event)`}">
+                ${isEquipped ? (task.isPlaying ? '⏸' : '▶') : '+'}
               </div>
-              <div style="font-size: 1.8rem;" onclick="openCardModal(growthTasks.find(t=>t.id==='${task.id}'))">${task.icon}</div>
-              <div style="font-family: var(--font-tech-head); font-size: 0.65rem; font-weight: 700; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%;" onclick="openCardModal(growthTasks.find(t=>t.id==='${task.id}'))">${task.name}</div>
-              <button class="card-add-btn" onclick="addToPlayDeck('${task.id}')">+ ADD</button>
             </div>
           `;
           railEl.appendChild(wrapper);
         });
 
-        // Add Empty [+] Add Card Placeholder
+        // Add Empty Slot Option
         const emptyAddCard = document.createElement('div');
         emptyAddCard.className = 'empty-add-card';
-        emptyAddCard.onclick = () => alert(`Create custom card under ${cat}`);
-        emptyAddCard.innerHTML = `<span style="font-size:1.8rem;">+</span><span style="font-size:0.65rem; font-family:var(--font-tech-head);">NEW CARD</span>`;
+        emptyAddCard.onclick = () => alert(`Add custom activity card to ${cat}`);
+        emptyAddCard.innerHTML = `<span style="font-size:1.4rem; color:var(--neon-cyan);">+</span><span style="font-size:0.6rem; font-family:var(--font-mono); color:var(--neon-cyan);">NEW CARD</span>`;
         railEl.appendChild(emptyAddCard);
       });
 
@@ -682,8 +879,8 @@
         wrapper.innerHTML = `
           <div class="matrix-card">
             <div style="font-size: 1.8rem;">${t.icon}</div>
-            <div style="font-family: var(--font-tech-head); font-size: 0.8rem; text-align:center;">${t.name}</div>
-            <div style="font-family: var(--font-tech-head); font-size: 0.7rem; color: var(--color-recovery);">${subVal}</div>
+            <div style="font-family: var(--font-serif); font-size: 1.1rem; font-style: normal; text-align:center;">${t.name}</div>
+            <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--color-recovery); font-weight:700;">${subVal}</div>
           </div>
         `;
         recGrid.appendChild(wrapper);
@@ -692,13 +889,11 @@
 
     function openCardModal(task, isRecovery = false) {
       activeSelectedTask = task;
-      const color = task.customColor || (isRecovery ? '#06b6d4' : (GROWTH_CATEGORIES[task.category]?.color || '#dc2626'));
       
       document.getElementById('modalIcon').innerText = task.icon;
       document.getElementById('modalTitle').innerText = task.name;
       document.getElementById('modalCategory').innerText = isRecovery ? 'RECOVERY' : (GROWTH_CATEGORIES[task.category]?.name || 'CUSTOM');
       
-      document.getElementById('modalCardWrapper').style.setProperty('--trading-border', color);
       const body = document.getElementById('modalInteractiveBody');
       body.innerHTML = '';
 
@@ -706,8 +901,8 @@
         if (task.type === 'timer') {
           body.innerHTML = `
             <div style="text-align:center; margin:10px 0;">
-              <div style="font-family:var(--font-tech-head); font-size:1.8rem;">${formatTime(task.secondsLogged)}</div>
-              <button class="btn-action-primary" style="background:#10b981;" onclick="alert('Timer Started')">START TIMER</button>
+              <div style="font-family:var(--font-mono); font-size:1.8rem; color:var(--neon-cyan);">${formatTime(task.secondsLogged)}</div>
+              <button class="btn-action-primary" style="background:var(--color-recovery); color:#fff;" onclick="alert('Timer Started')">START RECOVERY TIMER</button>
             </div>
           `;
         } else {
@@ -723,22 +918,22 @@
           body.innerHTML = `
             <div style="text-align:center; font-size:0.75rem; color:var(--text-muted);">
               Container: 
-              <select onchange="updateContainerSize(this.value)" style="background:#1e1b2e; color:#fff; border:1px solid var(--card-border);">
+              <select onchange="updateContainerSize(this.value)" style="background:var(--card-bg); color:var(--text); border:1px solid var(--neon-cyan); border-radius:4px; padding:2px 4px;">
                 <option value="250" ${task.containerML === 250 ? 'selected' : ''}>250 mL Glass</option>
                 <option value="500" ${task.containerML === 500 ? 'selected' : ''}>500 mL Tumbler</option>
               </select>
             </div>
             ${tumblersHTML}
-            <div style="text-align:center; font-family:var(--font-tech-head); font-size:0.85rem; color:var(--color-recovery);">${task.currentML} / ${task.targetML} mL</div>
+            <div style="text-align:center; font-family:var(--font-mono); font-size:0.85rem; color:var(--color-recovery); font-weight:700;">${task.currentML} / ${task.targetML} mL</div>
           `;
         }
       } else {
         body.innerHTML = `
           <div style="text-align:center; font-size:0.8rem; color:var(--text-muted); margin: 8px 0;">
-            Difficulty: <strong style="color:#fff;">${task.diffLabel}</strong><br>
-            HP Depletion Cost: <strong style="color:#f43f5e;">-${task.hpCost}% HP</strong>
+            Intensity Rating: <strong style="color:var(--text);">${task.diffLabel}</strong><br>
+            Energy Value: <strong style="color:var(--color-recovery);">${task.hpCost} HP Units</strong>
           </div>
-          <button class="btn-action-primary" onclick="addToPlayDeck('${task.id}'); closeCardModal(null, true);">ADD TO PLAY DECK</button>
+          <button class="btn-action-primary" onclick="addToPlayDeck('${task.id}'); closeCardModal(null, true);">EQUIP TO ACTION DECK</button>
         `;
       }
       document.getElementById('cardDetailModal').classList.add('active');
@@ -769,7 +964,8 @@
     function formatTime(sec) {
       const h = Math.floor(sec / 3600);
       const m = Math.floor((sec % 3600) / 60);
-      return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+      const s = sec % 60;
+      return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     }
 
     function renderTimelineStats() {
@@ -779,7 +975,7 @@
         if (t.secondsLogged > 0) {
           const item = document.createElement('div');
           item.className = 'timeline-item';
-          item.innerHTML = `<div><div style="font-family:var(--font-tech-head);">${t.icon} ${t.name}</div></div><div style="font-family:var(--font-tech-head); color:var(--nav-pink);">${(t.secondsLogged / 3600).toFixed(1)}h</div>`;
+          item.innerHTML = `<div><div style="font-family:var(--font-mono);">${t.icon} ${t.name}</div></div><div style="font-family:var(--font-mono); color:var(--neon-cyan); font-weight:700;">${(t.secondsLogged / 3600).toFixed(1)}h</div>`;
           list.appendChild(item);
         }
       });
@@ -787,15 +983,17 @@
 
     let radarChartInstance = null;
     function renderRadarChart() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const gridColor = isDark ? 'rgba(0, 240, 255, 0.2)' : 'rgba(0, 180, 216, 0.25)';
       const ctx = document.getElementById('radarChart').getContext('2d');
       if (radarChartInstance) radarChartInstance.destroy();
       radarChartInstance = new Chart(ctx, {
         type: 'radar',
         data: {
           labels: ['Work', 'Hobbies', 'Media', 'Chores', 'Social', 'Other'],
-          datasets: [{ data: [85, 70, 60, 75, 80, 50], backgroundColor: 'rgba(236, 72, 153, 0.2)', borderColor: '#ec4899' }]
+          datasets: [{ data: [85, 70, 60, 75, 80, 50], backgroundColor: 'rgba(230, 0, 115, 0.25)', borderColor: '#e60073', pointBackgroundColor: '#00b4d8' }]
         },
-        options: { scales: { r: { angleLines: { color: 'rgba(255,255,255,0.1)' }, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { display: false } } }, plugins: { legend: { display: false } } }
+        options: { scales: { r: { angleLines: { color: gridColor }, grid: { color: gridColor }, ticks: { display: false } } }, plugins: { legend: { display: false } } }
       });
     }
 
