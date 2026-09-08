@@ -202,7 +202,7 @@
       padding: 0 8px; border: 1px solid var(--neon-cyan); letter-spacing: 1px;
     }
 
-    .hero-deck-header { font-family: var(--font-serif); font-size: 1.6rem; color: var(--text); display: flex; align-items: center; gap: 8px; }
+    .hero-deck-header { font-family: var(--font-serif); font-size: 1.42rem; color: var(--text); display: flex; align-items: center; gap: 8px; }
     .hero-slots-scroll { display: flex; gap: 14px; overflow-x: auto; scrollbar-width: none; padding: 8px 3px; }
     .hero-slots-scroll::-webkit-scrollbar { display: none; }
 
@@ -223,25 +223,27 @@
       flex-shrink: 0; cursor: pointer; background: var(--card-inner-bg);
       border: 2px solid var(--card-color, var(--neon-cyan));
       box-shadow: 0 4px 10px rgba(0,0,0,0.1), inset 0 0 6px var(--card-color, var(--neon-cyan));
-      overflow: hidden; display: flex; flex-direction: column; padding: 8px;
+      overflow: hidden; display: flex; flex-direction: column; padding: 8px; isolation: isolate;
       transition: transform 0.15s ease, box-shadow 0.3s ease;
     }
     .trading-card-outer:hover { transform: translateY(-2px); }
 
     .trading-card-outer.is-active-running {
       border-color: transparent;
-      background-image: linear-gradient(var(--card-inner-bg), var(--card-inner-bg)),
-                        conic-gradient(from var(--border-angle, 0deg), transparent 70%, var(--card-color, var(--neon-cyan)) 100%);
-      background-origin: border-box;
-      background-clip: padding-box, border-box;
-      animation: rotateBorder 8s linear infinite;
       box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
     }
+    .trading-card-outer.is-active-running::after {
+      content: ''; position: absolute; inset: -35%; z-index: 0; pointer-events: none;
+      background: conic-gradient(from 0deg, transparent 0 63%, var(--card-color, var(--neon-cyan)) 79%, transparent 92%);
+      animation: smoothGlow 2.8s linear infinite; will-change: transform;
+    }
+    .trading-card-outer.is-active-running > * { position: relative; z-index: 2; }
 
     @property --border-angle {
       syntax: '<angle>'; initial-value: 0deg; inherits: false;
     }
     @keyframes rotateBorder { to { --border-angle: 360deg; } }
+    @keyframes smoothGlow { to { transform: rotate(360deg); } }
 
     .trading-card-outer::before {
       content: ''; position: absolute; inset: 2px;
@@ -288,7 +290,7 @@
     }
     .trading-card-circle-btn-lg:active { transform: scale(0.92); }
 
-    .trading-card-jp-tag { position: absolute; top: 4px; left: 5px; font-size: 0.55rem; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px; }
+    .trading-card-category-tag { position: absolute; top: 4px; left: 5px; font-size: 0.55rem; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px; }
 
     .empty-add-card {
       min-width: 165px; height: 250px; border: 1px dashed var(--neon-cyan); border-radius: 14px;
@@ -299,7 +301,7 @@
     .empty-add-card span:last-child { font-size: 0.75rem; }
 
     .hp-container { background: var(--card-bg); border: 1px solid var(--neon-cyan); box-shadow: var(--glow-intensity); border-radius: 16px; padding: 18px; margin-bottom: 6px; }
-    .hp-header { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-serif); font-size: 1.4rem; margin-bottom: 10px; }
+    .hp-header { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-serif); font-size: 1.22rem; margin-bottom: 10px; }
     .hp-bar-bg { width: 100%; height: 18px; background: rgba(0, 0, 0, 0.1); border-radius: 10px; overflow: hidden; border: 1px solid var(--neon-cyan); position: relative; }
     .hp-bar-fill { height: 100%; width: 100%; background: var(--color-recovery); border-radius: 9px; transition: width 0.3s ease; }
 
@@ -321,6 +323,20 @@
     .date-picker-bar button { font-size: 1.2rem; }
     .timeline-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
     .timeline-item { background: var(--card-bg); border: 1px solid var(--neon-cyan); border-left: 3px solid var(--nav-pink); padding: 15px 18px; border-radius: 0 14px 14px 0; display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; }
+    .stats-pie-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stats-pie-card { background: var(--card-bg); border: 1px solid var(--neon-cyan); border-radius: 14px; padding: 12px; text-align: center; min-width: 0; }
+    .stats-pie-title { color: var(--neon-cyan); font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; margin-bottom: 8px; }
+    .stats-pie-card canvas { width: 100% !important; height: auto !important; aspect-ratio: 1; }
+    .stats-empty { color: var(--text-muted); font-family: var(--font-mono); font-size: 0.78rem; text-align: center; padding: 18px 8px; }
+    .stats-bar-track { flex: 1; height: 8px; background: rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; margin: 0 12px; }
+    .stats-bar-fill { height: 100%; border-radius: inherit; background: var(--nav-pink); }
+    .drawer-section-title { color: var(--neon-cyan); font-family: var(--font-mono); font-size: 0.76rem; font-weight: 700; letter-spacing: 0.8px; margin-top: 2px; }
+    .category-editor-list { display: flex; flex-direction: column; gap: 8px; }
+    .category-editor-row { display: flex; gap: 6px; align-items: center; }
+    .category-editor-row input { min-width: 0; flex: 1; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 7px; color: var(--text); padding: 7px 8px; font-family: var(--font-mono); font-size: 0.76rem; }
+    .category-editor-row button { background: var(--neon-cyan); border: none; border-radius: 7px; color: #fff; padding: 7px 8px; font-size: 0.68rem; font-weight: 700; cursor: pointer; }
+    .recovery-empty-card { min-height: 165px; border: 1px dashed var(--neon-cyan); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); gap: 6px; background: rgba(0,240,255,0.02); }
+    .recovery-empty-card span:first-child { font-size: 2rem; color: var(--neon-cyan); }
 
     .profile-card {
       background: var(--card-bg);
@@ -588,12 +604,14 @@
     .full-trading-card.card-active-glow {
       box-shadow: 0 0 12px var(--modal-color, var(--neon-cyan));
       border-color: transparent;
-      background-image: linear-gradient(var(--card-inner-bg), var(--card-inner-bg)),
-                        conic-gradient(from var(--border-angle, 0deg), transparent 70%, var(--modal-color, var(--neon-cyan)) 100%);
-      background-origin: border-box;
-      background-clip: padding-box, border-box;
-      animation: rotateBorder 8s linear infinite;
+      isolation: isolate;
     }
+    .full-trading-card.card-active-glow::after {
+      content: ''; position: absolute; inset: -30%; z-index: 0; pointer-events: none;
+      background: conic-gradient(from 0deg, transparent 0 63%, var(--modal-color, var(--neon-cyan)) 79%, transparent 92%);
+      animation: smoothGlow 2.8s linear infinite; will-change: transform;
+    }
+    .full-trading-card.card-active-glow > * { position: relative; z-index: 1; }
 
     .tc-header {
       display: flex; justify-content: space-between; align-items: center;
@@ -621,7 +639,7 @@
       z-index: 1;
     }
     .tc-art-icon { font-size: 4.4rem; z-index: 2; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); }
-    .tc-jp-sub { position: absolute; top: 8px; left: 10px; font-size: 0.7rem; color: var(--text-muted); font-weight: 700; z-index: 2; }
+    .tc-category-sub { position: absolute; top: 8px; left: 10px; font-size: 0.7rem; color: var(--text-muted); font-weight: 700; z-index: 2; }
 
     .tc-stats-box {
       background: var(--card-bg); border: 1px solid var(--modal-color, var(--neon-cyan));
@@ -722,14 +740,16 @@
 
     <div class="top-bar-clean">
       <button class="hamburger-btn-minimal" onclick="toggleDrawer()">☰</button>
-      <span class="top-bar-date">MON // SEP 07 // 2026</span>
+      <span class="top-bar-date" id="topBarDate"></span>
       <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()">☀️ LIGHT</button>
     </div>
 
     <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
     <div class="drawer" id="sideDrawer">
-      <div style="font-family: var(--font-serif); font-size: 1.6rem; border-bottom: 1px solid var(--neon-cyan); padding-bottom: 12px; color:var(--neon-cyan);">システム MENU</div>
+      <div style="font-family: var(--font-serif); font-size: 1.6rem; border-bottom: 1px solid var(--neon-cyan); padding-bottom: 12px; color:var(--neon-cyan);">SYSTEM MENU</div>
       <div style="padding:14px; background:rgba(0, 240, 255, 0.05); border:1px solid var(--neon-cyan); cursor:pointer; border-radius:10px; font-size:0.9rem;" onclick="toggleDrawer()">✕ Close Menu</div>
+      <div class="drawer-section-title">ACTION CATEGORIES</div>
+      <div class="category-editor-list" id="categoryEditorList"></div>
     </div>
 
     <!-- TAB 1: ACTION VIEW -->
@@ -742,32 +762,32 @@
       </div>
 
       <div class="rail-section">
-        <div class="rail-header">Work // 作業</div>
+        <div class="rail-header" id="railTitleWork">Work</div>
         <div class="rail-container" id="railWork"></div>
       </div>
 
       <div class="rail-section">
-        <div class="rail-header">Hobbies // 趣味</div>
+        <div class="rail-header" id="railTitleHobbies">Hobbies</div>
         <div class="rail-container" id="railHobbies"></div>
       </div>
 
       <div class="rail-section">
-        <div class="rail-header">Media // 映像</div>
+        <div class="rail-header" id="railTitleMedia">Media</div>
         <div class="rail-container" id="railMedia"></div>
       </div>
 
       <div class="rail-section">
-        <div class="rail-header">Chores // 家事</div>
+        <div class="rail-header" id="railTitleChores">Chores</div>
         <div class="rail-container" id="railChores"></div>
       </div>
 
       <div class="rail-section">
-        <div class="rail-header">Social // 社交</div>
+        <div class="rail-header" id="railTitleSocial">Social</div>
         <div class="rail-container" id="railSocial"></div>
       </div>
 
       <div class="rail-section">
-        <div class="rail-header">Other // その他</div>
+        <div class="rail-header" id="railTitleOther">Other</div>
         <div class="rail-container" id="railOther"></div>
       </div>
     </div>
@@ -784,18 +804,28 @@
         </div>
       </div>
 
-      <div style="font-family: var(--font-serif); font-size: 1.5rem; color: var(--neon-cyan); text-align: center;">RECOVERY MATRIX // 回復</div>
+      <div style="font-family: var(--font-serif); font-size: 1.5rem; color: var(--neon-cyan); text-align: center;">RECOVERY MATRIX</div>
       <div class="matrix-grid" id="recoveryGrid"></div>
     </div>
 
     <!-- TAB 3: STATS VIEW -->
     <div id="statsView" class="view">
       <div class="date-picker-bar">
-        <button style="background:none; border:none; color:var(--neon-cyan); cursor:pointer;">◄</button>
-        <span>LOG // SEP 07, 2026</span>
-        <button style="background:none; border:none; color:var(--neon-cyan); cursor:pointer;">►</button>
+        <button id="statsPrevBtn" onclick="shiftStatsDate(-1)" style="background:none; border:none; color:var(--neon-cyan); cursor:pointer;">◄</button>
+        <span id="statsDateLabel">LOG</span>
+        <button id="statsNextBtn" onclick="shiftStatsDate(1)" style="background:none; border:none; color:var(--neon-cyan); cursor:pointer;">►</button>
       </div>
-      <div style="font-family: var(--font-serif); font-size: 1.35rem; color: var(--neon-cyan); margin-top: 8px;">24-Hour Timeline Analytics</div>
+      <div style="font-family: var(--font-serif); font-size: 1.35rem; color: var(--neon-cyan); margin-top: 8px;">Activity Time Analytics</div>
+      <div class="stats-pie-grid">
+        <div class="stats-pie-card">
+          <div class="stats-pie-title">AM CLOCK // 00:00–12:00</div>
+          <canvas id="activityPieChart"></canvas>
+        </div>
+        <div class="stats-pie-card">
+          <div class="stats-pie-title">PM CLOCK // 12:00–24:00</div>
+          <canvas id="categoryPieChart"></canvas>
+        </div>
+      </div>
       <div class="timeline-list" id="timelineList"></div>
     </div>
 
@@ -916,7 +946,7 @@
           <span class="tc-hp-badge" id="modalHpBadge">-10 HP</span>
         </div>
         <div class="tc-art-frame">
-          <span class="tc-jp-sub" id="modalJpCategory">作業 // WORK</span>
+          <span class="tc-category-sub" id="modalCategory">WORK</span>
           <div class="tc-art-icon" id="modalIcon">🍎</div>
         </div>
 
@@ -948,11 +978,11 @@
         <!-- PROBLEM 2 fix: the decorative dot overlay in .tc-art-frame::before now has pointer-events:none,
              and this field is a real, large, clearly-tappable box (z-index above it as extra safety) -->
         <div class="tc-art-frame">
-          <span class="tc-jp-sub" id="createFormJpTag">CARD CREATION</span>
+          <span class="tc-category-sub" id="createFormCategoryTag">CARD CREATION</span>
           <input type="text" id="createFormIcon" class="form-input-clean emoji-input-box" placeholder="😀" maxlength="2" oninput="validateCreateCardForm()">
         </div>
 
-        <div style="display:flex; flex-direction:column; gap:6px;">
+        <div id="createCategoryField" style="display:flex; flex-direction:column; gap:6px;">
           <label style="font-size:0.7rem; color:var(--neon-cyan); font-weight:700;">CATEGORY</label>
           <select id="createFormCategory" onchange="onCategorySelectChange()" style="background:var(--card-bg); border:1px solid var(--card-border); color:var(--text); font-size:0.9rem; border-radius:8px; padding:8px;">
             <option value="">-- Select Category --</option>
@@ -1070,12 +1100,12 @@
 
   <script>
     const GROWTH_CATEGORIES = {
-      work: { name: 'Work', color: 'var(--color-work)', jp: '作業' },
-      hobbies: { name: 'Hobbies', color: 'var(--color-hobbies)', jp: '趣味' },
-      media: { name: 'Media', color: 'var(--color-media)', jp: '映像' },
-      chores: { name: 'Chores', color: 'var(--color-chores)', jp: '家事' },
-      social: { name: 'Social', color: 'var(--color-social)', jp: '社交' },
-      other: { name: 'Other', color: 'var(--color-other)', jp: 'その他' }
+      work: { name: 'Work', color: 'var(--color-work)' },
+      hobbies: { name: 'Hobbies', color: 'var(--color-hobbies)' },
+      media: { name: 'Media', color: 'var(--color-media)' },
+      chores: { name: 'Chores', color: 'var(--color-chores)' },
+      social: { name: 'Social', color: 'var(--color-social)' },
+      other: { name: 'Other', color: 'var(--color-other)' }
     };
 
     const ARCHETYPE_TABLE = {
@@ -1100,32 +1130,32 @@
     let growthTasks = [
       {
         id: 'physics-2', name: 'Physics 2', icon: '🍎', category: 'work', hpCost: 10,
-        customColor: 'var(--color-work)', secondsLogged: 14400, isPlaying: false,
+         customColor: 'var(--color-work)', secondsLogged: 0, isPlaying: false,
         skills: [ { name: 'Intellect', stars: 5 }, { name: 'Discipline', stars: 4 } ]
       },
       {
         id: 'painting', name: 'Painting', icon: '🎨', category: 'hobbies', hpCost: 5,
-        customColor: 'var(--color-hobbies)', secondsLogged: 21600, isPlaying: false,
+         customColor: 'var(--color-hobbies)', secondsLogged: 0, isPlaying: false,
         skills: [ { name: 'Creativity', stars: 5 }, { name: 'Discipline', stars: 3 } ]
       },
       {
         id: 'marvel', name: 'Marvel', icon: '🎬', category: 'media', hpCost: 2,
-        customColor: 'var(--color-media)', secondsLogged: 3600, isPlaying: false,
+         customColor: 'var(--color-media)', secondsLogged: 0, isPlaying: false,
         skills: [ { name: 'Empathy', stars: 3 }, { name: 'Creativity', stars: 2 } ]
       },
       {
         id: 'laundry', name: 'Laundry', icon: '🧺', category: 'chores', hpCost: 5,
-        customColor: 'var(--color-chores)', secondsLogged: 1800, isPlaying: false,
+         customColor: 'var(--color-chores)', secondsLogged: 0, isPlaying: false,
         skills: [ { name: 'Discipline', stars: 3 }, { name: 'Intellect', stars: 1 } ]
       },
       {
         id: 'uni-friends', name: 'Uni Friends', icon: '👩‍❤️‍👩', category: 'social', hpCost: 5,
-        customColor: 'var(--color-social)', secondsLogged: 7200, isPlaying: false,
+         customColor: 'var(--color-social)', secondsLogged: 0, isPlaying: false,
         skills: [ { name: 'Empathy', stars: 5 }, { name: 'Creativity', stars: 3 } ]
       },
       {
         id: 'phone', name: 'Phone', icon: '📱', category: 'other', hpCost: 2,
-        customColor: 'var(--color-other)', secondsLogged: 900, isPlaying: false,
+         customColor: 'var(--color-other)', secondsLogged: 0, isPlaying: false,
         skills: [ { name: 'Intellect', stars: 2 }, { name: 'Empathy', stars: 2 } ]
       }
     ];
@@ -1133,6 +1163,8 @@
     let recoveryTasks = [
       { id: 'sleep', name: 'Sleep & Rest', icon: '🌙', type: 'timer', secondsLogged: 0, hpCost: -30, skills: [{ name: 'Discipline', stars: 4 }, { name: 'Intellect', stars: 3 }] },
       { id: 'mind', name: 'Mind Reset', icon: '🧘', type: 'timer', secondsLogged: 0, hpCost: -15, skills: [{ name: 'Empathy', stars: 4 }, { name: 'Discipline', stars: 4 }] },
+      { id: 'shower', name: 'Shower', icon: '🚿', type: 'timer', secondsLogged: 0, hpCost: -5, skills: [{ name: 'Discipline', stars: 2 }] },
+      { id: 'brush-teeth', name: 'Brush Teeth', icon: '🪥', type: 'timer', secondsLogged: 0, hpCost: -2, skills: [{ name: 'Discipline', stars: 2 }] },
       { id: 'hydration', name: 'Hydration', icon: '🥛', type: 'fluid', targetML: 2700, containerML: 500, currentML: 1250, hpCost: -10, skills: [{ name: 'Discipline', stars: 3 }, { name: 'Intellect', stars: 2 }] },
       { id: 'nutrition', name: 'Nutrition', icon: '🥗', type: 'fluid', targetML: 2000, containerML: 400, currentML: 800, hpCost: -15, skills: [{ name: 'Discipline', stars: 4 }, { name: 'Creativity', stars: 2 }] }
     ];
@@ -1152,8 +1184,12 @@
     let heroDeckSlots = [ growthTasks[0] ];
     let currentHP = 100;
     let activeSelectedTask = null;
-    let nextSkillPopTime = 10;
-    let popTimerCounter = 0;
+    let sleepPopTimerCounter = 0;
+    let statsDate = new Date();
+    let activityHistory = {};
+    let activityPieChartInstance = null;
+    let categoryPieChartInstance = null;
+    let creatingRecoveryCard = false;
     let selectedStarRating1 = 0;
     let selectedStarRating2 = 0;
 
@@ -1184,12 +1220,49 @@
       }
     });
 
+    function getDateKey(date = new Date()) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function formatStatsDate(date) {
+      return date.toLocaleDateString(undefined, { month: 'short', day: '2-digit', year: 'numeric' }).toUpperCase();
+    }
+
+    function updateHealthDisplay() {
+      const hp = Math.max(0, Math.min(100, currentHP));
+      document.getElementById('hpPercentageText').innerText = `${hp % 1 ? hp.toFixed(2) : hp}%`;
+      document.getElementById('hpBarFill').style.width = `${hp}%`;
+    }
+
+    function recordActivityTime(task) {
+      const key = getDateKey();
+      if (!activityHistory[key]) activityHistory[key] = {};
+      if (!activityHistory[key][task.id]) {
+        activityHistory[key][task.id] = {
+          id: task.id, name: task.name, icon: task.icon,
+          category: task.category || 'recovery',
+           color: task.customColor || 'var(--color-recovery)', seconds: 0, amSeconds: 0, pmSeconds: 0
+        };
+      }
+      const entry = activityHistory[key][task.id];
+      entry.seconds++;
+      if (new Date().getHours() < 12) entry.amSeconds++;
+      else entry.pmSeconds++;
+      entry.name = task.name;
+      entry.icon = task.icon;
+      entry.category = task.category || 'recovery';
+    }
+
     setInterval(() => {
       let anyTaskActive = false;
 
       growthTasks.concat(recoveryTasks).forEach(task => {
         if (task.isPlaying) {
           task.secondsLogged++;
+          if (task.type === 'timer' || !task.type) recordActivityTime(task);
           anyTaskActive = true;
 
           if (activeSelectedTask && activeSelectedTask.id === task.id) {
@@ -1207,36 +1280,33 @@
       const bgOverlay = document.getElementById('calmingBgOverlay');
       if (anyTaskActive) {
         bgOverlay.classList.add('active');
-        popTimerCounter++;
-        if (popTimerCounter >= nextSkillPopTime) {
-          triggerRandomSkillPop();
-          popTimerCounter = 0;
-          nextSkillPopTime = Math.floor(Math.random() * 11) + 10;
-        }
       } else {
         bgOverlay.classList.remove('active');
-        popTimerCounter = 0;
+      }
+      const sleepTask = recoveryTasks.find(task => task.id === 'sleep');
+      if (sleepTask && sleepTask.isPlaying) {
+        sleepPopTimerCounter++;
+        if (sleepPopTimerCounter >= 20) {
+          triggerHealthPop();
+          sleepPopTimerCounter = 0;
+        }
+      } else {
+        sleepPopTimerCounter = 0;
       }
     }, 1000);
 
-    function triggerRandomSkillPop() {
-      const activeTasks = growthTasks.concat(recoveryTasks).filter(t => t.isPlaying);
-      if (activeTasks.length === 0) return;
-
-      const randomTask = activeTasks[Math.floor(Math.random() * activeTasks.length)];
-      if (!randomTask.skills || randomTask.skills.length === 0) return;
-
-      const randomSkill = randomTask.skills[Math.floor(Math.random() * randomTask.skills.length)];
-      const gainAmount = Math.floor(Math.random() * 2) + 1;
+    function triggerHealthPop() {
+      currentHP = Math.min(100, currentHP + 0.02);
+      updateHealthDisplay();
 
       const popEl = document.createElement('div');
       popEl.className = 'skill-pop-particle';
-      popEl.innerText = `+${gainAmount} ${randomSkill.name}`;
+      popEl.innerText = '+.02% HP';
 
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       const popColors = isDark
-        ? ['#00e5ff', '#ff2a70', '#ffb300', '#00ff66', '#e040fb']
-        : ['#007a93', '#b30047', '#b35f00', '#008a3b', '#7300a8'];
+        ? ['#00e5ff', '#00ff66']
+        : ['#007a93', '#008a3b'];
 
       popEl.style.color = popColors[Math.floor(Math.random() * popColors.length)];
 
@@ -1272,6 +1342,7 @@
     function toggleDrawer() {
       document.getElementById('sideDrawer').classList.toggle('open');
       document.getElementById('drawerOverlay').classList.toggle('show');
+      renderCategoryEditor();
     }
 
     function switchMainTab(tab) {
@@ -1293,14 +1364,43 @@
       if (!heroDeckSlots.some(t => t.id === taskId)) {
         heroDeckSlots.push(task);
         currentHP = Math.max(0, currentHP - task.hpCost);
-        document.getElementById('hpPercentageText').innerText = `${currentHP}%`;
-        document.getElementById('hpBarFill').style.width = `${currentHP}%`;
+        updateHealthDisplay();
         showToast(`${task.name} added to deck!`);
       } else {
         showToast(`${task.name} is already in the deck!`);
       }
       renderHeroSlots();
       updateUI();
+      if (activeSelectedTask && activeSelectedTask.id === taskId) renderModalInteractiveBody(false);
+    }
+
+    function renderCategoryEditor() {
+      const editor = document.getElementById('categoryEditorList');
+      if (!editor) return;
+      editor.innerHTML = '';
+      Object.entries(GROWTH_CATEGORIES).forEach(([key, category]) => {
+        const row = document.createElement('div');
+        row.className = 'category-editor-row';
+        const input = document.createElement('input');
+        input.id = `category-input-${key}`;
+        input.value = category.name;
+        input.setAttribute('aria-label', `Edit ${category.name} category`);
+        const saveButton = document.createElement('button');
+        saveButton.innerText = 'SAVE';
+        saveButton.onclick = () => saveCategoryName(key);
+        row.append(input, saveButton);
+        editor.appendChild(row);
+      });
+    }
+
+    function saveCategoryName(categoryKey) {
+      const input = document.getElementById(`category-input-${categoryKey}`);
+      const nextName = input ? input.value.trim() : '';
+      if (!nextName || !GROWTH_CATEGORIES[categoryKey]) return;
+      GROWTH_CATEGORIES[categoryKey].name = nextName;
+      updateUI();
+      renderCategoryEditor();
+      showToast(`${nextName} category updated.`);
     }
 
     function removeFromPlayDeck(index, event) {
@@ -1323,7 +1423,7 @@
         if (i < heroDeckSlots.length) {
           const task = heroDeckSlots[i];
           const color = task.customColor || GROWTH_CATEGORIES[task.category]?.color;
-          const jpTag = GROWTH_CATEGORIES[task.category]?.jp || '能力';
+           const categoryTag = GROWTH_CATEGORIES[task.category]?.name.toUpperCase() || 'ACTIVITY';
           const activeClass = task.isPlaying ? 'is-active-running' : '';
 
           slotWrapper.innerHTML = `
@@ -1333,7 +1433,7 @@
                 <span class="trading-card-hp-tag">-${task.hpCost} HP</span>
               </div>
               <div class="trading-card-halftone">
-                <span class="trading-card-jp-tag">${jpTag}</span>
+                <span class="trading-card-category-tag">${categoryTag}</span>
                 <div class="trading-card-icon">${task.icon}</div>
               </div>
               <div class="trading-card-banner">
@@ -1350,18 +1450,22 @@
     }
 
     function updateUI() {
+      const topBarDate = document.getElementById('topBarDate');
+      if (topBarDate) topBarDate.innerText = `LOG // ${formatStatsDate(new Date())}`;
       renderHeroSlots();
 
       Object.keys(GROWTH_CATEGORIES).forEach(cat => {
         const railEl = document.getElementById(`rail${cat.charAt(0).toUpperCase() + cat.slice(1)}`);
         if (!railEl) return;
         railEl.innerHTML = '';
+        const railTitle = document.getElementById(`railTitle${cat.charAt(0).toUpperCase() + cat.slice(1)}`);
+        if (railTitle) railTitle.innerText = GROWTH_CATEGORIES[cat].name;
 
         const catTasks = growthTasks.filter(t => t.category === cat);
 
         catTasks.forEach(task => {
           const color = task.customColor || GROWTH_CATEGORIES[cat].color;
-          const jpTag = GROWTH_CATEGORIES[cat]?.jp || '能力';
+          const categoryTag = GROWTH_CATEGORIES[cat]?.name.toUpperCase() || 'ACTIVITY';
           const wrapper = document.createElement('div');
           wrapper.className = 'trading-card-outer';
           if (task.isPlaying) wrapper.classList.add('is-active-running');
@@ -1373,7 +1477,7 @@
               <span class="trading-card-hp-tag">-${task.hpCost} HP</span>
             </div>
             <div class="trading-card-halftone">
-              <span class="trading-card-jp-tag">${jpTag}</span>
+               <span class="trading-card-category-tag">${categoryTag}</span>
               <div class="trading-card-icon">${task.icon}</div>
             </div>
             <div class="trading-card-banner">
@@ -1408,12 +1512,34 @@
         `;
         recGrid.appendChild(wrapper);
       });
+      const recoveryAddCard = document.createElement('div');
+      recoveryAddCard.className = 'recovery-empty-card';
+      recoveryAddCard.onclick = openNewRecoveryCardModal;
+      recoveryAddCard.innerHTML = '<span>+</span><span style="font-family:var(--font-mono); color:var(--neon-cyan);">NEW CARD</span>';
+      recGrid.appendChild(recoveryAddCard);
+
+      renderCategoryOptions();
+      updateStatsDateLabel();
+    }
+
+    function renderCategoryOptions() {
+      const select = document.getElementById('createFormCategory');
+      if (!select) return;
+      const currentValue = select.value;
+      select.innerHTML = '<option value="">-- Select Category --</option>';
+      Object.entries(GROWTH_CATEGORIES).forEach(([key, category]) => {
+        const option = document.createElement('option');
+        option.value = key;
+        option.innerText = category.name;
+        select.appendChild(option);
+      });
+      select.value = currentValue;
     }
 
     function openCardModal(task, isRecovery = false) {
       activeSelectedTask = task;
       const cardColor = isRecovery ? 'var(--color-recovery)' : (task.customColor || GROWTH_CATEGORIES[task.category]?.color);
-      const categoryJp = isRecovery ? '回復 // RECOVERY' : `${GROWTH_CATEGORIES[task.category]?.jp} // ${GROWTH_CATEGORIES[task.category]?.name.toUpperCase()}`;
+      const categoryLabel = isRecovery ? 'RECOVERY' : (GROWTH_CATEGORIES[task.category]?.name.toUpperCase() || 'ACTIVITY');
 
       const tcCard = document.getElementById('tcModalCard');
       tcCard.style.setProperty('--modal-color', cardColor);
@@ -1423,7 +1549,7 @@
 
       document.getElementById('modalIcon').innerText = task.icon;
       document.getElementById('modalTitle').innerText = task.name;
-      document.getElementById('modalJpCategory').innerText = categoryJp;
+      document.getElementById('modalCategory').innerText = categoryLabel;
       document.getElementById('modalHpBadge').innerText = task.hpCost > 0 ? `-${task.hpCost} HP` : `+${Math.abs(task.hpCost)} HP`;
 
       const skillsContainer = document.getElementById('modalSkillsContainer');
@@ -1473,16 +1599,16 @@
       }
 
       const isEquippedInDeck = heroDeckSlots.some(t => t.id === task.id);
-      if (!isEquippedInDeck && !isRecovery) {
-        heroDeckSlots.push(task);
-        renderHeroSlots();
-      }
 
       const timerDisplay = `<div class="timer-display-modal" id="modalTimerDisplay">${formatTime(task.secondsLogged)}</div>`;
 
       let mainButtonArea = '';
       if (!task.isPlaying) {
-        mainButtonArea = `<button class="btn-action-primary-compact" onclick="activateTaskTimer('${task.id}')">${task.secondsLogged > 0 ? 'RESUME' : 'START'}</button>`;
+        if (!isRecovery && !isEquippedInDeck) {
+          mainButtonArea = `<button class="btn-action-primary-compact" onclick="addToPlayDeck('${task.id}', event)">ADD TO DECK</button>`;
+        } else {
+          mainButtonArea = `<button class="btn-action-primary-compact" onclick="activateTaskTimer('${task.id}')">${task.secondsLogged > 0 ? 'RESUME' : 'START'}</button>`;
+        }
       } else {
         mainButtonArea = `
           <div class="btn-dual-group-compact">
@@ -1532,9 +1658,12 @@
       const task = growthTasks.concat(recoveryTasks).find(t => t.id === taskId);
       if (task) {
         task.isPlaying = false;
+        heroDeckSlots = heroDeckSlots.filter(deckTask => deckTask.id !== taskId);
         document.getElementById('tcModalCard').classList.remove('card-active-glow');
-        renderModalInteractiveBody(recoveryTasks.some(r => r.id === taskId));
+        closeCardModal(null, true);
         renderHeroSlots();
+        updateUI();
+        showToast(`${task.name} stopped and removed from the deck.`);
       }
     }
 
@@ -1567,6 +1696,7 @@
 
     function openNewCardModal(defaultCat = '') {
       activeSelectedTask = null;
+      creatingRecoveryCard = false;
       selectedStarRating1 = 0;
       selectedStarRating2 = 0;
 
@@ -1574,6 +1704,7 @@
       document.getElementById('createFormIcon').value = '';
       document.getElementById('createFormHpCost').value = '';
       document.getElementById('createFormCategory').value = defaultCat || '';
+      document.getElementById('createCategoryField').style.display = 'flex';
       document.getElementById('createFormSkill1').value = '';
       document.getElementById('createFormSkill2').value = '';
 
@@ -1585,14 +1716,35 @@
       document.getElementById('cardFormModal').classList.add('active');
     }
 
+    function openNewRecoveryCardModal() {
+      activeSelectedTask = null;
+      creatingRecoveryCard = true;
+      selectedStarRating1 = 0;
+      selectedStarRating2 = 0;
+      document.getElementById('createFormName').value = '';
+      document.getElementById('createFormIcon').value = '';
+      document.getElementById('createFormHpCost').value = '2';
+      document.getElementById('createFormCategory').value = '';
+      document.getElementById('createFormSkill1').value = '';
+      document.getElementById('createFormSkill2').value = '';
+      document.getElementById('starSelector1').innerText = '☆☆☆☆☆';
+      document.getElementById('starSelector2').innerText = '☆☆☆☆☆';
+      document.getElementById('createCategoryField').style.display = 'none';
+      document.getElementById('createFormCategoryTag').innerText = 'RECOVERY';
+      validateCreateCardForm();
+      document.getElementById('cardFormModal').classList.add('active');
+    }
+
     function openEditCardModal() {
       if (!activeSelectedTask) return;
       const t = activeSelectedTask;
+      creatingRecoveryCard = false;
 
       document.getElementById('createFormName').value = t.name;
       document.getElementById('createFormIcon').value = t.icon;
       document.getElementById('createFormHpCost').value = t.hpCost.toString();
       document.getElementById('createFormCategory').value = t.category;
+      document.getElementById('createCategoryField').style.display = 'flex';
 
       if (t.skills && t.skills.length >= 2) {
         document.getElementById('createFormSkill1').value = t.skills[0].name;
@@ -1613,14 +1765,14 @@
     function onCategorySelectChange() {
       const catVal = document.getElementById('createFormCategory').value;
       const formCard = document.getElementById('createFormTradingCard');
-      const jpTagEl = document.getElementById('createFormJpTag');
+      const categoryTagEl = document.getElementById('createFormCategoryTag');
 
       if (catVal && GROWTH_CATEGORIES[catVal]) {
         formCard.style.setProperty('--modal-color', GROWTH_CATEGORIES[catVal].color);
-        jpTagEl.innerText = `${GROWTH_CATEGORIES[catVal].jp} // ${GROWTH_CATEGORIES[catVal].name.toUpperCase()}`;
+        categoryTagEl.innerText = GROWTH_CATEGORIES[catVal].name.toUpperCase();
       } else {
         formCard.style.setProperty('--modal-color', '#888888');
-        jpTagEl.innerText = 'SELECT CATEGORY';
+        categoryTagEl.innerText = creatingRecoveryCard ? 'RECOVERY' : 'SELECT CATEGORY';
       }
       validateCreateCardForm();
     }
@@ -1655,7 +1807,9 @@
       const sk1 = document.getElementById('createFormSkill1').value;
       const sk2 = document.getElementById('createFormSkill2').value;
 
-      const isComplete = name && icon && hp && cat && sk1 && sk2 && selectedStarRating1 > 0 && selectedStarRating2 > 0;
+      const isComplete = creatingRecoveryCard
+        ? Boolean(name && icon)
+        : Boolean(name && icon && hp && cat && sk1 && sk2 && selectedStarRating1 > 0 && selectedStarRating2 > 0);
       document.getElementById('btnSaveCard').disabled = !isComplete;
     }
 
@@ -1678,6 +1832,18 @@
           { name: skill2Name, stars: selectedStarRating2 }
         ];
         showToast(`${name} updated!`);
+      } else if (creatingRecoveryCard) {
+        recoveryTasks.push({
+          id: 'recovery-custom-' + Date.now(),
+          name,
+          icon,
+          type: 'timer',
+          secondsLogged: 0,
+          isPlaying: false,
+          hpCost: -5,
+          skills: []
+        });
+        showToast(`${name} recovery card created!`);
       } else {
         const newCard = {
           id: 'custom-' + Date.now(),
@@ -1698,6 +1864,7 @@
       }
 
       closeFormModal(null, true);
+      creatingRecoveryCard = false;
       updateUI();
     }
 
@@ -1725,16 +1892,84 @@
       return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     }
 
+    function updateStatsDateLabel() {
+      const label = document.getElementById('statsDateLabel');
+      if (label) label.innerText = `LOG // ${formatStatsDate(statsDate)}`;
+    }
+
+    function shiftStatsDate(days) {
+      statsDate.setDate(statsDate.getDate() + days);
+      renderTimelineStats();
+    }
+
     function renderTimelineStats() {
       const list = document.getElementById('timelineList');
       list.innerHTML = '';
-      growthTasks.forEach(t => {
-        if (t.secondsLogged > 0) {
-          const item = document.createElement('div');
-          item.className = 'timeline-item';
-          item.innerHTML = `<div><div style="font-family:var(--font-mono);">${t.icon} ${t.name}</div></div><div style="font-family:var(--font-mono); color:var(--neon-cyan); font-weight:700;">${(t.secondsLogged / 3600).toFixed(2)}h</div>`;
-          list.appendChild(item);
-        }
+      updateStatsDateLabel();
+      const dateLog = activityHistory[getDateKey(statsDate)] || {};
+      const entries = Object.values(dateLog).sort((a, b) => b.seconds - a.seconds);
+      renderStatsCharts(entries);
+
+      if (entries.length === 0) {
+        list.innerHTML = '<div class="stats-empty">No tracked activities for this day.</div>';
+        return;
+      }
+
+      const maxSeconds = entries[0].seconds || 1;
+      entries.forEach(entry => {
+        const item = document.createElement('div');
+        item.className = 'timeline-item';
+        const color = entry.color || GROWTH_CATEGORIES[entry.category]?.color || 'var(--neon-cyan)';
+        item.innerHTML = `
+          <div style="display:flex; align-items:center; min-width:0; flex:1;">
+            <span style="font-size:1.15rem;">${entry.icon}</span>
+            <span style="font-family:var(--font-mono); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-left:8px;">${entry.name}</span>
+            <span class="stats-bar-track"><span class="stats-bar-fill" style="width:${(entry.seconds / maxSeconds) * 100}%; background:${color};"></span></span>
+          </div>
+          <div style="font-family:var(--font-mono); color:var(--neon-cyan); font-weight:700; white-space:nowrap;">${(entry.seconds / 3600).toFixed(2)}h</div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function renderStatsCharts(entries) {
+      if (typeof Chart === 'undefined') return;
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const textColor = isDark ? '#f0f2fe' : '#0d0926';
+      const palette = ['#00b4d8', '#d6005f', '#7b2cbf', '#e08a00', '#008a3b', '#b30059', '#5200b3'];
+      const activityCanvas = document.getElementById('activityPieChart');
+      const categoryCanvas = document.getElementById('categoryPieChart');
+      if (!activityCanvas || !categoryCanvas) return;
+
+      if (activityPieChartInstance) activityPieChartInstance.destroy();
+      if (categoryPieChartInstance) categoryPieChartInstance.destroy();
+
+      const getClockData = bucket => {
+        const clockEntries = entries.filter(entry => entry[bucket] > 0);
+        return clockEntries.length
+          ? { labels: clockEntries.map(entry => entry.name), values: clockEntries.map(entry => entry[bucket]) }
+          : { labels: ['No tracked time'], values: [1] };
+      };
+      const amData = getClockData('amSeconds');
+      const pmData = getClockData('pmSeconds');
+      const hasAmData = entries.some(entry => entry.amSeconds > 0);
+      const hasPmData = entries.some(entry => entry.pmSeconds > 0);
+
+      const baseOptions = {
+        responsive: true,
+        animation: { duration: 450 },
+        plugins: { legend: { display: false } },
+        cutout: '62%'
+      };
+      activityPieChartInstance = new Chart(activityCanvas.getContext('2d'), {
+        type: 'doughnut',
+        data: { labels: amData.labels, datasets: [{ data: amData.values, backgroundColor: hasAmData ? palette : ['rgba(128,128,150,0.35)'], borderWidth: 1 }] },
+        options: { ...baseOptions, plugins: { legend: { position: 'bottom', labels: { color: textColor, boxWidth: 10, font: { size: 9 } } } } }
+      });
+      categoryPieChartInstance = new Chart(categoryCanvas.getContext('2d'), {
+        type: 'doughnut',
+        data: { labels: pmData.labels, datasets: [{ data: pmData.values, backgroundColor: hasPmData ? palette.slice().reverse() : ['rgba(128,128,150,0.35)'], borderWidth: 1 }] },
+        options: { ...baseOptions, plugins: { legend: { position: 'bottom', labels: { color: textColor, boxWidth: 10, font: { size: 9 } } } } }
       });
     }
 
@@ -2051,7 +2286,7 @@
       const sortedActivities = [...growthTasks].sort((a, b) => b.secondsLogged - a.secondsLogged).slice(0, 3);
       sortedActivities.forEach(act => {
         const color = act.customColor || GROWTH_CATEGORIES[act.category]?.color;
-        const jpTag = GROWTH_CATEGORIES[act.category]?.jp || '能力';
+        const categoryTag = GROWTH_CATEGORIES[act.category]?.name.toUpperCase() || 'ACTIVITY';
 
         const cardWrapper = document.createElement('div');
         cardWrapper.className = 'trading-card-outer';
@@ -2063,7 +2298,7 @@
             <span class="trading-card-hp-tag">-${act.hpCost} HP</span>
           </div>
           <div class="trading-card-halftone">
-            <span class="trading-card-jp-tag">${jpTag}</span>
+            <span class="trading-card-category-tag">${categoryTag}</span>
             <div class="trading-card-icon">${act.icon}</div>
           </div>
           <div class="trading-card-banner">
