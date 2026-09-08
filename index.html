@@ -5,11 +5,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Skill Issue</title>
-  
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=Instrument+Serif&display=swap" rel="stylesheet">
-  
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
@@ -18,59 +18,64 @@
       --card-border: rgba(0, 180, 216, 0.25);
       --text: #0d0926;
       --text-muted: #5a577d;
-      
+
       --font-serif: 'Instrument Serif', serif;
       --font-mono: 'Geist Mono', monospace;
-      
+
       --color-intellect: #008da8;
       --color-creativity: #801072;
       --color-discipline: #b35f00;
       --color-empathy: #c2004d;
 
-      --color-work: #c2004d;     
-      --color-hobbies: #b35f00;  
-      --color-media: #801072;    
-      --color-chores: #007a93;   
-      --color-social: #b30059;   
-      --color-other: #5200b3;    
-      --color-recovery: #008da8; 
-      
+      --color-work: #c2004d;
+      --color-hobbies: #b35f00;
+      --color-media: #801072;
+      --color-chores: #007a93;
+      --color-social: #b30059;
+      --color-other: #5200b3;
+      --color-recovery: #008da8;
+
       --nav-pink: #c20060;
       --nav-pink-bg: rgba(230, 0, 115, 0.1);
       --neon-cyan: #008da8;
-      
+
       --glow-intensity: 0 2px 8px rgba(0, 180, 216, 0.12);
       --card-inner-bg: rgba(255, 255, 255, 0.95);
-      
+
       --bg-gradient-1: rgba(112, 0, 255, 0.04);
       --bg-gradient-2: rgba(255, 0, 127, 0.04);
       --bg-grid: rgba(0, 180, 216, 0.05);
 
       --folder-tab-bg: rgba(0, 141, 168, 0.12);
       --folder-border: rgba(0, 141, 168, 0.4);
+
+      /* Brand doodle palette */
+      --swatch-cyan: #00b4d8;
+      --swatch-amber: #e08a00;
+      --swatch-magenta: #d6005f;
+      --swatch-violet: #7b2cbf;
     }
 
-    /* Soft, textured dark mode background */
     [data-theme="dark"] {
       --bg: #181623;
       --card-bg: #232035;
       --card-border: rgba(0, 240, 255, 0.25);
       --text: #f0f2fe;
       --text-muted: #a0a3cd;
-      
+
       --color-intellect: #00e5ff;
       --color-creativity: #e040fb;
       --color-discipline: #ffb300;
       --color-empathy: #ff2a70;
 
-      --color-work: #ff2a70;     
-      --color-hobbies: #ffb300;  
-      --color-media: #e040fb;    
-      --color-chores: #00e5ff;   
-      --color-social: #ff40a0;   
-      --color-other: #9d4edd;    
-      --color-recovery: #00e5ff; 
-      
+      --color-work: #ff2a70;
+      --color-hobbies: #ffb300;
+      --color-media: #e040fb;
+      --color-chores: #00e5ff;
+      --color-social: #ff40a0;
+      --color-other: #9d4edd;
+      --color-recovery: #00e5ff;
+
       --nav-pink: #ff007f;
       --nav-pink-bg: rgba(255, 0, 127, 0.18);
       --neon-cyan: #00e5ff;
@@ -83,17 +88,25 @@
 
       --folder-tab-bg: rgba(0, 229, 255, 0.15);
       --folder-border: rgba(0, 229, 255, 0.35);
+
+      --swatch-cyan: #00e5ff;
+      --swatch-amber: #ffb300;
+      --swatch-magenta: #ff2a70;
+      --swatch-violet: #9d4edd;
     }
 
+    /* PROBLEM 1: bump the root scale so every rem-based size in the app grows together */
+    html { font-size: 19px; }
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-mono); }
-    
+
     body {
       background-color: var(--bg);
       color: var(--text);
       display: flex;
       justify-content: center;
       min-height: 100vh;
-      background-image: 
+      background-image:
         radial-gradient(circle at 50% 0%, var(--bg-gradient-1), transparent 60%),
         radial-gradient(circle at 85% 90%, var(--bg-gradient-2), transparent 50%),
         linear-gradient(var(--bg-grid) 1px, transparent 1px),
@@ -107,26 +120,20 @@
 
     .app-container {
       width: 100%;
-      max-width: 480px;
-      padding: 12px 14px 100px 14px;
+      max-width: 540px;
+      padding: 18px 16px 120px 16px;
       display: flex;
       flex-direction: column;
       position: relative;
     }
 
     @media (min-width: 768px) {
-      .app-container {
-        max-width: 720px;
-        padding-bottom: 110px;
-      }
-      .matrix-grid {
-        grid-template-columns: repeat(4, 1fr) !important;
-      }
+      .app-container { max-width: 780px; padding-bottom: 130px; }
+      .matrix-grid { grid-template-columns: repeat(4, 1fr) !important; }
+      html { font-size: 20px; }
     }
 
-    .calming-bg-overlay {
-      position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0; transition: opacity 1s ease;
-    }
+    .calming-bg-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0; transition: opacity 1s ease; }
     .calming-bg-overlay.active { opacity: 1; }
     .calming-orb { position: absolute; border-radius: 50%; filter: blur(50px); animation: floatMotion 12s infinite ease-in-out alternate; }
     .calming-orb-1 { width: 260px; height: 260px; background: rgba(0, 240, 255, 0.12); top: 10%; left: -10%; }
@@ -139,12 +146,8 @@
     }
 
     .skill-pop-particle {
-      position: fixed;
-      pointer-events: none;
-      z-index: 300;
-      font-family: var(--font-mono);
-      font-size: 0.95rem;
-      font-weight: 800;
+      position: fixed; pointer-events: none; z-index: 300;
+      font-family: var(--font-mono); font-size: 1.1rem; font-weight: 800;
       text-shadow: none;
       animation: floatUpAndFade 4s forwards ease-out;
     }
@@ -158,76 +161,76 @@
 
     .top-bar-clean {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--neon-cyan);
+      margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--neon-cyan);
       position: relative; z-index: 2;
     }
-    
-    .hamburger-btn-minimal { background: transparent; border: none; color: var(--neon-cyan); font-size: 1.3rem; cursor: pointer; }
-    .theme-toggle-btn { background: var(--card-bg); border: 1px solid var(--neon-cyan); color: var(--text); padding: 4px 10px; border-radius: 12px; font-size: 0.65rem; font-weight: 700; cursor: pointer; }
-    .top-bar-date { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; color: var(--neon-cyan); letter-spacing: 1.5px; text-transform: uppercase; }
+
+    .hamburger-btn-minimal { background: transparent; border: none; color: var(--neon-cyan); font-size: 1.6rem; cursor: pointer; }
+    .theme-toggle-btn { background: var(--card-bg); border: 1px solid var(--neon-cyan); color: var(--text); padding: 7px 14px; border-radius: 14px; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
+    .top-bar-date { font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700; color: var(--neon-cyan); letter-spacing: 1.5px; text-transform: uppercase; }
 
     .drawer {
-      position: fixed; top: 0; left: -100%; width: 280px; height: 100%;
+      position: fixed; top: 0; left: -100%; width: 300px; height: 100%;
       background: var(--bg); border-right: 1px solid var(--neon-cyan);
-      box-shadow: 5px 0 20px rgba(0, 0, 0, 0.2); z-index: 100; padding: 24px;
-      transition: left 0.25s ease-out; display: flex; flex-direction: column; gap: 16px;
+      box-shadow: 5px 0 20px rgba(0, 0, 0, 0.2); z-index: 100; padding: 28px;
+      transition: left 0.25s ease-out; display: flex; flex-direction: column; gap: 18px;
     }
     .drawer.open { left: 0; }
     .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 99; display: none; }
     .drawer-overlay.show { display: block; }
 
     .toast-notification {
-      position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+      position: fixed; top: 24px; left: 50%; transform: translateX(-50%) translateY(-100px);
       background: var(--card-inner-bg); border: 2px solid var(--neon-cyan); color: var(--text);
-      padding: 10px 18px; border-radius: 20px; font-size: 0.78rem; font-weight: 700;
+      padding: 13px 22px; border-radius: 22px; font-size: 0.9rem; font-weight: 700;
       box-shadow: 0 4px 15px rgba(0,0,0,0.25); z-index: 400; opacity: 0;
       transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
       pointer-events: none; text-align: center; max-width: 90%;
     }
     .toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-    .view { display: none; flex-direction: column; gap: 16px; position: relative; z-index: 2; }
+    .view { display: none; flex-direction: column; gap: 20px; position: relative; z-index: 2; }
     .view.active { display: flex; }
 
     .hero-deck-section {
       background: var(--card-bg); border: 1px solid var(--neon-cyan); box-shadow: var(--glow-intensity);
-      border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 10px; position: relative;
+      border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 12px; position: relative;
     }
     .hero-deck-section::before {
-      content: 'DECK // ACTIVE'; position: absolute; top: -8px; right: 14px;
-      font-size: 0.55rem; background: var(--bg); color: var(--neon-cyan);
-      padding: 0 6px; border: 1px solid var(--neon-cyan); letter-spacing: 1px;
+      content: 'DECK // ACTIVE'; position: absolute; top: -10px; right: 16px;
+      font-size: 0.65rem; background: var(--bg); color: var(--neon-cyan);
+      padding: 0 8px; border: 1px solid var(--neon-cyan); letter-spacing: 1px;
     }
 
-    .hero-deck-header { font-family: var(--font-serif); font-size: 1.3rem; color: var(--text); display: flex; align-items: center; gap: 6px; }
-    .hero-slots-scroll { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; padding: 6px 2px; }
+    .hero-deck-header { font-family: var(--font-serif); font-size: 1.6rem; color: var(--text); display: flex; align-items: center; gap: 8px; }
+    .hero-slots-scroll { display: flex; gap: 14px; overflow-x: auto; scrollbar-width: none; padding: 8px 3px; }
     .hero-slots-scroll::-webkit-scrollbar { display: none; }
 
-    .deck-slot-wrapper { min-width: 124px; max-width: 124px; height: 188px; flex-shrink: 0; position: relative; }
+    .deck-slot-wrapper { min-width: 165px; max-width: 165px; height: 250px; flex-shrink: 0; position: relative; }
     .deck-slot-empty {
-      width: 100%; height: 100%; border: 1px dashed var(--neon-cyan); border-radius: 12px;
+      width: 100%; height: 100%; border: 1px dashed var(--neon-cyan); border-radius: 14px;
       display: flex; align-items: center; justify-content: center; background: rgba(0, 240, 255, 0.02);
-      color: var(--neon-cyan); font-size: 1.2rem; font-weight: 700; opacity: 0.7;
+      color: var(--neon-cyan); font-size: 1.4rem; font-weight: 700; opacity: 0.7;
     }
 
-    .rail-section { display: flex; flex-direction: column; gap: 8px; }
-    .rail-header { font-family: var(--font-serif); font-size: 1.25rem; color: var(--neon-cyan); letter-spacing: 0.5px; }
-    .rail-container { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
+    .rail-section { display: flex; flex-direction: column; gap: 10px; }
+    .rail-header { font-family: var(--font-serif); font-size: 1.45rem; color: var(--neon-cyan); letter-spacing: 0.5px; }
+    .rail-container { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
     .rail-container::-webkit-scrollbar { display: none; }
 
     .trading-card-outer {
-      min-width: 124px; max-width: 124px; height: 188px; position: relative; border-radius: 12px;
+      min-width: 165px; max-width: 165px; height: 250px; position: relative; border-radius: 14px;
       flex-shrink: 0; cursor: pointer; background: var(--card-inner-bg);
       border: 2px solid var(--card-color, var(--neon-cyan));
       box-shadow: 0 4px 10px rgba(0,0,0,0.1), inset 0 0 6px var(--card-color, var(--neon-cyan));
-      overflow: hidden; display: flex; flex-direction: column; padding: 5px;
+      overflow: hidden; display: flex; flex-direction: column; padding: 8px;
       transition: transform 0.15s ease, box-shadow 0.3s ease;
     }
     .trading-card-outer:hover { transform: translateY(-2px); }
 
     .trading-card-outer.is-active-running {
       border-color: transparent;
-      background-image: linear-gradient(var(--card-inner-bg), var(--card-inner-bg)), 
+      background-image: linear-gradient(var(--card-inner-bg), var(--card-inner-bg)),
                         conic-gradient(from var(--border-angle, 0deg), transparent 70%, var(--card-color, var(--neon-cyan)) 100%);
       background-origin: border-box;
       background-clip: padding-box, border-box;
@@ -243,111 +246,118 @@
     .trading-card-outer::before {
       content: ''; position: absolute; inset: 2px;
       border: 1px solid var(--card-color, var(--neon-cyan));
-      border-radius: 9px; pointer-events: none; opacity: 0.5; z-index: 3;
+      border-radius: 11px; pointer-events: none; opacity: 0.5; z-index: 3;
     }
 
-    .trading-card-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 1px 4px 3px 4px; z-index: 4; }
-    .trading-card-hp-tag { font-size: 0.55rem; font-weight: 700; color: var(--card-color, var(--neon-cyan)); }
+    .trading-card-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 2px 5px 4px 5px; z-index: 4; }
+    .trading-card-hp-tag { font-size: 0.72rem; font-weight: 700; color: var(--card-color, var(--neon-cyan)); }
 
     .trading-card-halftone {
       width: 100%; height: 48%; position: relative; display: flex; align-items: center; justify-content: center;
-      border-radius: 6px; overflow: hidden; background: rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.08);
     }
     .trading-card-halftone::before {
       content: ''; position: absolute; inset: 0;
       background-image: radial-gradient(var(--card-color, var(--neon-cyan)) 0.75px, transparent 0.75px);
       background-size: 4px 4px; opacity: 0.18;
+      pointer-events: none;
     }
 
-    .trading-card-icon { font-size: 2.2rem; z-index: 2; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); }
+    .trading-card-icon { font-size: 2.9rem; z-index: 2; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); }
 
     .trading-card-banner {
       width: 100%; flex: 1; background: var(--card-bg);
-      border-top: 1px solid var(--card-color, var(--neon-cyan)); border-radius: 0 0 6px 6px;
+      border-top: 1px solid var(--card-color, var(--neon-cyan)); border-radius: 0 0 8px 8px;
       display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-      padding: 4px 2px; position: relative; z-index: 2; margin-top: 3px;
+      padding: 6px 3px; position: relative; z-index: 2; margin-top: 4px;
     }
 
     .trading-card-name {
-      font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+      font-family: var(--font-mono); font-size: 0.9rem; font-weight: 700;
       color: var(--text); text-transform: uppercase; text-align: center;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; letter-spacing: 0.3px;
     }
 
-    .trading-card-timer-hero { font-family: var(--font-mono); font-size: 0.85rem; color: var(--neon-cyan); font-weight: 700; letter-spacing: 0.5px; }
+    .trading-card-timer-hero { font-family: var(--font-mono); font-size: 1rem; color: var(--neon-cyan); font-weight: 700; letter-spacing: 0.5px; }
 
     .trading-card-circle-btn-lg {
-      width: 36px; height: 36px; border-radius: 50%;
+      width: 44px; height: 44px; border-radius: 50%;
       background: var(--card-color, var(--neon-cyan)); border: 2px solid #ffffff; color: #ffffff;
-      font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; justify-content: center;
       cursor: pointer; outline: none; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: transform 0.1s ease; margin-bottom: 2px;
     }
     .trading-card-circle-btn-lg:active { transform: scale(0.92); }
 
-    .trading-card-jp-tag { position: absolute; top: 3px; left: 4px; font-size: 0.45rem; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px; }
+    .trading-card-jp-tag { position: absolute; top: 4px; left: 5px; font-size: 0.55rem; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px; }
 
     .empty-add-card {
-      min-width: 124px; height: 188px; border: 1px dashed var(--neon-cyan); border-radius: 12px;
+      min-width: 165px; height: 250px; border: 1px dashed var(--neon-cyan); border-radius: 14px;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      cursor: pointer; flex-shrink: 0; color: var(--text-muted); background: rgba(0, 240, 255, 0.02); gap: 4px;
+      cursor: pointer; flex-shrink: 0; color: var(--text-muted); background: rgba(0, 240, 255, 0.02); gap: 6px;
     }
+    .empty-add-card span:first-child { font-size: 1.8rem; }
+    .empty-add-card span:last-child { font-size: 0.75rem; }
 
-    .hp-container { background: var(--card-bg); border: 1px solid var(--neon-cyan); box-shadow: var(--glow-intensity); border-radius: 14px; padding: 14px; margin-bottom: 6px; }
-    .hp-header { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-serif); font-size: 1.2rem; margin-bottom: 8px; }
-    .hp-bar-bg { width: 100%; height: 14px; background: rgba(0, 0, 0, 0.1); border-radius: 8px; overflow: hidden; border: 1px solid var(--neon-cyan); position: relative; }
-    .hp-bar-fill { height: 100%; width: 100%; background: var(--color-recovery); border-radius: 7px; transition: width 0.3s ease; }
+    .hp-container { background: var(--card-bg); border: 1px solid var(--neon-cyan); box-shadow: var(--glow-intensity); border-radius: 16px; padding: 18px; margin-bottom: 6px; }
+    .hp-header { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-serif); font-size: 1.4rem; margin-bottom: 10px; }
+    .hp-bar-bg { width: 100%; height: 18px; background: rgba(0, 0, 0, 0.1); border-radius: 10px; overflow: hidden; border: 1px solid var(--neon-cyan); position: relative; }
+    .hp-bar-fill { height: 100%; width: 100%; background: var(--color-recovery); border-radius: 9px; transition: width 0.3s ease; }
 
-    .matrix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .matrix-card-wrapper { border-radius: 14px; cursor: pointer; }
+    .matrix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .matrix-card-wrapper { border-radius: 16px; cursor: pointer; }
     .matrix-card {
       background: var(--card-bg); border: 1px solid var(--neon-cyan); box-shadow: var(--glow-intensity);
-      border-radius: 14px; padding: 16px 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 130px;
+      border-radius: 16px; padding: 20px 12px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 165px;
     }
+    .matrix-card > div:first-child { font-size: 2.3rem; }
+    .matrix-card > div:nth-child(2) { font-size: 1.25rem; }
+    .matrix-card > div:nth-child(3) { font-size: 0.85rem; }
 
-    .tumbler-container { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 14px 0; }
-    .tumbler-item { width: 40px; height: 64px; border: 1px solid var(--neon-cyan); border-radius: 4px 4px 10px 10px; position: relative; overflow: hidden; cursor: pointer; background: rgba(0,240,255,0.03); }
+    .tumbler-container { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 18px 0; }
+    .tumbler-item { width: 50px; height: 80px; border: 1px solid var(--neon-cyan); border-radius: 5px 5px 12px 12px; position: relative; overflow: hidden; cursor: pointer; background: rgba(0,240,255,0.03); }
     .tumbler-fill { position: absolute; bottom: 0; left: 0; right: 0; background: var(--color-recovery); }
 
-    .date-picker-bar { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 10px 14px; border: 1px solid var(--neon-cyan); border-radius: 12px; font-family: var(--font-mono); font-size: 0.78rem; }
-    .timeline-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-    .timeline-item { background: var(--card-bg); border: 1px solid var(--neon-cyan); border-left: 3px solid var(--nav-pink); padding: 12px 14px; border-radius: 0 12px 12px 0; display: flex; justify-content: space-between; align-items: center; }
+    .date-picker-bar { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 13px 18px; border: 1px solid var(--neon-cyan); border-radius: 14px; font-family: var(--font-mono); font-size: 0.92rem; }
+    .date-picker-bar button { font-size: 1.2rem; }
+    .timeline-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+    .timeline-item { background: var(--card-bg); border: 1px solid var(--neon-cyan); border-left: 3px solid var(--nav-pink); padding: 15px 18px; border-radius: 0 14px 14px 0; display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; }
 
     .profile-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       box-shadow: var(--glow-intensity);
-      padding: 24px 16px 18px 16px;
-      border-radius: 18px;
+      padding: 30px 18px 22px 18px;
+      border-radius: 20px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 24px;
       position: relative;
     }
 
     .scrapbook-tape {
       position: absolute;
-      width: 70px;
-      height: 20px;
+      width: 82px;
+      height: 24px;
       background: rgba(255, 255, 255, 0.45);
       border: 1px dashed rgba(0, 0, 0, 0.15);
       backdrop-filter: blur(2px);
       z-index: 10;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
     }
-    .tape-top-left { top: -8px; left: 20px; transform: rotate(-5deg); }
-    .tape-top-right { top: -8px; right: 20px; transform: rotate(6deg); }
-    .tape-bottom-right { bottom: 10px; right: -10px; transform: rotate(-12deg); }
+    .tape-top-left { top: -10px; left: 22px; transform: rotate(-5deg); }
+    .tape-top-right { top: -10px; right: 22px; transform: rotate(6deg); }
+    .tape-bottom-right { bottom: 12px; right: -12px; transform: rotate(-12deg); }
 
     .scrapbook-sticker {
       position: absolute;
-      top: -12px;
-      right: 15px;
+      top: -14px;
+      right: 16px;
       background: #ff0055;
       color: #fff;
-      font-size: 0.55rem;
+      font-size: 0.65rem;
       font-weight: 800;
-      padding: 4px 8px;
-      border-radius: 4px;
+      padding: 5px 10px;
+      border-radius: 5px;
       transform: rotate(8deg);
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
       letter-spacing: 1px;
@@ -357,19 +367,19 @@
 
     .profile-share-btn {
       position: absolute;
-      bottom: 12px;
-      right: 14px;
+      bottom: 14px;
+      right: 16px;
       background: var(--card-bg);
       border: 1px solid var(--neon-cyan);
       color: var(--neon-cyan);
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 0.68rem;
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-size: 0.8rem;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
       transition: transform 0.15s ease;
     }
@@ -377,105 +387,176 @@
 
     .profile-header-social {
       display: flex;
-      align-items: center;
-      gap: 14px;
+      align-items: flex-start;
+      gap: 18px;
       border-bottom: 1px dashed var(--card-border);
-      padding-bottom: 14px;
+      padding-bottom: 20px;
       position: relative;
     }
 
-    .profile-avatar-container { position: relative; }
+    /* PROBLEM 4: large square "2x2 ID photo" avatar, taped in at a skew, pinned with a clip */
+    .profile-avatar-container {
+      position: relative;
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
     .profile-avatar {
-      width: 64px; height: 64px; border-radius: 50%;
-      border: 2px solid var(--neon-cyan);
-      background: linear-gradient(135deg, rgba(0,180,216,0.2), rgba(230,0,115,0.2));
-      display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
-      box-shadow: 0 0 10px rgba(0,240,255,0.2);
-    }
-    .profile-live-badge {
-      position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px;
-      background: #00ff66; border: 2px solid var(--bg); border-radius: 50%;
-    }
-
-    .profile-identity-info { display: flex; flex-direction: column; gap: 2px; }
-    .profile-display-name { font-family: var(--font-serif); font-size: 1.4rem; font-weight: 700; color: var(--text); }
-    .profile-username { font-size: 0.72rem; color: var(--text-muted); }
-    .profile-archetype-tag {
-      font-size: 0.62rem; font-weight: 800; color: var(--neon-cyan);
-      background: rgba(0,240,255,0.08); border: 1px solid var(--neon-cyan);
-      padding: 2px 8px; border-radius: 6px; margin-top: 4px; align-self: flex-start; letter-spacing: 0.5px;
-    }
-
-    .folder-card-wrapper {
+      width: 118px; height: 118px; border-radius: 4px;
+      border: 5px solid #fdfdfd;
+      background: linear-gradient(135deg, rgba(0,180,216,0.25), rgba(230,0,115,0.25));
+      display: flex; align-items: center; justify-content: center; font-size: 3rem;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+      transform: rotate(-4deg);
+      cursor: pointer;
+      background-size: cover;
+      background-position: center;
       position: relative;
-      margin-top: 12px;
+      transition: transform 0.15s ease;
     }
+    .profile-avatar:active { transform: rotate(-4deg) scale(0.96); }
+    .profile-avatar-edit-hint {
+      position: absolute; bottom: -9px; left: 50%; transform: translateX(-50%) rotate(-4deg);
+      background: var(--nav-pink); color: #fff; font-size: 0.55rem; font-weight: 800;
+      padding: 2px 8px; border-radius: 6px; letter-spacing: 0.5px; white-space: nowrap;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    /* the "clip" pinning the photo to the page */
+    .photo-clip {
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-4deg);
+      width: 34px;
+      height: 20px;
+      z-index: 12;
+      pointer-events: none;
+    }
+    .photo-clip::before {
+      content: '';
+      position: absolute;
+      top: 8px; left: 3px; right: 3px;
+      height: 7px;
+      background: linear-gradient(180deg, #e8e8e8, #a8a8a8);
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .photo-clip::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 9px;
+      width: 16px; height: 16px;
+      border: 3px solid #b8b8b8;
+      border-bottom-color: transparent;
+      border-radius: 50%;
+      transform: rotate(20deg);
+    }
+
+    .profile-live-badge {
+      position: absolute; bottom: 0px; right: -2px; width: 18px; height: 18px;
+      background: #00ff66; border: 3px solid var(--bg); border-radius: 50%; z-index: 13;
+    }
+
+    .profile-identity-info { display: flex; flex-direction: column; gap: 4px; padding-top: 6px; }
+    .profile-display-name { font-family: var(--font-serif); font-size: 1.7rem; font-weight: 700; color: var(--text); }
+    .profile-username { font-size: 0.85rem; color: var(--text-muted); }
+    .profile-archetype-tag {
+      font-size: 0.72rem; font-weight: 800; color: var(--neon-cyan);
+      background: rgba(0,240,255,0.08); border: 1px solid var(--neon-cyan);
+      padding: 4px 10px; border-radius: 8px; margin-top: 6px; align-self: flex-start; letter-spacing: 0.5px;
+    }
+
+    .folder-card-wrapper { position: relative; margin-top: 14px; }
     .folder-tab-flap {
       display: inline-block;
       background: var(--folder-tab-bg);
       border: 1px solid var(--folder-border);
       border-bottom: none;
-      border-radius: 8px 8px 0 0;
-      padding: 4px 12px;
-      font-size: 0.65rem;
+      border-radius: 10px 10px 0 0;
+      padding: 6px 14px;
+      font-size: 0.75rem;
       font-weight: 800;
       color: var(--neon-cyan);
       letter-spacing: 0.8px;
       text-transform: uppercase;
       position: absolute;
-      top: -21px;
-      left: 10px;
+      top: -25px;
+      left: 12px;
       z-index: 2;
     }
     .folder-card-body {
       background: var(--card-bg);
       border: 1px solid var(--folder-border);
-      border-radius: 0 10px 10px 10px;
-      padding: 14px 12px;
+      border-radius: 0 12px 12px 12px;
+      padding: 18px 14px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
       position: relative;
     }
 
-    .personality-bar-container { display: flex; flex-direction: column; gap: 6px; }
-    .personality-bar-track { width: 100%; height: 12px; background: rgba(0, 0, 0, 0.1); border-radius: 6px; overflow: hidden; display: flex; }
+    .personality-bar-container { display: flex; flex-direction: column; gap: 8px; }
+    .personality-bar-track { width: 100%; height: 15px; background: rgba(0, 0, 0, 0.1); border-radius: 8px; overflow: hidden; display: flex; }
     .personality-segment { height: 100%; transition: width 0.3s ease; }
-    .personality-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.65rem; font-weight: 600; }
-    .legend-item { display: flex; align-items: center; gap: 4px; }
-    .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .personality-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.78rem; font-weight: 600; }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
 
-    .top-activities-cards-rail {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      scrollbar-width: none;
-    }
+    .top-activities-cards-rail { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
     .top-activities-cards-rail::-webkit-scrollbar { display: none; }
 
-    .privacy-controls-grid { display: flex; flex-direction: column; gap: 6px; font-size: 0.7rem; }
+    /* PROBLEM 3: Friends rail */
+    .friends-rail { display: flex; gap: 16px; overflow-x: auto; padding: 6px 2px; scrollbar-width: none; }
+    .friends-rail::-webkit-scrollbar { display: none; }
+    .friend-chip {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      min-width: 78px; cursor: pointer; flex-shrink: 0;
+    }
+    .friend-chip-avatar {
+      width: 62px; height: 62px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 1.7rem;
+      background: var(--card-inner-bg);
+      border: 2px solid var(--card-color, var(--neon-cyan));
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    }
+    .friend-chip-name { font-size: 0.72rem; font-weight: 700; color: var(--text); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 78px; }
+    .add-friend-btn {
+      background: var(--nav-pink); color: #fff; border: none; border-radius: 10px;
+      padding: 8px 14px; font-size: 0.78rem; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .friend-chip-add {
+      width: 62px; height: 62px; border-radius: 50%; border: 1px dashed var(--neon-cyan);
+      display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--neon-cyan);
+      background: rgba(0,240,255,0.02);
+    }
+    .discover-user-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 10px 4px; border-bottom: 1px dashed var(--card-border);
+    }
+    .discover-user-row:last-child { border-bottom: none; }
+    .discover-user-left { display: flex; align-items: center; gap: 10px; }
+    .discover-user-avatar {
+      width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; background: var(--card-inner-bg); border: 2px solid var(--card-color, var(--neon-cyan));
+    }
+    .discover-user-name { font-size: 0.85rem; font-weight: 700; }
+    .discover-user-sub { font-size: 0.68rem; color: var(--text-muted); }
+    .btn-add-small {
+      background: var(--neon-cyan); color: #fff; border: none; border-radius: 8px;
+      padding: 7px 14px; font-size: 0.72rem; font-weight: 700; cursor: pointer; flex-shrink: 0;
+    }
+    .btn-add-small:disabled { background: var(--text-muted); cursor: default; }
+
+    .privacy-controls-grid { display: flex; flex-direction: column; gap: 10px; font-size: 0.82rem; }
     .privacy-row { display: flex; justify-content: space-between; align-items: center; }
+    .privacy-row input[type="checkbox"] { width: 20px; height: 20px; }
 
     .scroll-top-btn {
-      position: fixed;
-      bottom: 72px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--card-bg);
-      border: 1px solid var(--neon-cyan);
-      color: var(--neon-cyan);
-      font-size: 1rem;
-      font-weight: bold;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      z-index: 60;
+      position: fixed; bottom: 82px; left: 50%; transform: translateX(-50%);
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--card-bg); border: 1px solid var(--neon-cyan); color: var(--neon-cyan);
+      font-size: 1.2rem; font-weight: bold; display: none; align-items: center; justify-content: center;
+      cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 60;
       transition: opacity 0.2s ease, transform 0.2s ease;
     }
     .scroll-top-btn.show { display: flex; }
@@ -489,25 +570,25 @@
     }
     .modal-overlay.active { display: flex; }
 
-    .modal-card-wrapper { width: 100%; max-width: 320px; }
+    .modal-card-wrapper { width: 100%; max-width: 400px; max-height: 92vh; overflow-y: auto; }
 
     .full-trading-card {
       background: var(--card-inner-bg);
       border: 3px solid var(--modal-color, var(--neon-cyan));
-      border-radius: 18px;
-      padding: 14px;
+      border-radius: 20px;
+      padding: 18px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.4);
       position: relative;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 14px;
       transition: border-color 0.3s ease;
     }
 
     .full-trading-card.card-active-glow {
       box-shadow: 0 0 12px var(--modal-color, var(--neon-cyan));
       border-color: transparent;
-      background-image: linear-gradient(var(--card-inner-bg), var(--card-inner-bg)), 
+      background-image: linear-gradient(var(--card-inner-bg), var(--card-inner-bg)),
                         conic-gradient(from var(--border-angle, 0deg), transparent 70%, var(--modal-color, var(--neon-cyan)) 100%);
       background-origin: border-box;
       background-clip: padding-box, border-box;
@@ -516,121 +597,116 @@
 
     .tc-header {
       display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 1px solid var(--modal-color, var(--neon-cyan)); padding-bottom: 6px;
+      border-bottom: 1px solid var(--modal-color, var(--neon-cyan)); padding-bottom: 8px;
+      gap: 10px;
     }
-    .tc-title { font-family: var(--font-serif); font-size: 1.4rem; font-weight: bold; color: var(--text); }
+    .tc-title { font-family: var(--font-serif); font-size: 1.7rem; font-weight: bold; color: var(--text); }
     .tc-hp-badge {
-      font-family: var(--font-mono); font-weight: 700; font-size: 0.75rem;
-      background: var(--modal-color, var(--neon-cyan)); color: #fff; padding: 2px 8px; border-radius: 10px;
+      font-family: var(--font-mono); font-weight: 700; font-size: 0.85rem;
+      background: var(--modal-color, var(--neon-cyan)); color: #fff; padding: 4px 10px; border-radius: 12px;
+      white-space: nowrap;
     }
 
     .tc-art-frame {
-      width: 100%; height: 120px; border: 1px solid var(--modal-color, var(--neon-cyan));
-      border-radius: 10px; position: relative; display: flex; align-items: center;
+      width: 100%; height: 170px; border: 1px solid var(--modal-color, var(--neon-cyan));
+      border-radius: 12px; position: relative; display: flex; align-items: center;
       justify-content: center; overflow: hidden; background: rgba(0, 0, 0, 0.04);
     }
+    /* PROBLEM 2: this decorative dot layer was sitting above the tappable icon field. pointer-events:none lets clicks pass through */
     .tc-art-frame::before {
       content: ''; position: absolute; inset: 0;
       background-image: radial-gradient(var(--modal-color, var(--neon-cyan)) 0.75px, transparent 0.75px);
       background-size: 5px 5px; opacity: 0.15;
+      pointer-events: none;
+      z-index: 1;
     }
-    .tc-art-icon { font-size: 3.5rem; z-index: 2; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); }
-    .tc-jp-sub { position: absolute; top: 6px; left: 8px; font-size: 0.6rem; color: var(--text-muted); font-weight: 700; }
+    .tc-art-icon { font-size: 4.4rem; z-index: 2; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); }
+    .tc-jp-sub { position: absolute; top: 8px; left: 10px; font-size: 0.7rem; color: var(--text-muted); font-weight: 700; z-index: 2; }
 
     .tc-stats-box {
       background: var(--card-bg); border: 1px solid var(--modal-color, var(--neon-cyan));
-      border-radius: 10px; padding: 8px 12px; display: flex; flex-direction: column; gap: 6px;
+      border-radius: 12px; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px;
     }
     .tc-skills-title {
-      font-size: 0.68rem; font-weight: 700; color: var(--neon-cyan); letter-spacing: 0.5px;
-      border-bottom: 1px dashed rgba(0, 240, 255, 0.2); padding-bottom: 3px; text-transform: uppercase;
+      font-size: 0.78rem; font-weight: 700; color: var(--neon-cyan); letter-spacing: 0.5px;
+      border-bottom: 1px dashed rgba(0, 240, 255, 0.2); padding-bottom: 5px; text-transform: uppercase;
     }
-    .tc-stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; font-weight: 600; }
-    .tc-stars-interactive { color: #ffb703; letter-spacing: 2px; font-size: 1.1rem; line-height: 1; cursor: pointer; user-select: none; }
+    .tc-stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 600; }
+    .tc-stars-interactive { color: #ffb703; letter-spacing: 3px; font-size: 1.35rem; line-height: 1; cursor: pointer; user-select: none; }
 
-    .timer-display-modal { font-family: var(--font-mono); font-size: 2rem; font-weight: 700; text-align: center; color: var(--neon-cyan); margin: 2px 0; }
+    .timer-display-modal { font-family: var(--font-mono); font-size: 2.4rem; font-weight: 700; text-align: center; color: var(--neon-cyan); margin: 4px 0; }
 
-    .tc-bottom-action-row {
-      display: flex;
-      gap: 8px;
-      width: 100%;
-      align-items: center;
-      margin-top: 4px;
-    }
+    .tc-bottom-action-row { display: flex; gap: 10px; width: 100%; align-items: center; margin-top: 4px; }
 
     .btn-square-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      color: var(--text);
-      font-size: 1.1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      flex-shrink: 0;
-      transition: background 0.2s, border-color 0.2s;
+      width: 50px; height: 50px; border-radius: 12px;
+      background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text);
+      font-size: 1.35rem; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; transition: background 0.2s, border-color 0.2s;
     }
     .btn-square-icon:hover { border-color: var(--neon-cyan); }
     .btn-square-icon.danger { color: #ff0055; }
     .btn-square-icon.danger:hover { border-color: #ff0055; background: rgba(255, 0, 85, 0.1); }
+    .btn-square-icon.selected-tool { border-color: var(--neon-cyan); background: var(--nav-pink-bg); }
 
     .btn-action-primary-compact {
-      flex: 1;
-      height: 40px;
-      background: var(--nav-pink);
-      border: none;
-      border-radius: 10px;
-      color: #fff;
-      font-family: var(--font-mono);
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 0.8rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 6px;
-      white-space: nowrap;
+      flex: 1; height: 50px; background: var(--nav-pink); border: none; border-radius: 12px;
+      color: #fff; font-family: var(--font-mono); font-weight: 700; cursor: pointer; font-size: 0.92rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;
+      padding: 0 8px; white-space: nowrap;
     }
     .btn-action-primary-compact:disabled { background: #7a7a8c; cursor: not-allowed; opacity: 0.6; box-shadow: none; }
 
-    .btn-dual-group-compact { display: flex; gap: 6px; flex: 1; height: 40px; }
+    .btn-dual-group-compact { display: flex; gap: 8px; flex: 1; height: 50px; }
     .btn-action-pause-compact {
-      flex: 1; height: 100%; background: #d97706; border: none; border-radius: 10px;
+      flex: 1; height: 100%; background: #d97706; border: none; border-radius: 12px;
       color: #fff; font-family: var(--font-mono); font-weight: 700; cursor: pointer;
-      font-size: 0.72rem; display: flex; align-items: center; justify-content: center; gap: 4px;
+      font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 5px;
     }
     .btn-action-stop-compact {
-      flex: 1; height: 100%; background: #e6005c; border: none; border-radius: 10px;
+      flex: 1; height: 100%; background: #e6005c; border: none; border-radius: 12px;
       color: #fff; font-family: var(--font-mono); font-weight: 700; cursor: pointer;
-      font-size: 0.72rem; display: flex; align-items: center; justify-content: center; gap: 4px;
+      font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 5px;
     }
 
     .form-input-clean {
       background: transparent; border: none; border-bottom: 1px solid var(--text-muted);
-      color: var(--text); font-family: var(--font-mono); font-size: 0.8rem;
-      padding: 2px 4px; outline: none; width: 100%;
+      color: var(--text); font-family: var(--font-mono); font-size: 1rem;
+      padding: 6px 4px; outline: none; width: 100%;
     }
     .form-input-clean:focus { border-bottom-color: var(--neon-cyan); }
 
-    .bottom-nav-container {
-      position: fixed; bottom: 18px; left: 0; right: 0;
-      display: flex; justify-content: center; z-index: 50;
+    /* PROBLEM 2: make the emoji field an obviously large, tappable box */
+    .emoji-input-box {
+      width: 84px; height: 84px; text-align: center; font-size: 3.2rem;
+      border: 2px dashed var(--modal-color, var(--neon-cyan)) !important;
+      border-radius: 14px; background: rgba(0,240,255,0.04) !important;
+      cursor: text; position: relative; z-index: 5;
     }
-    .bottom-nav-wrapper { border-radius: 20px; }
+
+    .bottom-nav-container { position: fixed; bottom: 22px; left: 0; right: 0; display: flex; justify-content: center; z-index: 50; }
+    .bottom-nav-wrapper { border-radius: 24px; }
     .bottom-nav {
       background: var(--card-bg); border: 1px solid var(--neon-cyan);
-      box-shadow: var(--glow-intensity); padding: 5px 8px; border-radius: 20px; display: flex; gap: 4px;
+      box-shadow: var(--glow-intensity); padding: 7px 10px; border-radius: 24px; display: flex; gap: 5px;
     }
     .nav-btn {
       background: transparent; border: 1px solid transparent; color: var(--text-muted);
-      padding: 8px 12px; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600;
-      border-radius: 14px; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer;
+      padding: 10px 15px; font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600;
+      border-radius: 16px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer;
     }
+    .nav-btn span:first-child { font-size: 1.15rem; }
     .nav-btn.active { background: var(--nav-pink-bg); color: var(--text); border-color: var(--nav-pink); }
+
+    /* Doodle modal */
+    #doodleCanvas { width: 100%; height: auto; aspect-ratio: 1 / 1; border-radius: 12px; touch-action: none; cursor: crosshair; }
+    .doodle-swatch-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .doodle-swatch {
+      width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+      border: 3px solid transparent; box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+    }
+    .doodle-swatch.selected { border-color: var(--text); transform: scale(1.12); }
+    .doodle-tool-row { display: flex; gap: 10px; justify-content: center; }
   </style>
 </head>
 <body>
@@ -643,7 +719,7 @@
   <div class="toast-notification" id="toastNotice"></div>
 
   <div class="app-container">
-    
+
     <div class="top-bar-clean">
       <button class="hamburger-btn-minimal" onclick="toggleDrawer()">☰</button>
       <span class="top-bar-date">MON // SEP 07 // 2026</span>
@@ -652,8 +728,8 @@
 
     <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
     <div class="drawer" id="sideDrawer">
-      <div style="font-family: var(--font-serif); font-size: 1.4rem; border-bottom: 1px solid var(--neon-cyan); padding-bottom: 10px; color:var(--neon-cyan);">システム MENU</div>
-      <div style="padding:10px; background:rgba(0, 240, 255, 0.05); border:1px solid var(--neon-cyan); cursor:pointer; border-radius:8px; font-size:0.8rem;" onclick="toggleDrawer()">✕ Close Menu</div>
+      <div style="font-family: var(--font-serif); font-size: 1.6rem; border-bottom: 1px solid var(--neon-cyan); padding-bottom: 12px; color:var(--neon-cyan);">システム MENU</div>
+      <div style="padding:14px; background:rgba(0, 240, 255, 0.05); border:1px solid var(--neon-cyan); cursor:pointer; border-radius:10px; font-size:0.9rem;" onclick="toggleDrawer()">✕ Close Menu</div>
     </div>
 
     <!-- TAB 1: ACTION VIEW -->
@@ -708,7 +784,7 @@
         </div>
       </div>
 
-      <div style="font-family: var(--font-serif); font-size: 1.3rem; color: var(--neon-cyan); text-align: center;">RECOVERY MATRIX // 回復</div>
+      <div style="font-family: var(--font-serif); font-size: 1.5rem; color: var(--neon-cyan); text-align: center;">RECOVERY MATRIX // 回復</div>
       <div class="matrix-grid" id="recoveryGrid"></div>
     </div>
 
@@ -719,15 +795,14 @@
         <span>LOG // SEP 07, 2026</span>
         <button style="background:none; border:none; color:var(--neon-cyan); cursor:pointer;">►</button>
       </div>
-      <div style="font-family: var(--font-serif); font-size: 1.2rem; color: var(--neon-cyan); margin-top: 6px;">24-Hour Timeline Analytics</div>
+      <div style="font-family: var(--font-serif); font-size: 1.35rem; color: var(--neon-cyan); margin-top: 8px;">24-Hour Timeline Analytics</div>
       <div class="timeline-list" id="timelineList"></div>
     </div>
 
     <!-- TAB 4: PROFILE VIEW -->
     <div id="profileView" class="view">
       <div class="profile-card" id="profileCardMain">
-        
-        <!-- Scrapbook Tape & Stickers -->
+
         <div class="scrapbook-tape tape-top-left"></div>
         <div class="scrapbook-tape tape-top-right"></div>
         <div class="scrapbook-tape tape-bottom-right"></div>
@@ -736,7 +811,9 @@
         <!-- Social / ID Header -->
         <div class="profile-header-social">
           <div class="profile-avatar-container">
-            <div class="profile-avatar">⚡</div>
+            <div class="photo-clip"></div>
+            <div class="profile-avatar" id="profileAvatarEl" onclick="openDoodleModal()">⚡</div>
+            <div class="profile-avatar-edit-hint">✏️ SKETCH</div>
             <div class="profile-live-badge" id="profileLiveSignal" title="Live Signal Active"></div>
           </div>
           <div class="profile-identity-info">
@@ -750,9 +827,9 @@
         <div class="folder-card-wrapper">
           <div class="folder-tab-flap">Identity Matrix</div>
           <div class="folder-card-body">
-            <div style="display:flex; justify-space-between; align-items:center;">
-              <span style="font-size:0.65rem; color:var(--text-muted); font-weight:700;">30-DAY ATTRIBUTES</span>
-              <span id="profileHouseTitle" style="font-size:0.65rem; color:var(--neon-cyan); font-weight:800;">House of Artisans</span>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">30-DAY ATTRIBUTES</span>
+              <span id="profileHouseTitle" style="font-size:0.75rem; color:var(--neon-cyan); font-weight:800;">House of Artisans</span>
             </div>
 
             <div class="personality-bar-container">
@@ -760,8 +837,8 @@
               <div class="personality-legend" id="personalityLegend"></div>
             </div>
 
-            <div style="position: relative; display: flex; justify-content: center; margin-top: 4px;">
-              <canvas id="radarChart" width="210" height="210"></canvas>
+            <div style="position: relative; display: flex; justify-content: center; margin-top: 6px;">
+              <canvas id="radarChart" width="250" height="250"></canvas>
             </div>
           </div>
         </div>
@@ -770,8 +847,20 @@
         <div class="folder-card-wrapper" id="topActivitiesCard">
           <div class="folder-tab-flap">Core Drivers</div>
           <div class="folder-card-body">
-            <div style="font-size:0.62rem; color:var(--text-muted); font-weight:700;">TOP 3 LOGGED ACTIVITIES</div>
+            <div style="font-size:0.72rem; color:var(--text-muted); font-weight:700;">TOP 3 LOGGED ACTIVITIES</div>
             <div class="top-activities-cards-rail" id="topActivitiesList"></div>
+          </div>
+        </div>
+
+        <!-- PROBLEM 3: Friends -->
+        <div class="folder-card-wrapper">
+          <div class="folder-tab-flap">Friends Network</div>
+          <div class="folder-card-body">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:0.72rem; color:var(--text-muted); font-weight:700;" id="friendsCountLabel">0 FRIENDS</span>
+              <button class="add-friend-btn" onclick="openAddFriendModal()">+ ADD FRIEND</button>
+            </div>
+            <div class="friends-rail" id="friendsRail"></div>
           </div>
         </div>
 
@@ -779,7 +868,7 @@
         <div class="folder-card-wrapper">
           <div class="folder-tab-flap">House Distribution</div>
           <div class="folder-card-body">
-            <div id="houseDistributionList" style="display:flex; flex-direction:column; gap:6px; font-size:0.68rem;"></div>
+            <div id="houseDistributionList" style="display:flex; flex-direction:column; gap:8px; font-size:0.8rem;"></div>
           </div>
         </div>
 
@@ -808,13 +897,11 @@
           </div>
         </div>
 
-        <!-- Profile Share Button -->
-        <button class="profile-share-btn" onclick="shareProfile()"><span style="font-size:0.8rem;">📤</span> SHARE ID</button>
+        <button class="profile-share-btn" onclick="shareProfile()"><span style="font-size:0.9rem;">📤</span> SHARE ID</button>
 
       </div>
     </div>
 
-    <!-- Scroll To Top Button -->
     <button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToHeroSection()">▲</button>
 
   </div>
@@ -823,7 +910,7 @@
   <div class="modal-overlay" id="cardDetailModal" onclick="closeCardModal(event)">
     <div class="modal-card-wrapper" id="modalCardWrapper">
       <div class="full-trading-card" id="tcModalCard">
-        
+
         <div class="tc-header">
           <span class="tc-title" id="modalTitle">Physics 2</span>
           <span class="tc-hp-badge" id="modalHpBadge">-10 HP</span>
@@ -832,12 +919,12 @@
           <span class="tc-jp-sub" id="modalJpCategory">作業 // WORK</span>
           <div class="tc-art-icon" id="modalIcon">🍎</div>
         </div>
-        
+
         <div class="tc-stats-box">
           <div class="tc-skills-title">SKILLS GAINED</div>
-          <div id="modalSkillsContainer" style="display:flex; flex-direction:column; gap:4px;"></div>
+          <div id="modalSkillsContainer" style="display:flex; flex-direction:column; gap:6px;"></div>
         </div>
-        
+
         <div id="modalInteractiveBody"></div>
       </div>
     </div>
@@ -847,10 +934,10 @@
   <div class="modal-overlay" id="cardFormModal" onclick="closeFormModal(event)">
     <div class="modal-card-wrapper">
       <div class="full-trading-card" id="createFormTradingCard" style="--modal-color: #888888;">
-        
+
         <div class="tc-header">
-          <input type="text" id="createFormName" class="form-input-clean" placeholder="Activity Name..." oninput="validateCreateCardForm()" style="font-weight:bold; font-size:1.1rem;">
-          <select id="createFormHpCost" onchange="validateCreateCardForm()" style="background:transparent; border:1px solid var(--text-muted); color:var(--text); font-size:0.65rem; border-radius:6px; padding:2px;">
+          <input type="text" id="createFormName" class="form-input-clean" placeholder="Activity Name..." oninput="validateCreateCardForm()" style="font-weight:bold; font-size:1.25rem;">
+          <select id="createFormHpCost" onchange="validateCreateCardForm()" style="background:transparent; border:1px solid var(--text-muted); color:var(--text); font-size:0.78rem; border-radius:8px; padding:6px;">
             <option value="">HP Cost</option>
             <option value="2">2 HP (Easy)</option>
             <option value="5">5 HP (Mid)</option>
@@ -858,14 +945,16 @@
           </select>
         </div>
 
+        <!-- PROBLEM 2 fix: the decorative dot overlay in .tc-art-frame::before now has pointer-events:none,
+             and this field is a real, large, clearly-tappable box (z-index above it as extra safety) -->
         <div class="tc-art-frame">
           <span class="tc-jp-sub" id="createFormJpTag">CARD CREATION</span>
-          <input type="text" id="createFormIcon" class="form-input-clean" placeholder="Emoji" maxlength="2" style="width:45px; text-align:center; font-size:2rem;" oninput="validateCreateCardForm()">
+          <input type="text" id="createFormIcon" class="form-input-clean emoji-input-box" placeholder="😀" maxlength="2" oninput="validateCreateCardForm()">
         </div>
 
-        <div style="display:flex; flex-direction:column; gap:4px;">
-          <label style="font-size:0.6rem; color:var(--neon-cyan); font-weight:700;">CATEGORY</label>
-          <select id="createFormCategory" onchange="onCategorySelectChange()" style="background:var(--card-bg); border:1px solid var(--card-border); color:var(--text); font-size:0.75rem; border-radius:6px; padding:4px;">
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <label style="font-size:0.7rem; color:var(--neon-cyan); font-weight:700;">CATEGORY</label>
+          <select id="createFormCategory" onchange="onCategorySelectChange()" style="background:var(--card-bg); border:1px solid var(--card-border); color:var(--text); font-size:0.9rem; border-radius:8px; padding:8px;">
             <option value="">-- Select Category --</option>
             <option value="work">Work</option>
             <option value="hobbies">Hobbies</option>
@@ -876,12 +965,11 @@
           </select>
         </div>
 
-        <!-- Skills Gained with Interactive Star Selection -->
         <div class="tc-stats-box">
           <div class="tc-skills-title">SKILLS GAINED</div>
-          
+
           <div class="tc-stat-row">
-            <select id="createFormSkill1" onchange="validateCreateCardForm()" style="background:transparent; border:none; border-bottom:1px solid var(--text-muted); color:var(--text); font-size:0.7rem;">
+            <select id="createFormSkill1" onchange="validateCreateCardForm()" style="background:transparent; border:none; border-bottom:1px solid var(--text-muted); color:var(--text); font-size:0.85rem; padding:4px 0;">
               <option value="">Select Skill 1</option>
               <option value="Intellect">Intellect</option>
               <option value="Creativity">Creativity</option>
@@ -892,7 +980,7 @@
           </div>
 
           <div class="tc-stat-row">
-            <select id="createFormSkill2" onchange="validateCreateCardForm()" style="background:transparent; border:none; border-bottom:1px solid var(--text-muted); color:var(--text); font-size:0.7rem;">
+            <select id="createFormSkill2" onchange="validateCreateCardForm()" style="background:transparent; border:none; border-bottom:1px solid var(--text-muted); color:var(--text); font-size:0.85rem; padding:4px 0;">
               <option value="">Select Skill 2</option>
               <option value="Intellect">Intellect</option>
               <option value="Creativity">Creativity</option>
@@ -903,8 +991,68 @@
           </div>
         </div>
 
-        <button class="btn-action-primary-compact" id="btnSaveCard" disabled onclick="saveCardForm()" style="height:38px; width:100%;">SAVE CARD</button>
-        <button class="btn-square-icon" style="width:100%; height:28px; font-size:0.7rem;" onclick="closeFormModal(null, true)">CANCEL</button>
+        <button class="btn-action-primary-compact" id="btnSaveCard" disabled onclick="saveCardForm()" style="height:46px; width:100%;">SAVE CARD</button>
+        <button class="btn-square-icon" style="width:100%; height:36px; font-size:0.85rem;" onclick="closeFormModal(null, true)">CANCEL</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROBLEM 3: Add Friend Modal -->
+  <div class="modal-overlay" id="addFriendModal" onclick="closeAddFriendModal(event)">
+    <div class="modal-card-wrapper">
+      <div class="full-trading-card" style="--modal-color: var(--neon-cyan);">
+        <div class="tc-header">
+          <span class="tc-title" style="font-size:1.4rem;">Add Friends</span>
+        </div>
+        <div id="discoverUsersList" style="display:flex; flex-direction:column;"></div>
+        <button class="btn-square-icon" style="width:100%; height:36px; font-size:0.85rem;" onclick="closeAddFriendModal(null, true)">CLOSE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROBLEM 3: Friend Profile Modal -->
+  <div class="modal-overlay" id="friendProfileModal" onclick="closeFriendProfileModal(event)">
+    <div class="modal-card-wrapper">
+      <div class="full-trading-card" id="friendProfileCard" style="--modal-color: var(--neon-cyan);">
+        <div class="tc-header">
+          <span class="tc-title" id="friendProfileName" style="font-size:1.4rem;">Friend Name</span>
+        </div>
+        <div class="tc-art-frame" style="height:150px;">
+          <div class="tc-art-icon" id="friendProfileIcon">🌙</div>
+        </div>
+        <div class="tc-stats-box">
+          <div class="tc-skills-title">ID CARD</div>
+          <div class="tc-stat-row"><span>Username</span><span id="friendProfileUsername">@handle</span></div>
+          <div class="tc-stat-row"><span>Archetype</span><span id="friendProfileArchetype">-</span></div>
+          <div class="tc-stat-row"><span>House</span><span id="friendProfileHouse">-</span></div>
+        </div>
+        <div class="tc-bottom-action-row">
+          <button class="btn-square-icon danger" title="Remove Friend" id="friendRemoveBtn" onclick="removeFriend()">🗑️</button>
+          <button class="btn-action-primary-compact" onclick="closeFriendProfileModal(null, true)">CLOSE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROBLEM 5: Doodle Profile Photo Modal -->
+  <div class="modal-overlay" id="doodleModal" onclick="closeDoodleModal(event)">
+    <div class="modal-card-wrapper" style="max-width:360px;">
+      <div class="full-trading-card" style="--modal-color: var(--neon-cyan);">
+        <div class="tc-header">
+          <span class="tc-title" style="font-size:1.4rem;">Sketch Your ID Photo</span>
+        </div>
+        <canvas id="doodleCanvas" width="300" height="300"></canvas>
+        <div class="doodle-swatch-row" id="doodleSwatchRow"></div>
+        <div class="doodle-tool-row">
+          <button class="btn-square-icon selected-tool" id="toolPencilBtn" title="Pencil" onclick="setDoodleTool('pencil')">✏️</button>
+          <button class="btn-square-icon" id="toolFillBtn" title="Fill" onclick="setDoodleTool('fill')">🪣</button>
+          <button class="btn-square-icon" id="toolEraserBtn" title="Eraser" onclick="setDoodleTool('eraser')">🧽</button>
+          <button class="btn-square-icon" title="Clear" onclick="clearDoodle()">↺</button>
+        </div>
+        <div class="tc-bottom-action-row">
+          <button class="btn-square-icon" title="Cancel" onclick="closeDoodleModal(null, true)">✕</button>
+          <button class="btn-action-primary-compact" onclick="saveDoodle()">SAVE PHOTO</button>
+        </div>
       </div>
     </div>
   </div>
@@ -950,32 +1098,32 @@
     };
 
     let growthTasks = [
-      { 
+      {
         id: 'physics-2', name: 'Physics 2', icon: '🍎', category: 'work', hpCost: 10,
         customColor: 'var(--color-work)', secondsLogged: 14400, isPlaying: false,
         skills: [ { name: 'Intellect', stars: 5 }, { name: 'Discipline', stars: 4 } ]
       },
-      { 
+      {
         id: 'painting', name: 'Painting', icon: '🎨', category: 'hobbies', hpCost: 5,
         customColor: 'var(--color-hobbies)', secondsLogged: 21600, isPlaying: false,
         skills: [ { name: 'Creativity', stars: 5 }, { name: 'Discipline', stars: 3 } ]
       },
-      { 
+      {
         id: 'marvel', name: 'Marvel', icon: '🎬', category: 'media', hpCost: 2,
         customColor: 'var(--color-media)', secondsLogged: 3600, isPlaying: false,
         skills: [ { name: 'Empathy', stars: 3 }, { name: 'Creativity', stars: 2 } ]
       },
-      { 
+      {
         id: 'laundry', name: 'Laundry', icon: '🧺', category: 'chores', hpCost: 5,
         customColor: 'var(--color-chores)', secondsLogged: 1800, isPlaying: false,
         skills: [ { name: 'Discipline', stars: 3 }, { name: 'Intellect', stars: 1 } ]
       },
-      { 
+      {
         id: 'uni-friends', name: 'Uni Friends', icon: '👩‍❤️‍👩', category: 'social', hpCost: 5,
         customColor: 'var(--color-social)', secondsLogged: 7200, isPlaying: false,
         skills: [ { name: 'Empathy', stars: 5 }, { name: 'Creativity', stars: 3 } ]
       },
-      { 
+      {
         id: 'phone', name: 'Phone', icon: '📱', category: 'other', hpCost: 2,
         customColor: 'var(--color-other)', secondsLogged: 900, isPlaying: false,
         skills: [ { name: 'Intellect', stars: 2 }, { name: 'Empathy', stars: 2 } ]
@@ -989,6 +1137,18 @@
       { id: 'nutrition', name: 'Nutrition', icon: '🥗', type: 'fluid', targetML: 2000, containerML: 400, currentML: 800, hpCost: -15, skills: [{ name: 'Discipline', stars: 4 }, { name: 'Creativity', stars: 2 }] }
     ];
 
+    // PROBLEM 3: friends data
+    let friendsList = [
+      { id: 'friend1', name: 'Jordan Lee', username: '@jordan_lee', icon: '🌙', archetype: 'Iron Mind', house: 'House of Monks', color: 'var(--color-hobbies)' },
+      { id: 'friend2', name: 'Sam Rivera', username: '@sam_rivera', icon: '🔥', archetype: 'Beacon Prime', house: 'House of Beacons', color: 'var(--color-work)' }
+    ];
+    let discoverableUsers = [
+      { id: 'user3', name: 'Taylor Chen', username: '@taylor_chen', icon: '⭐', archetype: 'Deep Creator', house: 'House of Artisans', color: 'var(--color-media)' },
+      { id: 'user4', name: 'Morgan Blake', username: '@morgan_blake', icon: '🌊', archetype: 'Grandmaster', house: 'House of Monks', color: 'var(--color-chores)' },
+      { id: 'user5', name: 'Riley Park', username: '@riley_park', icon: '💫', archetype: 'Vector One', house: 'House of Tacticians', color: 'var(--color-social)' }
+    ];
+    let activeFriendId = null;
+
     let heroDeckSlots = [ growthTasks[0] ];
     let currentHP = 100;
     let activeSelectedTask = null;
@@ -996,11 +1156,25 @@
     let popTimerCounter = 0;
     let selectedStarRating1 = 0;
     let selectedStarRating2 = 0;
-    let radarChartInstance = null;
 
     let privacySettings = { archetype: true, radar: true, top3: true, live: true };
 
-    // Scroll to Top Button Visibility
+    // PROBLEM 5: doodle state
+    let profileAvatarDataUrl = null;
+    const DOODLE_COLORS = [
+      { name: 'Cyan', hex: '#00b4d8' },
+      { name: 'Amber', hex: '#e08a00' },
+      { name: 'Magenta', hex: '#d6005f' },
+      { name: 'Violet', hex: '#7b2cbf' },
+      { name: 'Black', hex: '#0d0926' },
+      { name: 'White', hex: '#ffffff' }
+    ];
+    let doodleColor = DOODLE_COLORS[0].hex;
+    let doodleTool = 'pencil';
+    let doodleDrawing = false;
+    let doodleCtx = null;
+    let doodleLastPoint = null;
+
     window.addEventListener('scroll', () => {
       const scrollBtn = document.getElementById('scrollTopBtn');
       if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 30) {
@@ -1012,12 +1186,12 @@
 
     setInterval(() => {
       let anyTaskActive = false;
-      
+
       growthTasks.concat(recoveryTasks).forEach(task => {
         if (task.isPlaying) {
           task.secondsLogged++;
           anyTaskActive = true;
-          
+
           if (activeSelectedTask && activeSelectedTask.id === task.id) {
             const timerEl = document.getElementById('modalTimerDisplay');
             if (timerEl) timerEl.innerText = formatTime(task.secondsLogged);
@@ -1060,8 +1234,8 @@
       popEl.innerText = `+${gainAmount} ${randomSkill.name}`;
 
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const popColors = isDark 
-        ? ['#00e5ff', '#ff2a70', '#ffb300', '#00ff66', '#e040fb'] 
+      const popColors = isDark
+        ? ['#00e5ff', '#ff2a70', '#ffb300', '#00ff66', '#e040fb']
         : ['#007a93', '#b30047', '#b35f00', '#008a3b', '#7300a8'];
 
       popEl.style.color = popColors[Math.floor(Math.random() * popColors.length)];
@@ -1151,10 +1325,10 @@
           const color = task.customColor || GROWTH_CATEGORIES[task.category]?.color;
           const jpTag = GROWTH_CATEGORIES[task.category]?.jp || '能力';
           const activeClass = task.isPlaying ? 'is-active-running' : '';
-          
+
           slotWrapper.innerHTML = `
             <div class="trading-card-outer ${activeClass}" style="--card-color: ${color}; width:100%; height:100%;" onclick="openCardModal(growthTasks.find(t=>t.id==='${task.id}'))">
-              <button style="position:absolute; top:3px; right:5px; z-index:20; background:none; border:none; color:var(--text); font-size:0.75rem; cursor:pointer;" onclick="removeFromPlayDeck(${i}, event)">✕</button>
+              <button style="position:absolute; top:4px; right:6px; z-index:20; background:none; border:none; color:var(--text); font-size:1rem; cursor:pointer;" onclick="removeFromPlayDeck(${i}, event)">✕</button>
               <div class="trading-card-top-bar">
                 <span class="trading-card-hp-tag">-${task.hpCost} HP</span>
               </div>
@@ -1184,7 +1358,7 @@
         railEl.innerHTML = '';
 
         const catTasks = growthTasks.filter(t => t.category === cat);
-        
+
         catTasks.forEach(task => {
           const color = task.customColor || GROWTH_CATEGORIES[cat].color;
           const jpTag = GROWTH_CATEGORIES[cat]?.jp || '能力';
@@ -1213,7 +1387,7 @@
         const emptyAddCard = document.createElement('div');
         emptyAddCard.className = 'empty-add-card';
         emptyAddCard.onclick = () => openNewCardModal(cat);
-        emptyAddCard.innerHTML = `<span style="font-size:1.4rem; color:var(--neon-cyan);">+</span><span style="font-size:0.6rem; font-family:var(--font-mono); color:var(--neon-cyan);">NEW CARD</span>`;
+        emptyAddCard.innerHTML = `<span>+</span><span style="font-family:var(--font-mono); color:var(--neon-cyan);">NEW CARD</span>`;
         railEl.appendChild(emptyAddCard);
       });
 
@@ -1227,9 +1401,9 @@
 
         wrapper.innerHTML = `
           <div class="matrix-card">
-            <div style="font-size: 1.8rem;">${t.icon}</div>
-            <div style="font-family: var(--font-serif); font-size: 1.1rem; text-align:center;">${t.name}</div>
-            <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--color-recovery); font-weight:700;">${subVal}</div>
+            <div>${t.icon}</div>
+            <div style="font-family: var(--font-serif); text-align:center;">${t.name}</div>
+            <div style="font-family: var(--font-mono); color: var(--color-recovery); font-weight:700;">${subVal}</div>
           </div>
         `;
         recGrid.appendChild(wrapper);
@@ -1240,7 +1414,7 @@
       activeSelectedTask = task;
       const cardColor = isRecovery ? 'var(--color-recovery)' : (task.customColor || GROWTH_CATEGORIES[task.category]?.color);
       const categoryJp = isRecovery ? '回復 // RECOVERY' : `${GROWTH_CATEGORIES[task.category]?.jp} // ${GROWTH_CATEGORIES[task.category]?.name.toUpperCase()}`;
-      
+
       const tcCard = document.getElementById('tcModalCard');
       tcCard.style.setProperty('--modal-color', cardColor);
 
@@ -1285,15 +1459,15 @@
         tumblersHTML += '</div>';
 
         body.innerHTML = `
-          <div style="text-align:center; font-size:0.75rem; color:var(--text-muted); margin-top:6px;">
-            Container: 
-            <select onchange="updateContainerSize(this.value)" style="background:var(--card-bg); color:var(--text); border:1px solid var(--neon-cyan); border-radius:4px; padding:2px 4px;">
+          <div style="text-align:center; font-size:0.9rem; color:var(--text-muted); margin-top:8px;">
+            Container:
+            <select onchange="updateContainerSize(this.value)" style="background:var(--card-bg); color:var(--text); border:1px solid var(--neon-cyan); border-radius:6px; padding:4px 6px;">
               <option value="250" ${task.containerML === 250 ? 'selected' : ''}>250 mL Glass</option>
               <option value="500" ${task.containerML === 500 ? 'selected' : ''}>500 mL Tumbler</option>
             </select>
           </div>
           ${tumblersHTML}
-          <div style="text-align:center; font-family:var(--font-mono); font-size:0.85rem; color:var(--color-recovery); font-weight:700;">${task.currentML} / ${task.targetML} mL</div>
+          <div style="text-align:center; font-family:var(--font-mono); font-size:1.05rem; color:var(--color-recovery); font-weight:700;">${task.currentML} / ${task.targetML} mL</div>
         `;
         return;
       }
@@ -1324,7 +1498,7 @@
       `;
 
       body.innerHTML = `
-        <div style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:2px;">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:2px;">
           ${timerDisplay}
           <div class="tc-bottom-action-row">
             ${editDeleteSquares}
@@ -1606,50 +1780,226 @@
       renderProfileTab();
     }
 
-    function renderRadarChart(totals) {
-      const canvas = document.getElementById('radarChart');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
+    // PROBLEM 3: Friends rendering + add/view/remove
+    function renderFriendsRail() {
+      const rail = document.getElementById('friendsRail');
+      rail.innerHTML = '';
+      document.getElementById('friendsCountLabel').innerText = `${friendsList.length} FRIEND${friendsList.length === 1 ? '' : 'S'}`;
 
-      if (radarChartInstance) {
-        radarChartInstance.destroy();
+      friendsList.forEach(friend => {
+        const chip = document.createElement('div');
+        chip.className = 'friend-chip';
+        chip.onclick = () => openFriendProfileModal(friend.id);
+        chip.innerHTML = `
+          <div class="friend-chip-avatar" style="--card-color:${friend.color};">${friend.icon}</div>
+          <div class="friend-chip-name">${friend.name}</div>
+        `;
+        rail.appendChild(chip);
+      });
+
+      const addChip = document.createElement('div');
+      addChip.className = 'friend-chip';
+      addChip.onclick = () => openAddFriendModal();
+      addChip.innerHTML = `<div class="friend-chip-add">+</div><div class="friend-chip-name">Add</div>`;
+      rail.appendChild(addChip);
+    }
+
+    function openAddFriendModal() {
+      const list = document.getElementById('discoverUsersList');
+      list.innerHTML = '';
+
+      if (discoverableUsers.length === 0) {
+        list.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding:12px 0;">No more users to discover right now.</div>`;
       }
 
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const textColor = isDark ? '#f0f2fe' : '#0d0926';
-      const gridColor = isDark ? 'rgba(0, 240, 255, 0.25)' : 'rgba(0, 141, 168, 0.25)';
-
-      radarChartInstance = new Chart(ctx, {
-        type: 'radar',
-        data: {
-          labels: ['Intellect', 'Creativity', 'Discipline', 'Empathy'],
-          datasets: [{
-            label: 'Attributes',
-            data: [totals.Intellect, totals.Creativity, totals.Discipline, totals.Empathy],
-            backgroundColor: isDark ? 'rgba(0, 229, 255, 0.25)' : 'rgba(0, 141, 168, 0.25)',
-            borderColor: isDark ? '#00e5ff' : '#008da8',
-            borderWidth: 2,
-            pointBackgroundColor: isDark ? '#ff007f' : '#c20060',
-            pointRadius: 4
-          }]
-        },
-        options: {
-          responsive: false,
-          maintainAspectRatio: true,
-          plugins: { legend: { display: false } },
-          scales: {
-            r: {
-              angleLines: { color: gridColor },
-              grid: { color: gridColor },
-              pointLabels: {
-                color: textColor,
-                font: { family: 'Geist Mono', size: 10, weight: 'bold' }
-              },
-              ticks: { display: false, beginAtZero: true }
-            }
-          }
-        }
+      discoverableUsers.forEach(user => {
+        const row = document.createElement('div');
+        row.className = 'discover-user-row';
+        row.innerHTML = `
+          <div class="discover-user-left">
+            <div class="discover-user-avatar" style="--card-color:${user.color};">${user.icon}</div>
+            <div>
+              <div class="discover-user-name">${user.name}</div>
+              <div class="discover-user-sub">${user.username} · ${user.archetype}</div>
+            </div>
+          </div>
+          <button class="btn-add-small" onclick="addFriend('${user.id}')">+ ADD</button>
+        `;
+        list.appendChild(row);
       });
+
+      document.getElementById('addFriendModal').classList.add('active');
+    }
+
+    function closeAddFriendModal(e, force = false) {
+      if (force || (e && e.target.id === 'addFriendModal')) {
+        document.getElementById('addFriendModal').classList.remove('active');
+      }
+    }
+
+    function addFriend(userId) {
+      const idx = discoverableUsers.findIndex(u => u.id === userId);
+      if (idx === -1) return;
+      const [user] = discoverableUsers.splice(idx, 1);
+      friendsList.push(user);
+      showToast(`${user.name} added as a friend!`);
+      openAddFriendModal();
+      renderFriendsRail();
+    }
+
+    function openFriendProfileModal(friendId) {
+      const friend = friendsList.find(f => f.id === friendId);
+      if (!friend) return;
+      activeFriendId = friendId;
+
+      document.getElementById('friendProfileCard').style.setProperty('--modal-color', friend.color);
+      document.getElementById('friendProfileName').innerText = friend.name;
+      document.getElementById('friendProfileIcon').innerText = friend.icon;
+      document.getElementById('friendProfileUsername').innerText = friend.username;
+      document.getElementById('friendProfileArchetype').innerText = friend.archetype;
+      document.getElementById('friendProfileHouse').innerText = friend.house;
+
+      document.getElementById('friendProfileModal').classList.add('active');
+    }
+
+    function closeFriendProfileModal(e, force = false) {
+      if (force || (e && e.target.id === 'friendProfileModal')) {
+        document.getElementById('friendProfileModal').classList.remove('active');
+        activeFriendId = null;
+      }
+    }
+
+    function removeFriend() {
+      if (!activeFriendId) return;
+      const idx = friendsList.findIndex(f => f.id === activeFriendId);
+      if (idx === -1) return;
+      const [removed] = friendsList.splice(idx, 1);
+      discoverableUsers.push(removed);
+      closeFriendProfileModal(null, true);
+      renderFriendsRail();
+      showToast(`${removed.name} removed from friends.`);
+    }
+
+    // PROBLEM 5: Doodle profile photo
+    function openDoodleModal() {
+      document.getElementById('doodleModal').classList.add('active');
+      setTimeout(initDoodleCanvas, 0);
+    }
+
+    function closeDoodleModal(e, force = false) {
+      if (force || (e && e.target.id === 'doodleModal')) {
+        document.getElementById('doodleModal').classList.remove('active');
+      }
+    }
+
+    function initDoodleCanvas() {
+      const canvas = document.getElementById('doodleCanvas');
+      doodleCtx = canvas.getContext('2d');
+
+      const swatchRow = document.getElementById('doodleSwatchRow');
+      swatchRow.innerHTML = '';
+      DOODLE_COLORS.forEach(c => {
+        const sw = document.createElement('div');
+        sw.className = 'doodle-swatch' + (c.hex === doodleColor ? ' selected' : '');
+        sw.style.background = c.hex;
+        sw.style.border = c.hex === '#ffffff' ? '3px solid var(--card-border)' : sw.style.border;
+        sw.title = c.name;
+        sw.onclick = () => selectDoodleColor(c.hex, sw);
+        swatchRow.appendChild(sw);
+      });
+
+      if (!canvas.dataset.initialized) {
+        doodleCtx.fillStyle = '#ffffff';
+        doodleCtx.fillRect(0, 0, canvas.width, canvas.height);
+        canvas.dataset.initialized = 'true';
+
+        canvas.addEventListener('pointerdown', doodlePointerDown);
+        canvas.addEventListener('pointermove', doodlePointerMove);
+        window.addEventListener('pointerup', doodlePointerUp);
+      }
+    }
+
+    function selectDoodleColor(hex, el) {
+      doodleColor = hex;
+      document.querySelectorAll('.doodle-swatch').forEach(s => s.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function setDoodleTool(tool) {
+      doodleTool = tool;
+      document.getElementById('toolPencilBtn').classList.toggle('selected-tool', tool === 'pencil');
+      document.getElementById('toolFillBtn').classList.toggle('selected-tool', tool === 'fill');
+      document.getElementById('toolEraserBtn').classList.toggle('selected-tool', tool === 'eraser');
+    }
+
+    function getCanvasPoint(canvas, evt) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      return { x: (evt.clientX - rect.left) * scaleX, y: (evt.clientY - rect.top) * scaleY };
+    }
+
+    function doodlePointerDown(evt) {
+      const canvas = document.getElementById('doodleCanvas');
+      if (doodleTool === 'fill') {
+        doodleCtx.fillStyle = doodleColor;
+        doodleCtx.fillRect(0, 0, canvas.width, canvas.height);
+        return;
+      }
+      doodleDrawing = true;
+      doodleLastPoint = getCanvasPoint(canvas, evt);
+      drawDoodleDot(doodleLastPoint);
+    }
+
+    function doodlePointerMove(evt) {
+      if (!doodleDrawing) return;
+      const canvas = document.getElementById('doodleCanvas');
+      const point = getCanvasPoint(canvas, evt);
+      drawDoodleLine(doodleLastPoint, point);
+      doodleLastPoint = point;
+    }
+
+    function doodlePointerUp() {
+      doodleDrawing = false;
+      doodleLastPoint = null;
+    }
+
+    function drawDoodleDot(point) {
+      const strokeColor = doodleTool === 'eraser' ? '#ffffff' : doodleColor;
+      const strokeWidth = doodleTool === 'eraser' ? 34 : 16;
+      doodleCtx.fillStyle = strokeColor;
+      doodleCtx.beginPath();
+      doodleCtx.arc(point.x, point.y, strokeWidth / 2, 0, Math.PI * 2);
+      doodleCtx.fill();
+    }
+
+    function drawDoodleLine(from, to) {
+      const strokeColor = doodleTool === 'eraser' ? '#ffffff' : doodleColor;
+      const strokeWidth = doodleTool === 'eraser' ? 34 : 16;
+      doodleCtx.strokeStyle = strokeColor;
+      doodleCtx.lineWidth = strokeWidth;
+      doodleCtx.lineCap = 'round';
+      doodleCtx.lineJoin = 'round';
+      doodleCtx.beginPath();
+      doodleCtx.moveTo(from.x, from.y);
+      doodleCtx.lineTo(to.x, to.y);
+      doodleCtx.stroke();
+    }
+
+    function clearDoodle() {
+      const canvas = document.getElementById('doodleCanvas');
+      doodleCtx.fillStyle = '#ffffff';
+      doodleCtx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function saveDoodle() {
+      const canvas = document.getElementById('doodleCanvas');
+      profileAvatarDataUrl = canvas.toDataURL('image/png');
+      const avatarEl = document.getElementById('profileAvatarEl');
+      avatarEl.style.backgroundImage = `url(${profileAvatarDataUrl})`;
+      avatarEl.innerText = '';
+      closeDoodleModal(null, true);
+      showToast('ID photo updated!');
     }
 
     function renderProfileTab() {
@@ -1676,7 +2026,7 @@
 
       Object.keys(matrix.totals).forEach(attr => {
         const pct = ((matrix.totals[attr] / grandTotal) * 100).toFixed(1);
-        
+
         const seg = document.createElement('div');
         seg.className = 'personality-segment';
         seg.style.width = `${pct}%`;
@@ -1694,7 +2044,7 @@
 
       const top3Container = document.getElementById('topActivitiesCard');
       top3Container.style.display = privacySettings.top3 ? 'block' : 'none';
-      
+
       const top3List = document.getElementById('topActivitiesList');
       top3List.innerHTML = '';
 
@@ -1702,7 +2052,7 @@
       sortedActivities.forEach(act => {
         const color = act.customColor || GROWTH_CATEGORIES[act.category]?.color;
         const jpTag = GROWTH_CATEGORIES[act.category]?.jp || '能力';
-        
+
         const cardWrapper = document.createElement('div');
         cardWrapper.className = 'trading-card-outer';
         cardWrapper.style.setProperty('--card-color', color);
@@ -1718,28 +2068,57 @@
           </div>
           <div class="trading-card-banner">
             <div class="trading-card-name">${act.name}</div>
-            <div style="font-size:0.65rem; color:var(--neon-cyan); font-weight:700;">${(act.secondsLogged / 3600).toFixed(1)}h</div>
+            <div class="trading-card-timer-hero">${(act.secondsLogged / 3600).toFixed(1)}h</div>
           </div>
         `;
         top3List.appendChild(cardWrapper);
       });
 
-      const houseContainer = document.getElementById('houseDistributionList');
-      houseContainer.innerHTML = '';
-      
-      const houses = [
-        { name: 'House of Artisans', val: '45%' },
-        { name: 'House of Tacticians', val: '30%' },
-        { name: 'House of Monks', val: '15%' },
-        { name: 'House of Beacons', val: '10%' }
-      ];
+      renderFriendsRail();
 
-      houses.forEach(h => {
+      const houseList = document.getElementById('houseDistributionList');
+      houseList.innerHTML = '';
+
+      const houseScores = {
+        'House of Tacticians': matrix.totals.Intellect,
+        'House of Artisans': matrix.totals.Creativity,
+        'House of Monks': matrix.totals.Discipline,
+        'House of Beacons': matrix.totals.Empathy
+      };
+
+      Object.keys(houseScores).forEach(h => {
+        const hPct = ((houseScores[h] / grandTotal) * 100).toFixed(1);
         const row = document.createElement('div');
         row.style.display = 'flex';
         row.style.justifyContent = 'space-between';
-        row.innerHTML = `<span>${h.name}</span><span style="color:var(--neon-cyan); font-weight:700;">${h.val}</span>`;
-        houseContainer.appendChild(row);
+        row.innerHTML = `<span>${h}</span><span style="font-weight:700; color:var(--neon-cyan);">${hPct}%</span>`;
+        houseList.appendChild(row);
+      });
+    }
+
+    let radarChartInstance = null;
+    function renderRadarChart(totals) {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const gridColor = isDark ? 'rgba(0, 240, 255, 0.2)' : 'rgba(0, 180, 216, 0.25)';
+      const ctx = document.getElementById('radarChart').getContext('2d');
+
+      if (radarChartInstance) radarChartInstance.destroy();
+      radarChartInstance = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: ['Intellect', 'Creativity', 'Discipline', 'Empathy'],
+          datasets: [{
+            data: [totals.Intellect, totals.Creativity, totals.Discipline, totals.Empathy],
+            backgroundColor: 'rgba(230, 0, 115, 0.2)',
+            borderColor: '#e60073',
+            pointBackgroundColor: '#00b4d8'
+          }]
+        },
+        options: {
+          animation: false,
+          scales: { r: { angleLines: { color: gridColor }, grid: { color: gridColor }, ticks: { display: false } } },
+          plugins: { legend: { display: false } }
+        }
       });
     }
 
