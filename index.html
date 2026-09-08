@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-  <link rel="manifest" href="./manifest.json">
+  <link rel="manifest" href="manifest.json">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Skill Issue</title>
@@ -50,7 +50,7 @@
       --folder-border: rgba(0, 141, 168, 0.4);
     }
 
-    /* PROBLEM 6: Softer, textured dark grey background for dark mode (no jet black) */
+    /* Soft, textured dark mode background */
     [data-theme="dark"] {
       --bg: #181623;
       --card-bg: #232035;
@@ -105,7 +105,6 @@
       transition: background-color 0.2s ease, color 0.2s ease;
     }
 
-    /* PROBLEM 1: Responsive design for Mobile & Tablet */
     .app-container {
       width: 100%;
       max-width: 480px;
@@ -139,7 +138,6 @@
       100% { transform: translate(-20px, 30px) scale(0.95); }
     }
 
-    /* PROBLEM 3: Skill pop particles adjusted for white background visibility & no drop shadows */
     .skill-pop-particle {
       position: fixed;
       pointer-events: none;
@@ -147,7 +145,7 @@
       font-family: var(--font-mono);
       font-size: 0.95rem;
       font-weight: 800;
-      text-shadow: none; /* Drop shadow removed */
+      text-shadow: none;
       animation: floatUpAndFade 4s forwards ease-out;
     }
 
@@ -227,14 +225,13 @@
     }
     .trading-card-outer:hover { transform: translateY(-2px); }
 
-    /* PROBLEM 3: Calming slow border-rotation glow animation (8s instead of fast 4s) */
     .trading-card-outer.is-active-running {
       border-color: transparent;
       background-image: linear-gradient(var(--card-inner-bg), var(--card-inner-bg)), 
                         conic-gradient(from var(--border-angle, 0deg), transparent 70%, var(--card-color, var(--neon-cyan)) 100%);
       background-origin: border-box;
       background-clip: padding-box, border-box;
-      animation: rotateBorder 8s linear infinite; /* Slowed down for a calming effect */
+      animation: rotateBorder 8s linear infinite;
       box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
     }
 
@@ -315,7 +312,6 @@
     .timeline-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
     .timeline-item { background: var(--card-bg); border: 1px solid var(--neon-cyan); border-left: 3px solid var(--nav-pink); padding: 12px 14px; border-radius: 0 12px 12px 0; display: flex; justify-content: space-between; align-items: center; }
 
-    /* PROBLEM 7 & 8: Profile Tab Scrapbook aesthetic with Folder-shaped ID cards, tape, and decorative stickers */
     .profile-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -328,7 +324,6 @@
       position: relative;
     }
 
-    /* Decorative Tape elements */
     .scrapbook-tape {
       position: absolute;
       width: 70px;
@@ -343,7 +338,6 @@
     .tape-top-right { top: -8px; right: 20px; transform: rotate(6deg); }
     .tape-bottom-right { bottom: 10px; right: -10px; transform: rotate(-12deg); }
 
-    /* Decorative Stamp / Sticker */
     .scrapbook-sticker {
       position: absolute;
       top: -12px;
@@ -361,7 +355,6 @@
       z-index: 11;
     }
 
-    /* PROBLEM 5: Profile Share Button Styling */
     .profile-share-btn {
       position: absolute;
       bottom: 12px;
@@ -382,7 +375,6 @@
     }
     .profile-share-btn:active { transform: scale(0.94); }
 
-    /* Header ID Spec */
     .profile-header-social {
       display: flex;
       align-items: center;
@@ -414,7 +406,6 @@
       padding: 2px 8px; border-radius: 6px; margin-top: 4px; align-self: flex-start; letter-spacing: 0.5px;
     }
 
-    /* PROBLEM 7: Folder-shaped card containers with top-left tab flaps */
     .folder-card-wrapper {
       position: relative;
       margin-top: 12px;
@@ -447,7 +438,6 @@
       position: relative;
     }
 
-    /* Personality Bar */
     .personality-bar-container { display: flex; flex-direction: column; gap: 6px; }
     .personality-bar-track { width: 100%; height: 12px; background: rgba(0, 0, 0, 0.1); border-radius: 6px; overflow: hidden; display: flex; }
     .personality-segment { height: 100%; transition: width 0.3s ease; }
@@ -455,7 +445,6 @@
     .legend-item { display: flex; align-items: center; gap: 4px; }
     .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
 
-    /* PROBLEM 4: Top 3 Activities in Profile rendered as actual Activity Trading Cards */
     .top-activities-cards-rail {
       display: flex;
       gap: 10px;
@@ -465,11 +454,9 @@
     }
     .top-activities-cards-rail::-webkit-scrollbar { display: none; }
 
-    /* Privacy Form Controls */
     .privacy-controls-grid { display: flex; flex-direction: column; gap: 6px; font-size: 0.7rem; }
     .privacy-row { display: flex; justify-content: space-between; align-items: center; }
 
-    /* Scroll to Top Button - Positioned Center Above Bottom Nav */
     .scroll-top-btn {
       position: fixed;
       bottom: 72px;
@@ -494,7 +481,6 @@
     .scroll-top-btn.show { display: flex; }
     .scroll-top-btn:active { transform: translateX(-50%) scale(0.9); }
 
-    /* Modals & Trading Card Overlay */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(2, 1, 8, 0.82);
@@ -518,7 +504,6 @@
       transition: border-color 0.3s ease;
     }
 
-    /* PROBLEM 3: Slow 8s calming animation for active modal card glow */
     .full-trading-card.card-active-glow {
       box-shadow: 0 0 12px var(--modal-color, var(--neon-cyan));
       border-color: transparent;
@@ -565,7 +550,6 @@
 
     .timer-display-modal { font-family: var(--font-mono); font-size: 2rem; font-weight: 700; text-align: center; color: var(--neon-cyan); margin: 2px 0; }
 
-    /* PROBLEM 2: Edit & Delete buttons positioned as square icons at bottom left corner next to smaller primary action button */
     .tc-bottom-action-row {
       display: flex;
       gap: 8px;
@@ -739,7 +723,7 @@
       <div class="timeline-list" id="timelineList"></div>
     </div>
 
-    <!-- TAB 4: PROFILE VIEW (PROBLEM 5, 7 & 8: ID Folder Format + Scrapbook Aesthetic + Share Button) -->
+    <!-- TAB 4: PROFILE VIEW -->
     <div id="profileView" class="view">
       <div class="profile-card" id="profileCardMain">
         
@@ -766,7 +750,7 @@
         <div class="folder-card-wrapper">
           <div class="folder-tab-flap">Identity Matrix</div>
           <div class="folder-card-body">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; justify-space-between; align-items:center;">
               <span style="font-size:0.65rem; color:var(--text-muted); font-weight:700;">30-DAY ATTRIBUTES</span>
               <span id="profileHouseTitle" style="font-size:0.65rem; color:var(--neon-cyan); font-weight:800;">House of Artisans</span>
             </div>
@@ -782,7 +766,7 @@
           </div>
         </div>
 
-        <!-- Folder Section 2: Top 3 Activity Cards (PROBLEM 4: Rendered as Activity Trading Cards) -->
+        <!-- Folder Section 2: Top 3 Activity Cards -->
         <div class="folder-card-wrapper" id="topActivitiesCard">
           <div class="folder-tab-flap">Core Drivers</div>
           <div class="folder-card-body">
@@ -824,7 +808,7 @@
           </div>
         </div>
 
-        <!-- PROBLEM 5: Profile Share Button -->
+        <!-- Profile Share Button -->
         <button class="profile-share-btn" onclick="shareProfile()"><span style="font-size:0.8rem;">📤</span> SHARE ID</button>
 
       </div>
@@ -1012,6 +996,7 @@
     let popTimerCounter = 0;
     let selectedStarRating1 = 0;
     let selectedStarRating2 = 0;
+    let radarChartInstance = null;
 
     let privacySettings = { archetype: true, radar: true, top3: true, live: true };
 
@@ -1060,7 +1045,6 @@
       }
     }, 1000);
 
-    /* PROBLEM 3: Visually readable colors on both dark and white backgrounds + NO drop shadows */
     function triggerRandomSkillPop() {
       const activeTasks = growthTasks.concat(recoveryTasks).filter(t => t.isPlaying);
       if (activeTasks.length === 0) return;
@@ -1075,7 +1059,6 @@
       popEl.className = 'skill-pop-particle';
       popEl.innerText = `+${gainAmount} ${randomSkill.name}`;
 
-      // High contrast readable colors
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       const popColors = isDark 
         ? ['#00e5ff', '#ff2a70', '#ffb300', '#00ff66', '#e040fb'] 
@@ -1286,7 +1269,6 @@
       document.getElementById('cardDetailModal').classList.add('active');
     }
 
-    /* PROBLEM 2: Action button row with bottom-left Edit (✏️) and Delete (🗑️) square icons + precise short main label */
     function renderModalInteractiveBody(isRecovery = false) {
       const task = activeSelectedTask;
       const body = document.getElementById('modalInteractiveBody');
@@ -1336,7 +1318,6 @@
         `;
       }
 
-      // Bottom action row putting ✏️ Edit and 🗑️ Delete at bottom left corner
       const editDeleteSquares = isRecovery ? '' : `
         <button class="btn-square-icon" title="Edit Card" onclick="openEditCardModal()">✏️</button>
         <button class="btn-square-icon danger" title="Delete Card" onclick="deleteCurrentCard()">🗑️</button>
@@ -1583,7 +1564,6 @@
       });
     }
 
-    /* PROBLEM 5: Profile Share Functionality */
     function shareProfile() {
       if (navigator.share) {
         navigator.share({
@@ -1626,6 +1606,52 @@
       renderProfileTab();
     }
 
+    function renderRadarChart(totals) {
+      const canvas = document.getElementById('radarChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      if (radarChartInstance) {
+        radarChartInstance.destroy();
+      }
+
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const textColor = isDark ? '#f0f2fe' : '#0d0926';
+      const gridColor = isDark ? 'rgba(0, 240, 255, 0.25)' : 'rgba(0, 141, 168, 0.25)';
+
+      radarChartInstance = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: ['Intellect', 'Creativity', 'Discipline', 'Empathy'],
+          datasets: [{
+            label: 'Attributes',
+            data: [totals.Intellect, totals.Creativity, totals.Discipline, totals.Empathy],
+            backgroundColor: isDark ? 'rgba(0, 229, 255, 0.25)' : 'rgba(0, 141, 168, 0.25)',
+            borderColor: isDark ? '#00e5ff' : '#008da8',
+            borderWidth: 2,
+            pointBackgroundColor: isDark ? '#ff007f' : '#c20060',
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: false,
+          maintainAspectRatio: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            r: {
+              angleLines: { color: gridColor },
+              grid: { color: gridColor },
+              pointLabels: {
+                color: textColor,
+                font: { family: 'Geist Mono', size: 10, weight: 'bold' }
+              },
+              ticks: { display: false, beginAtZero: true }
+            }
+          }
+        }
+      });
+    }
+
     function renderProfileTab() {
       const matrix = calculateIdentityMatrix();
 
@@ -1666,7 +1692,6 @@
       document.getElementById('radarChart').style.display = privacySettings.radar ? 'block' : 'none';
       if (privacySettings.radar) renderRadarChart(matrix.totals);
 
-      /* PROBLEM 4: Top 3 Activities in Profile tab render as actual Trading Cards */
       const top3Container = document.getElementById('topActivitiesCard');
       top3Container.style.display = privacySettings.top3 ? 'block' : 'none';
       
@@ -1693,55 +1718,28 @@
           </div>
           <div class="trading-card-banner">
             <div class="trading-card-name">${act.name}</div>
-            <div class="trading-card-timer-hero">${(act.secondsLogged / 3600).toFixed(1)}h</div>
+            <div style="font-size:0.65rem; color:var(--neon-cyan); font-weight:700;">${(act.secondsLogged / 3600).toFixed(1)}h</div>
           </div>
         `;
         top3List.appendChild(cardWrapper);
       });
 
-      const houseList = document.getElementById('houseDistributionList');
-      houseList.innerHTML = '';
+      const houseContainer = document.getElementById('houseDistributionList');
+      houseContainer.innerHTML = '';
       
-      const houseScores = {
-        'House of Tacticians': matrix.totals.Intellect,
-        'House of Artisans': matrix.totals.Creativity,
-        'House of Monks': matrix.totals.Discipline,
-        'House of Beacons': matrix.totals.Empathy
-      };
+      const houses = [
+        { name: 'House of Artisans', val: '45%' },
+        { name: 'House of Tacticians', val: '30%' },
+        { name: 'House of Monks', val: '15%' },
+        { name: 'House of Beacons', val: '10%' }
+      ];
 
-      Object.keys(houseScores).forEach(h => {
-        const hPct = ((houseScores[h] / grandTotal) * 100).toFixed(1);
+      houses.forEach(h => {
         const row = document.createElement('div');
         row.style.display = 'flex';
         row.style.justifyContent = 'space-between';
-        row.innerHTML = `<span>${h}</span><span style="font-weight:700; color:var(--neon-cyan);">${hPct}%</span>`;
-        houseList.appendChild(row);
-      });
-    }
-
-    let radarChartInstance = null;
-    function renderRadarChart(totals) {
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const gridColor = isDark ? 'rgba(0, 240, 255, 0.2)' : 'rgba(0, 180, 216, 0.25)';
-      const ctx = document.getElementById('radarChart').getContext('2d');
-      
-      if (radarChartInstance) radarChartInstance.destroy();
-      radarChartInstance = new Chart(ctx, {
-        type: 'radar',
-        data: {
-          labels: ['Intellect', 'Creativity', 'Discipline', 'Empathy'],
-          datasets: [{
-            data: [totals.Intellect, totals.Creativity, totals.Discipline, totals.Empathy],
-            backgroundColor: 'rgba(230, 0, 115, 0.2)',
-            borderColor: '#e60073',
-            pointBackgroundColor: '#00b4d8'
-          }]
-        },
-        options: { 
-          animation: false,
-          scales: { r: { angleLines: { color: gridColor }, grid: { color: gridColor }, ticks: { display: false } } }, 
-          plugins: { legend: { display: false } } 
-        }
+        row.innerHTML = `<span>${h.name}</span><span style="color:var(--neon-cyan); font-weight:700;">${h.val}</span>`;
+        houseContainer.appendChild(row);
       });
     }
 
