@@ -229,13 +229,23 @@
     .trading-card-outer:hover { transform: translateY(-2px); }
 
     .trading-card-outer.is-active-running {
-      border-color: transparent;
-      box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+      border-color: var(--card-color, var(--neon-cyan));
+      box-shadow: 0 0 10px 1px color-mix(in srgb, var(--card-color, var(--neon-cyan)) 55%, transparent);
     }
+    /* PROBLEM 2: a narrow shimmer point traces just the border ring, clockwise, at a steady pace */
     .trading-card-outer.is-active-running::after {
-      content: ''; position: absolute; inset: -35%; z-index: 0; pointer-events: none;
-      background: conic-gradient(from 0deg, transparent 0 63%, var(--card-color, var(--neon-cyan)) 79%, transparent 92%);
-      animation: smoothGlow 2.8s linear infinite; will-change: transform;
+      content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+      border-radius: inherit; padding: 2px;
+      background: conic-gradient(from var(--border-angle),
+        transparent 0deg,
+        transparent 336deg,
+        #ffffff 350deg,
+        var(--card-color, var(--neon-cyan)) 360deg);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      animation: rotateBorder 3.6s linear infinite;
+      will-change: transform;
     }
     .trading-card-outer.is-active-running > * { position: relative; z-index: 2; }
 
@@ -243,7 +253,6 @@
       syntax: '<angle>'; initial-value: 0deg; inherits: false;
     }
     @keyframes rotateBorder { to { --border-angle: 360deg; } }
-    @keyframes smoothGlow { to { transform: rotate(360deg); } }
 
     .trading-card-outer::before {
       content: ''; position: absolute; inset: 2px;
@@ -327,6 +336,21 @@
     .stats-pie-card { background: var(--card-bg); border: 1px solid var(--neon-cyan); border-radius: 14px; padding: 12px; text-align: center; min-width: 0; }
     .stats-pie-title { color: var(--neon-cyan); font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; margin-bottom: 8px; }
     .stats-pie-card canvas { width: 100% !important; height: auto !important; aspect-ratio: 1; }
+
+    /* PROBLEM 3: AM/PM toggle for the clock chart */
+    .clock-toggle-row { display: flex; justify-content: center; gap: 8px; }
+    .clock-toggle-btn {
+      background: var(--card-bg); border: 1px solid var(--neon-cyan); color: var(--text-muted);
+      padding: 7px 22px; border-radius: 14px; font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; cursor: pointer;
+    }
+    .clock-toggle-btn.active { background: var(--nav-pink-bg); border-color: var(--nav-pink); color: var(--text); }
+
+    /* PROBLEM 5: activity list doubles as the chart legend; header holds the category sort/filter */
+    .activity-list-header { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+    .activity-list-header select {
+      background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text);
+      font-family: var(--font-mono); font-size: 0.75rem; border-radius: 8px; padding: 5px 8px;
+    }
     .stats-empty { color: var(--text-muted); font-family: var(--font-mono); font-size: 0.78rem; text-align: center; padding: 18px 8px; }
     .stats-bar-track { flex: 1; height: 8px; background: rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; margin: 0 12px; }
     .stats-bar-fill { height: 100%; border-radius: inherit; background: var(--nav-pink); }
@@ -473,8 +497,8 @@
     }
 
     .profile-identity-info { display: flex; flex-direction: column; gap: 4px; padding-top: 6px; }
-    .profile-display-name { font-family: var(--font-serif); font-size: 1.7rem; font-weight: 700; color: var(--text); }
-    .profile-username { font-size: 0.85rem; color: var(--text-muted); }
+    .profile-display-name { font-family: var(--font-serif); font-size: 1.7rem; font-weight: 700; color: var(--text); cursor: pointer; }
+    .profile-username { font-size: 0.85rem; color: var(--text-muted); cursor: pointer; }
     .profile-archetype-tag {
       font-size: 0.72rem; font-weight: 800; color: var(--neon-cyan);
       background: rgba(0,240,255,0.08); border: 1px solid var(--neon-cyan);
@@ -602,14 +626,24 @@
     }
 
     .full-trading-card.card-active-glow {
-      box-shadow: 0 0 12px var(--modal-color, var(--neon-cyan));
-      border-color: transparent;
+      box-shadow: 0 0 12px 1px color-mix(in srgb, var(--modal-color, var(--neon-cyan)) 55%, transparent);
+      border-color: var(--modal-color, var(--neon-cyan));
       isolation: isolate;
     }
+    /* PROBLEM 2: narrow shimmer point tracing the card border, clockwise */
     .full-trading-card.card-active-glow::after {
-      content: ''; position: absolute; inset: -30%; z-index: 0; pointer-events: none;
-      background: conic-gradient(from 0deg, transparent 0 63%, var(--modal-color, var(--neon-cyan)) 79%, transparent 92%);
-      animation: smoothGlow 2.8s linear infinite; will-change: transform;
+      content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+      border-radius: inherit; padding: 3px;
+      background: conic-gradient(from var(--border-angle),
+        transparent 0deg,
+        transparent 336deg,
+        #ffffff 350deg,
+        var(--modal-color, var(--neon-cyan)) 360deg);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      animation: rotateBorder 3.6s linear infinite;
+      will-change: transform;
     }
     .full-trading-card.card-active-glow > * { position: relative; z-index: 1; }
 
@@ -747,9 +781,16 @@
     <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
     <div class="drawer" id="sideDrawer">
       <div style="font-family: var(--font-serif); font-size: 1.6rem; border-bottom: 1px solid var(--neon-cyan); padding-bottom: 12px; color:var(--neon-cyan);">SYSTEM MENU</div>
-      <div style="padding:14px; background:rgba(0, 240, 255, 0.05); border:1px solid var(--neon-cyan); cursor:pointer; border-radius:10px; font-size:0.9rem;" onclick="toggleDrawer()">✕ Close Menu</div>
-      <div class="drawer-section-title">ACTION CATEGORIES</div>
-      <div class="category-editor-list" id="categoryEditorList"></div>
+
+      <!-- PROBLEM 7: category renaming now lives nested inside this button, no standalone Close Menu row -->
+      <div style="padding:14px; background:rgba(0, 240, 255, 0.05); border:1px solid var(--neon-cyan); cursor:pointer; border-radius:10px; font-size:0.9rem; display:flex; justify-content:space-between; align-items:center;" onclick="toggleCategoryEditor()">
+        <span>⚙️ Edit Categories</span>
+        <span id="categoryEditorChevron">▾</span>
+      </div>
+      <div class="category-editor-list" id="categoryEditorList" style="display:none; padding-left:4px;"></div>
+
+      <!-- PROBLEM 8: Log History entry point -->
+      <div style="padding:14px; background:rgba(0, 240, 255, 0.05); border:1px solid var(--neon-cyan); cursor:pointer; border-radius:10px; font-size:0.9rem;" onclick="openLogHistory()">🕘 Log History</div>
     </div>
 
     <!-- TAB 1: ACTION VIEW -->
@@ -816,17 +857,32 @@
         <button id="statsNextBtn" onclick="shiftStatsDate(1)" style="background:none; border:none; color:var(--neon-cyan); cursor:pointer;">►</button>
       </div>
       <div style="font-family: var(--font-serif); font-size: 1.35rem; color: var(--neon-cyan); margin-top: 8px;">Activity Time Analytics</div>
-      <div class="stats-pie-grid">
-        <div class="stats-pie-card">
-          <div class="stats-pie-title">AM CLOCK // 00:00–12:00</div>
-          <canvas id="activityPieChart"></canvas>
-        </div>
-        <div class="stats-pie-card">
-          <div class="stats-pie-title">PM CLOCK // 12:00–24:00</div>
-          <canvas id="categoryPieChart"></canvas>
-        </div>
+
+      <div class="clock-toggle-row">
+        <button class="clock-toggle-btn active" id="clockToggleAM" onclick="setStatsClockHalf('AM')">AM</button>
+        <button class="clock-toggle-btn" id="clockTogglePM" onclick="setStatsClockHalf('PM')">PM</button>
+      </div>
+      <div class="stats-pie-card" style="max-width:280px; margin:0 auto; width:100%;">
+        <div class="stats-pie-title" id="clockCardTitle">AM CLOCK // 12AM – 12PM</div>
+        <canvas id="activityClockChart"></canvas>
+      </div>
+
+      <div class="activity-list-header">
+        <span style="font-size:0.78rem; color:var(--text-muted); font-weight:700;">TIME BY ACTIVITY</span>
+        <select id="timelineCategoryFilter" onchange="renderTimelineStats()">
+          <option value="all">All Categories</option>
+        </select>
       </div>
       <div class="timeline-list" id="timelineList"></div>
+    </div>
+
+    <!-- PROBLEM 8: LOG HISTORY VIEW (accessed from the menu, not a bottom-nav tab) -->
+    <div id="logHistoryView" class="view">
+      <div class="date-picker-bar" style="justify-content:flex-start; gap:14px;">
+        <button onclick="closeLogHistory()" style="background:none; border:none; color:var(--neon-cyan); font-size:1.3rem; cursor:pointer;">←</button>
+        <span style="font-family: var(--font-serif); font-size: 1.3rem; color: var(--neon-cyan);">Log History</span>
+      </div>
+      <div class="timeline-list" id="logHistoryList"></div>
     </div>
 
     <!-- TAB 4: PROFILE VIEW -->
@@ -847,8 +903,8 @@
             <div class="profile-live-badge" id="profileLiveSignal" title="Live Signal Active"></div>
           </div>
           <div class="profile-identity-info">
-            <div class="profile-display-name">Alex Vance</div>
-            <div class="profile-username">ID // @alex_vance2026</div>
+            <div class="profile-display-name" id="profileDisplayNameEl" onclick="editProfileField('displayName')" title="Tap to edit">Alex Vance ✏️</div>
+            <div class="profile-username" id="profileUsernameEl" onclick="editProfileField('username')" title="Tap to edit">ID // @alex_vance2026 ✏️</div>
             <div class="profile-archetype-tag" id="profileArchetypeBadge">ZENITH CRAFTSMAN</div>
           </div>
         </div>
@@ -968,7 +1024,7 @@
         <div class="tc-header">
           <input type="text" id="createFormName" class="form-input-clean" placeholder="Activity Name..." oninput="validateCreateCardForm()" style="font-weight:bold; font-size:1.25rem;">
           <select id="createFormHpCost" onchange="validateCreateCardForm()" style="background:transparent; border:1px solid var(--text-muted); color:var(--text); font-size:0.78rem; border-radius:8px; padding:6px;">
-            <option value="">HP Cost</option>
+            <option value="">HP Cost (default 5)</option>
             <option value="2">2 HP (Easy)</option>
             <option value="5">5 HP (Mid)</option>
             <option value="10">10 HP (Hard)</option>
@@ -1041,13 +1097,14 @@
   </div>
 
   <!-- PROBLEM 3: Friend Profile Modal -->
+  <!-- PROBLEM 6: full info-sheet modal for viewing any user's profile (friends or discoverable users) -->
   <div class="modal-overlay" id="friendProfileModal" onclick="closeFriendProfileModal(event)">
     <div class="modal-card-wrapper">
-      <div class="full-trading-card" id="friendProfileCard" style="--modal-color: var(--neon-cyan);">
+      <div class="full-trading-card" id="friendProfileCard" style="--modal-color: var(--neon-cyan); gap:16px;">
         <div class="tc-header">
           <span class="tc-title" id="friendProfileName" style="font-size:1.4rem;">Friend Name</span>
         </div>
-        <div class="tc-art-frame" style="height:150px;">
+        <div class="tc-art-frame" style="height:120px;">
           <div class="tc-art-icon" id="friendProfileIcon">🌙</div>
         </div>
         <div class="tc-stats-box">
@@ -1056,8 +1113,35 @@
           <div class="tc-stat-row"><span>Archetype</span><span id="friendProfileArchetype">-</span></div>
           <div class="tc-stat-row"><span>House</span><span id="friendProfileHouse">-</span></div>
         </div>
+
+        <div class="folder-card-wrapper" style="margin-top:0;">
+          <div class="folder-tab-flap">Identity Matrix</div>
+          <div class="folder-card-body">
+            <div class="personality-bar-container">
+              <div class="personality-bar-track" id="friendPersonalityBarTrack"></div>
+              <div class="personality-legend" id="friendPersonalityLegend"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="folder-card-wrapper">
+          <div class="folder-tab-flap">Core Drivers</div>
+          <div class="folder-card-body">
+            <div style="font-size:0.72rem; color:var(--text-muted); font-weight:700;">TOP LOGGED ACTIVITIES</div>
+            <div class="top-activities-cards-rail" id="friendTopActivitiesList"></div>
+          </div>
+        </div>
+
+        <div class="folder-card-wrapper">
+          <div class="folder-tab-flap">House Distribution</div>
+          <div class="folder-card-body">
+            <div id="friendHouseDistributionList" style="display:flex; flex-direction:column; gap:8px; font-size:0.8rem;"></div>
+          </div>
+        </div>
+
         <div class="tc-bottom-action-row">
           <button class="btn-square-icon danger" title="Remove Friend" id="friendRemoveBtn" onclick="removeFriend()">🗑️</button>
+          <button class="btn-add-small" id="friendAddBtn" style="display:none; height:50px; flex-shrink:0; padding:0 16px;" onclick="addFriendFromProfile()">+ ADD</button>
           <button class="btn-action-primary-compact" onclick="closeFriendProfileModal(null, true)">CLOSE</button>
         </div>
       </div>
@@ -1169,15 +1253,41 @@
       { id: 'nutrition', name: 'Nutrition', icon: '🥗', type: 'fluid', targetML: 2000, containerML: 400, currentML: 800, hpCost: -15, skills: [{ name: 'Discipline', stars: 4 }, { name: 'Creativity', stars: 2 }] }
     ];
 
-    // PROBLEM 3: friends data
+    // PROBLEM 3/6: friends + discoverable users data, with identity-matrix totals and top activities
+    // so their full info sheet (Problem 6) has something real to render.
     let friendsList = [
-      { id: 'friend1', name: 'Jordan Lee', username: '@jordan_lee', icon: '🌙', archetype: 'Iron Mind', house: 'House of Monks', color: 'var(--color-hobbies)' },
-      { id: 'friend2', name: 'Sam Rivera', username: '@sam_rivera', icon: '🔥', archetype: 'Beacon Prime', house: 'House of Beacons', color: 'var(--color-work)' }
+      { id: 'friend1', name: 'Jordan Lee', username: '@jordan_lee', icon: '🌙', archetype: 'Iron Mind', house: 'House of Monks', color: 'var(--color-hobbies)',
+        totals: { Intellect: 22, Creativity: 14, Discipline: 48, Empathy: 16 },
+        topActivities: [
+          { name: 'Gym', icon: '🏋️', hours: 5.2, hpCost: 10, color: 'var(--color-hobbies)' },
+          { name: 'Reading', icon: '📚', hours: 3.4, hpCost: 5, color: 'var(--color-work)' }
+        ] },
+      { id: 'friend2', name: 'Sam Rivera', username: '@sam_rivera', icon: '🔥', archetype: 'Beacon Prime', house: 'House of Beacons', color: 'var(--color-work)',
+        totals: { Intellect: 18, Creativity: 20, Discipline: 15, Empathy: 47 },
+        topActivities: [
+          { name: 'Volunteering', icon: '🤝', hours: 4.1, hpCost: 5, color: 'var(--color-social)' },
+          { name: 'Journaling', icon: '📓', hours: 2.6, hpCost: 2, color: 'var(--color-other)' }
+        ] }
     ];
     let discoverableUsers = [
-      { id: 'user3', name: 'Taylor Chen', username: '@taylor_chen', icon: '⭐', archetype: 'Deep Creator', house: 'House of Artisans', color: 'var(--color-media)' },
-      { id: 'user4', name: 'Morgan Blake', username: '@morgan_blake', icon: '🌊', archetype: 'Grandmaster', house: 'House of Monks', color: 'var(--color-chores)' },
-      { id: 'user5', name: 'Riley Park', username: '@riley_park', icon: '💫', archetype: 'Vector One', house: 'House of Tacticians', color: 'var(--color-social)' }
+      { id: 'user3', name: 'Taylor Chen', username: '@taylor_chen', icon: '⭐', archetype: 'Deep Creator', house: 'House of Artisans', color: 'var(--color-media)',
+        totals: { Intellect: 12, Creativity: 51, Discipline: 19, Empathy: 18 },
+        topActivities: [
+          { name: 'Digital Art', icon: '🎨', hours: 6.0, hpCost: 5, color: 'var(--color-media)' },
+          { name: 'Photography', icon: '📷', hours: 2.9, hpCost: 5, color: 'var(--color-hobbies)' }
+        ] },
+      { id: 'user4', name: 'Morgan Blake', username: '@morgan_blake', icon: '🌊', archetype: 'Grandmaster', house: 'House of Monks', color: 'var(--color-chores)',
+        totals: { Intellect: 34, Creativity: 10, Discipline: 44, Empathy: 12 },
+        topActivities: [
+          { name: 'Meal Prep', icon: '🍱', hours: 3.3, hpCost: 5, color: 'var(--color-chores)' },
+          { name: 'Coding', icon: '💻', hours: 5.5, hpCost: 10, color: 'var(--color-work)' }
+        ] },
+      { id: 'user5', name: 'Riley Park', username: '@riley_park', icon: '💫', archetype: 'Vector One', house: 'House of Tacticians', color: 'var(--color-social)',
+        totals: { Intellect: 40, Creativity: 22, Discipline: 20, Empathy: 18 },
+        topActivities: [
+          { name: 'Chess', icon: '♟️', hours: 4.7, hpCost: 5, color: 'var(--color-work)' },
+          { name: 'Podcasts', icon: '🎧', hours: 2.1, hpCost: 2, color: 'var(--color-media)' }
+        ] }
     ];
     let activeFriendId = null;
 
@@ -1187,13 +1297,16 @@
     let sleepPopTimerCounter = 0;
     let statsDate = new Date();
     let activityHistory = {};
-    let activityPieChartInstance = null;
-    let categoryPieChartInstance = null;
+    let activityClockChartInstance = null;
+    let statsClockHalf = new Date().getHours() < 12 ? 'AM' : 'PM';
     let creatingRecoveryCard = false;
     let selectedStarRating1 = 0;
     let selectedStarRating2 = 0;
 
     let privacySettings = { archetype: true, radar: true, top3: true, live: true };
+
+    // PROBLEM 9: editable identity
+    let userProfile = { displayName: 'Alex Vance', username: '@alex_vance2026' };
 
     // PROBLEM 5: doodle state
     let profileAvatarDataUrl = null;
@@ -1244,13 +1357,17 @@
         activityHistory[key][task.id] = {
           id: task.id, name: task.name, icon: task.icon,
           category: task.category || 'recovery',
-           color: task.customColor || 'var(--color-recovery)', seconds: 0, amSeconds: 0, pmSeconds: 0
+           color: task.customColor || 'var(--color-recovery)', seconds: 0, amSeconds: 0, pmSeconds: 0,
+          hourSeconds: new Array(24).fill(0)
         };
       }
       const entry = activityHistory[key][task.id];
+      const nowHour = new Date().getHours();
       entry.seconds++;
-      if (new Date().getHours() < 12) entry.amSeconds++;
+      if (nowHour < 12) entry.amSeconds++;
       else entry.pmSeconds++;
+      if (!entry.hourSeconds) entry.hourSeconds = new Array(24).fill(0);
+      entry.hourSeconds[nowHour]++;
       entry.name = task.name;
       entry.icon = task.icon;
       entry.category = task.category || 'recovery';
@@ -1340,9 +1457,26 @@
     }
 
     function toggleDrawer() {
-      document.getElementById('sideDrawer').classList.toggle('open');
+      const drawer = document.getElementById('sideDrawer');
+      drawer.classList.toggle('open');
       document.getElementById('drawerOverlay').classList.toggle('show');
+      if (!drawer.classList.contains('open')) {
+        // collapse the nested category editor each time the drawer is closed
+        document.getElementById('categoryEditorList').style.display = 'none';
+        document.getElementById('categoryEditorChevron').innerText = '▾';
+      }
       renderCategoryEditor();
+    }
+
+    // PROBLEM 7: category name editing is nested inside this toggle instead of always shown
+    function toggleCategoryEditor() {
+      const list = document.getElementById('categoryEditorList');
+      const chevron = document.getElementById('categoryEditorChevron');
+      const isHidden = list.style.display === 'none';
+      list.style.display = isHidden ? 'flex' : 'none';
+      list.style.flexDirection = 'column';
+      chevron.innerText = isHidden ? '▴' : '▾';
+      if (isHidden) renderCategoryEditor();
     }
 
     function switchMainTab(tab) {
@@ -1807,19 +1941,24 @@
       const sk1 = document.getElementById('createFormSkill1').value;
       const sk2 = document.getElementById('createFormSkill2').value;
 
-      const isComplete = creatingRecoveryCard
-        ? Boolean(name && icon)
-        : Boolean(name && icon && hp && cat && sk1 && sk2 && selectedStarRating1 > 0 && selectedStarRating2 > 0);
+      // PROBLEM 1: only the activity name is required to save a card now.
+      // Everything else (icon, HP cost, category, skills) is optional and can be filled in later.
+      const isComplete = Boolean(name);
       document.getElementById('btnSaveCard').disabled = !isComplete;
     }
 
     function saveCardForm() {
       const name = document.getElementById('createFormName').value.trim();
-      const icon = document.getElementById('createFormIcon').value.trim();
-      const hpCost = parseInt(document.getElementById('createFormHpCost').value);
-      const category = document.getElementById('createFormCategory').value;
+      // PROBLEM 1: everything below is optional now, so fall back to sensible defaults.
+      // 5 HP is the default cost for an unassigned/incomplete card.
+      const icon = document.getElementById('createFormIcon').value.trim() || '⭐';
+      const hpCost = parseInt(document.getElementById('createFormHpCost').value) || 5;
+      const category = document.getElementById('createFormCategory').value || 'other';
       const skill1Name = document.getElementById('createFormSkill1').value;
       const skill2Name = document.getElementById('createFormSkill2').value;
+      const skills = [];
+      if (skill1Name) skills.push({ name: skill1Name, stars: selectedStarRating1 || 1 });
+      if (skill2Name) skills.push({ name: skill2Name, stars: selectedStarRating2 || 1 });
 
       if (activeSelectedTask) {
         activeSelectedTask.name = name;
@@ -1827,10 +1966,7 @@
         activeSelectedTask.category = category;
         activeSelectedTask.hpCost = hpCost;
         activeSelectedTask.customColor = GROWTH_CATEGORIES[category]?.color;
-        activeSelectedTask.skills = [
-          { name: skill1Name, stars: selectedStarRating1 },
-          { name: skill2Name, stars: selectedStarRating2 }
-        ];
+        activeSelectedTask.skills = skills;
         showToast(`${name} updated!`);
       } else if (creatingRecoveryCard) {
         recoveryTasks.push({
@@ -1854,13 +1990,10 @@
           customColor: GROWTH_CATEGORIES[category]?.color,
           secondsLogged: 0,
           isPlaying: false,
-          skills: [
-            { name: skill1Name, stars: selectedStarRating1 },
-            { name: skill2Name, stars: selectedStarRating2 }
-          ]
+          skills: skills
         };
         growthTasks.push(newCard);
-        showToast(`${name} created!`);
+        showToast(`${name} created — fill in the rest anytime from Edit Card!`);
       }
 
       closeFormModal(null, true);
@@ -1902,13 +2035,40 @@
       renderTimelineStats();
     }
 
+    function resolveEntryColor(entry) {
+      const raw = entry.color || GROWTH_CATEGORIES[entry.category]?.color || 'var(--neon-cyan)';
+      if (raw.startsWith('var(')) {
+        return getComputedStyle(document.documentElement).getPropertyValue(raw.slice(4, -1)).trim() || '#00b4d8';
+      }
+      return raw;
+    }
+
+    // PROBLEM 5: activity list is sorted most-timed to least-timed, and can be filtered to one category
     function renderTimelineStats() {
       const list = document.getElementById('timelineList');
       list.innerHTML = '';
       updateStatsDateLabel();
       const dateLog = activityHistory[getDateKey(statsDate)] || {};
-      const entries = Object.values(dateLog).sort((a, b) => b.seconds - a.seconds);
-      renderStatsCharts(entries);
+      const allEntries = Object.values(dateLog);
+      renderClockChart(allEntries);
+
+      const filterSelect = document.getElementById('timelineCategoryFilter');
+      if (filterSelect && filterSelect.options.length <= 1) {
+        Object.entries(GROWTH_CATEGORIES).forEach(([key, cat]) => {
+          const opt = document.createElement('option');
+          opt.value = key;
+          opt.innerText = cat.name;
+          filterSelect.appendChild(opt);
+        });
+        const recoveryOpt = document.createElement('option');
+        recoveryOpt.value = 'recovery';
+        recoveryOpt.innerText = 'Recovery';
+        filterSelect.appendChild(recoveryOpt);
+      }
+      const filterVal = filterSelect ? filterSelect.value : 'all';
+      const entries = allEntries
+        .filter(e => filterVal === 'all' || e.category === filterVal)
+        .sort((a, b) => b.seconds - a.seconds);
 
       if (entries.length === 0) {
         list.innerHTML = '<div class="stats-empty">No tracked activities for this day.</div>';
@@ -1932,51 +2092,202 @@
       });
     }
 
-    function renderStatsCharts(entries) {
+    // PROBLEM 8: Log History — view/edit/delete individual logged entries
+    let preLogHistoryTab = 'action';
+
+    function openLogHistory() {
+      const activeNavBtn = document.querySelector('.nav-btn.active');
+      preLogHistoryTab = activeNavBtn ? activeNavBtn.id.replace('btnNav', '').toLowerCase() : 'action';
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById('logHistoryView').classList.add('active');
+      if (document.getElementById('sideDrawer').classList.contains('open')) toggleDrawer();
+      renderLogHistory();
+    }
+
+    function closeLogHistory() {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById(`${preLogHistoryTab}View`).classList.add('active');
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      const navBtn = document.getElementById(`btnNav${preLogHistoryTab.charAt(0).toUpperCase()}${preLogHistoryTab.slice(1)}`);
+      if (navBtn) navBtn.classList.add('active');
+    }
+
+    function renderLogHistory() {
+      const container = document.getElementById('logHistoryList');
+      container.innerHTML = '';
+      const dateKeys = Object.keys(activityHistory).sort((a, b) => b.localeCompare(a));
+
+      if (dateKeys.length === 0) {
+        container.innerHTML = '<div class="stats-empty">No logs yet. Start a timer to begin tracking.</div>';
+        return;
+      }
+
+      dateKeys.forEach(dateKey => {
+        const dayEntries = Object.values(activityHistory[dateKey]).sort((a, b) => b.seconds - a.seconds);
+        if (dayEntries.length === 0) return;
+
+        const header = document.createElement('div');
+        header.className = 'drawer-section-title';
+        header.style.marginTop = '8px';
+        header.innerText = dateKey;
+        container.appendChild(header);
+
+        dayEntries.forEach(entry => {
+          const row = document.createElement('div');
+          row.className = 'timeline-item';
+          row.innerHTML = `
+            <div style="display:flex; align-items:center; min-width:0; flex:1; gap:8px;">
+              <span style="font-size:1.15rem;">${entry.icon}</span>
+              <span style="font-family:var(--font-mono); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${entry.name}</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+              <span style="font-family:var(--font-mono); color:var(--neon-cyan); font-weight:700; white-space:nowrap;">${(entry.seconds / 3600).toFixed(2)}h</span>
+              <button class="btn-square-icon" style="width:34px; height:34px; font-size:0.9rem;" title="Edit log" onclick="editLogEntry('${dateKey}','${entry.id}')">✏️</button>
+              <button class="btn-square-icon danger" style="width:34px; height:34px; font-size:0.9rem;" title="Delete log" onclick="deleteLogEntry('${dateKey}','${entry.id}')">🗑️</button>
+            </div>
+          `;
+          container.appendChild(row);
+        });
+      });
+    }
+
+    function editLogEntry(dateKey, taskId) {
+      const entry = activityHistory[dateKey]?.[taskId];
+      if (!entry) return;
+      const currentHours = (entry.seconds / 3600).toFixed(2);
+      const input = prompt(`Edit logged hours for "${entry.name}" on ${dateKey}:`, currentHours);
+      if (input === null) return;
+      const newHours = parseFloat(input);
+      if (isNaN(newHours) || newHours < 0) { showToast('Please enter a valid, non-negative number of hours.'); return; }
+
+      const newSeconds = Math.round(newHours * 3600);
+      const deltaSeconds = newSeconds - entry.seconds;
+      const scale = entry.seconds > 0 ? newSeconds / entry.seconds : 0;
+
+      entry.seconds = newSeconds;
+      entry.amSeconds = Math.round((entry.amSeconds || 0) * scale);
+      entry.pmSeconds = Math.round((entry.pmSeconds || 0) * scale);
+      if (entry.hourSeconds) entry.hourSeconds = entry.hourSeconds.map(s => Math.round(s * scale));
+
+      applyLogSecondsChange(taskId, deltaSeconds);
+      renderLogHistory();
+      showToast('Log updated.');
+    }
+
+    function deleteLogEntry(dateKey, taskId) {
+      const entry = activityHistory[dateKey]?.[taskId];
+      if (!entry) return;
+      if (!confirm(`Delete this log for "${entry.name}" on ${dateKey}?`)) return;
+
+      applyLogSecondsChange(taskId, -entry.seconds);
+      delete activityHistory[dateKey][taskId];
+      if (Object.keys(activityHistory[dateKey]).length === 0) delete activityHistory[dateKey];
+
+      renderLogHistory();
+      showToast('Log deleted — HP and stats readjusted.');
+    }
+
+    // Readjusts the underlying task's total time (which drives stats, identity matrix, top activities)
+    // and, for recovery activities that actually grant HP over time (currently just Sleep, at the
+    // same 0.02%-per-20-seconds rate used while the timer runs), readjusts HP to match.
+    function applyLogSecondsChange(taskId, deltaSeconds) {
+      const task = growthTasks.concat(recoveryTasks).find(t => t.id === taskId);
+      if (task) task.secondsLogged = Math.max(0, task.secondsLogged + deltaSeconds);
+
+      if (taskId === 'sleep') {
+        currentHP = Math.max(0, Math.min(100, currentHP + (deltaSeconds / 20) * 0.02));
+        updateHealthDisplay();
+      }
+
+      updateUI();
+      if (document.getElementById('statsView').classList.contains('active')) renderTimelineStats();
+      if (document.getElementById('profileView').classList.contains('active')) renderProfileTab();
+    }
+
+    // PROBLEM 3: toggle which 12-hour half of the day the clock chart shows
+    function setStatsClockHalf(half) {
+      statsClockHalf = half;
+      document.getElementById('clockToggleAM').classList.toggle('active', half === 'AM');
+      document.getElementById('clockTogglePM').classList.toggle('active', half === 'PM');
+      renderTimelineStats();
+    }
+
+    // PROBLEM 3+4: a real 12-hour clock face. Every hour gets an equal 30° wedge positioned at its
+    // actual clock position (12 at top, moving clockwise) — this is a PIE (no cutout), not a donut,
+    // and it's positional rather than proportional: a 6-9 activity fills the bottom-left quarter.
+    // PROBLEM 5: no chart legend — the activity list below the chart is the legend.
+    function renderClockChart(entries) {
       if (typeof Chart === 'undefined') return;
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const textColor = isDark ? '#f0f2fe' : '#0d0926';
-      const palette = ['#00b4d8', '#d6005f', '#7b2cbf', '#e08a00', '#008a3b', '#b30059', '#5200b3'];
-      const activityCanvas = document.getElementById('activityPieChart');
-      const categoryCanvas = document.getElementById('categoryPieChart');
-      if (!activityCanvas || !categoryCanvas) return;
+      const canvas = document.getElementById('activityClockChart');
+      if (!canvas) return;
+      if (activityClockChartInstance) activityClockChartInstance.destroy();
 
-      if (activityPieChartInstance) activityPieChartInstance.destroy();
-      if (categoryPieChartInstance) categoryPieChartInstance.destroy();
+      const isPM = statsClockHalf === 'PM';
+      document.getElementById('clockCardTitle').innerText = isPM ? 'PM CLOCK // 12PM – 12AM' : 'AM CLOCK // 12AM – 12PM';
+      const baseHour = isPM ? 12 : 0;
 
-      const getClockData = bucket => {
-        const clockEntries = entries.filter(entry => entry[bucket] > 0);
-        return clockEntries.length
-          ? { labels: clockEntries.map(entry => entry.name), values: clockEntries.map(entry => entry[bucket]) }
-          : { labels: ['No tracked time'], values: [1] };
-      };
-      const amData = getClockData('amSeconds');
-      const pmData = getClockData('pmSeconds');
-      const hasAmData = entries.some(entry => entry.amSeconds > 0);
-      const hasPmData = entries.some(entry => entry.pmSeconds > 0);
+      const wedgeLabels = [];
+      const wedgeColors = [];
+      for (let i = 0; i < 12; i++) {
+        const hour = baseHour + i;
+        const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+        const suffix = hour < 12 ? 'AM' : 'PM';
 
-      const baseOptions = {
-        responsive: true,
-        animation: { duration: 450 },
-        plugins: { legend: { display: false } },
-        cutout: '62%'
-      };
-      activityPieChartInstance = new Chart(activityCanvas.getContext('2d'), {
-        type: 'doughnut',
-        data: { labels: amData.labels, datasets: [{ data: amData.values, backgroundColor: hasAmData ? palette : ['rgba(128,128,150,0.35)'], borderWidth: 1 }] },
-        options: { ...baseOptions, plugins: { legend: { position: 'bottom', labels: { color: textColor, boxWidth: 10, font: { size: 9 } } } } }
+        let topEntry = null;
+        entries.forEach(entry => {
+          const secs = entry.hourSeconds ? entry.hourSeconds[hour] : 0;
+          if (secs > 0 && (!topEntry || secs > topEntry.secs)) topEntry = { entry, secs };
+        });
+
+        wedgeLabels.push(topEntry ? `${displayHour}${suffix} — ${topEntry.entry.name} (${Math.round(topEntry.secs / 60)}m)` : `${displayHour}${suffix} — untracked`);
+        wedgeColors.push(topEntry ? resolveEntryColor(topEntry.entry) : 'rgba(128,128,150,0.18)');
+      }
+
+      activityClockChartInstance = new Chart(canvas.getContext('2d'), {
+        type: 'pie',
+        data: { labels: wedgeLabels, datasets: [{ data: new Array(12).fill(1), backgroundColor: wedgeColors, borderWidth: 1 }] },
+        options: {
+          responsive: true,
+          animation: { duration: 450 },
+          rotation: 0, // Chart.js pie/doughnut 0° = 12 o'clock, drawn clockwise — matches real clock hour positions
+          plugins: {
+            legend: { display: false }, // PROBLEM 5: legend removed — activity list below is the legend
+            tooltip: { callbacks: { label: ctx => ctx.label, title: () => '' } }
+          }
+        }
       });
-      categoryPieChartInstance = new Chart(categoryCanvas.getContext('2d'), {
-        type: 'doughnut',
-        data: { labels: pmData.labels, datasets: [{ data: pmData.values, backgroundColor: hasPmData ? palette.slice().reverse() : ['rgba(128,128,150,0.35)'], borderWidth: 1 }] },
-        options: { ...baseOptions, plugins: { legend: { position: 'bottom', labels: { color: textColor, boxWidth: 10, font: { size: 9 } } } } }
-      });
+    }
+
+    // PROBLEM 9: editable nickname (display name) and username
+    function editProfileField(field) {
+      const isName = field === 'displayName';
+      const label = isName ? 'Enter your display name:' : 'Enter your username (with or without @):';
+      const current = isName ? userProfile.displayName : userProfile.username.replace(/^@/, '');
+      const input = prompt(label, current);
+      if (input === null) return;
+      const trimmed = input.trim();
+      if (!trimmed) { showToast('That field can\'t be empty.'); return; }
+
+      if (isName) {
+        userProfile.displayName = trimmed;
+      } else {
+        userProfile.username = trimmed.startsWith('@') ? trimmed : `@${trimmed}`;
+      }
+      renderProfileIdentity();
+      showToast('Profile updated!');
+    }
+
+    function renderProfileIdentity() {
+      const nameEl = document.getElementById('profileDisplayNameEl');
+      const userEl = document.getElementById('profileUsernameEl');
+      if (nameEl) nameEl.innerText = `${userProfile.displayName} ✏️`;
+      if (userEl) userEl.innerText = `ID // ${userProfile.username} ✏️`;
     }
 
     function shareProfile() {
       if (navigator.share) {
         navigator.share({
-          title: 'Alex Vance - Life Engine ID',
+          title: `${userProfile.displayName} - Life Engine ID`,
           text: 'Check out my Archetype Identity Record on My 24h Life Engine!',
           url: window.location.href,
         }).catch(() => {});
@@ -1986,6 +2297,8 @@
       }
     }
 
+    // PROBLEM 10: leveling in the identity matrix / skill web is slowed down —
+    // lowered the per-hour multiplier so attributes (and archetype unlocks) climb more gradually.
     function calculateIdentityMatrix() {
       const totals = { Intellect: 0, Creativity: 0, Discipline: 0, Empathy: 0 };
 
@@ -1994,7 +2307,7 @@
         if (task.skills) {
           task.skills.forEach(skill => {
             if (totals[skill.name] !== undefined) {
-              totals[skill.name] += skill.stars * hoursLogged * 10;
+              totals[skill.name] += skill.stars * hoursLogged * 3;
             }
           });
         }
@@ -2047,9 +2360,12 @@
         list.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding:12px 0;">No more users to discover right now.</div>`;
       }
 
+      // PROBLEM 6: the row itself opens that user's full profile info sheet; the button just adds.
       discoverableUsers.forEach(user => {
         const row = document.createElement('div');
         row.className = 'discover-user-row';
+        row.style.cursor = 'pointer';
+        row.onclick = () => openUserProfileModal(user.id);
         row.innerHTML = `
           <div class="discover-user-left">
             <div class="discover-user-avatar" style="--card-color:${user.color};">${user.icon}</div>
@@ -2058,7 +2374,7 @@
               <div class="discover-user-sub">${user.username} · ${user.archetype}</div>
             </div>
           </div>
-          <button class="btn-add-small" onclick="addFriend('${user.id}')">+ ADD</button>
+          <button class="btn-add-small" onclick="event.stopPropagation(); addFriend('${user.id}')">+ ADD</button>
         `;
         list.appendChild(row);
       });
@@ -2080,22 +2396,93 @@
       showToast(`${user.name} added as a friend!`);
       openAddFriendModal();
       renderFriendsRail();
+      if (document.getElementById('friendProfileModal').classList.contains('active') && activeFriendId === userId) {
+        openUserProfileModal(userId);
+      }
     }
 
-    function openFriendProfileModal(friendId) {
-      const friend = friendsList.find(f => f.id === friendId);
-      if (!friend) return;
-      activeFriendId = friendId;
+    function addFriendFromProfile() {
+      if (!activeFriendId) return;
+      addFriend(activeFriendId);
+    }
 
-      document.getElementById('friendProfileCard').style.setProperty('--modal-color', friend.color);
-      document.getElementById('friendProfileName').innerText = friend.name;
-      document.getElementById('friendProfileIcon').innerText = friend.icon;
-      document.getElementById('friendProfileUsername').innerText = friend.username;
-      document.getElementById('friendProfileArchetype').innerText = friend.archetype;
-      document.getElementById('friendProfileHouse').innerText = friend.house;
+    // PROBLEM 6: view ANY user's profile — friend or not-yet-friend — as a full info sheet
+    function openUserProfileModal(userId) {
+      const friend = friendsList.find(u => u.id === userId);
+      const user = friend || discoverableUsers.find(u => u.id === userId);
+      if (!user) return;
+      activeFriendId = userId;
+      const isFriend = Boolean(friend);
+
+      document.getElementById('friendProfileCard').style.setProperty('--modal-color', user.color);
+      document.getElementById('friendProfileName').innerText = user.name;
+      document.getElementById('friendProfileIcon').innerText = user.icon;
+      document.getElementById('friendProfileUsername').innerText = user.username;
+      document.getElementById('friendProfileArchetype').innerText = user.archetype;
+      document.getElementById('friendProfileHouse').innerText = user.house;
+
+      document.getElementById('friendRemoveBtn').style.display = isFriend ? 'flex' : 'none';
+      document.getElementById('friendAddBtn').style.display = isFriend ? 'none' : 'flex';
+
+      const totals = user.totals || { Intellect: 0, Creativity: 0, Discipline: 0, Empathy: 0 };
+      const grandTotal = Object.values(totals).reduce((a, b) => a + b, 0) || 1;
+      const attrColors = {
+        Intellect: 'var(--color-intellect)', Creativity: 'var(--color-creativity)',
+        Discipline: 'var(--color-discipline)', Empathy: 'var(--color-empathy)'
+      };
+      const track = document.getElementById('friendPersonalityBarTrack');
+      const legend = document.getElementById('friendPersonalityLegend');
+      track.innerHTML = '';
+      legend.innerHTML = '';
+      Object.keys(totals).forEach(attr => {
+        const pct = ((totals[attr] / grandTotal) * 100).toFixed(1);
+        const seg = document.createElement('div');
+        seg.className = 'personality-segment';
+        seg.style.width = `${pct}%`;
+        seg.style.background = attrColors[attr];
+        track.appendChild(seg);
+        const legItem = document.createElement('div');
+        legItem.className = 'legend-item';
+        legItem.innerHTML = `<div class="legend-dot" style="background:${attrColors[attr]};"></div><span>${attr}: ${pct}%</span>`;
+        legend.appendChild(legItem);
+      });
+
+      const topList = document.getElementById('friendTopActivitiesList');
+      topList.innerHTML = '';
+      (user.topActivities || []).forEach(act => {
+        const cardWrapper = document.createElement('div');
+        cardWrapper.className = 'trading-card-outer';
+        cardWrapper.style.setProperty('--card-color', act.color);
+        cardWrapper.innerHTML = `
+          <div class="trading-card-top-bar"><span class="trading-card-hp-tag">-${act.hpCost} HP</span></div>
+          <div class="trading-card-halftone"><div class="trading-card-icon">${act.icon}</div></div>
+          <div class="trading-card-banner">
+            <div class="trading-card-name">${act.name}</div>
+            <div class="trading-card-timer-hero">${act.hours.toFixed(1)}h</div>
+          </div>`;
+        topList.appendChild(cardWrapper);
+      });
+
+      const houseScores = {
+        'House of Tacticians': totals.Intellect, 'House of Artisans': totals.Creativity,
+        'House of Monks': totals.Discipline, 'House of Beacons': totals.Empathy
+      };
+      const houseList = document.getElementById('friendHouseDistributionList');
+      houseList.innerHTML = '';
+      Object.keys(houseScores).forEach(h => {
+        const hPct = ((houseScores[h] / grandTotal) * 100).toFixed(1);
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.justifyContent = 'space-between';
+        row.innerHTML = `<span>${h}</span><span style="font-weight:700; color:var(--neon-cyan);">${hPct}%</span>`;
+        houseList.appendChild(row);
+      });
 
       document.getElementById('friendProfileModal').classList.add('active');
     }
+
+    // Kept as an alias so existing friend-chip calls keep working
+    function openFriendProfileModal(friendId) { openUserProfileModal(friendId); }
 
     function closeFriendProfileModal(e, force = false) {
       if (force || (e && e.target.id === 'friendProfileModal')) {
@@ -2238,6 +2625,7 @@
     }
 
     function renderProfileTab() {
+      renderProfileIdentity();
       const matrix = calculateIdentityMatrix();
 
       document.getElementById('profileArchetypeBadge').style.display = privacySettings.archetype ? 'block' : 'none';
@@ -2357,6 +2745,7 @@
       });
     }
 
+    renderProfileIdentity();
     updateUI();
   </script>
 </body>
