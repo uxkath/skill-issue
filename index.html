@@ -1,1188 +1,910 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skill Issue - Gamified Focus & Life Tracker</title>
+    <title>Skill Issue - Life System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,600;0,700;1,400&family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=VT323&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        jp: {
+                            bg: '#0B0E14',
+                            card: '#151921',
+                            panel: '#1E232D',
+                            accent: '#FF2A5F', // Neon Magenta/Pink
+                            cyan: '#00F0FF',
+                            gold: '#FFB800',
+                            text: '#E2E8F0',
+                            sub: '#94A3B8',
+                            border: '#2A3241'
+                        },
+                        journal: {
+                            bg: '#F5F2EB',
+                            card: '#FFFFFF',
+                            panel: '#EFECE6',
+                            accent: '#D9381E', // Stamp Red
+                            cyan: '#2C5E8A',   // Indigo Blue
+                            gold: '#C58B2B',
+                            text: '#2B2927',
+                            sub: '#787571',
+                            border: '#E2DDD5'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        tech: ['Orbitron', 'sans-serif'],
+                        digital: ['VT323', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    
     <style>
-        :root {
-            /* Theme Colors - Default Dark Neon */
-            --bg-main: #0B0E14;
-            --bg-card: #151A23;
-            --bg-card-hover: #1E2532;
-            --border-color: #2A3447;
-            --text-main: #E2E8F0;
-            --text-muted: #8A99AD;
-            
-            --accent-primary: #00F0FF;
-            --accent-primary-dim: rgba(0, 240, 255, 0.15);
-            --accent-secondary: #FF0055;
-            --accent-green: #00FF66;
-            --accent-yellow: #FFB800;
-            --accent-purple: #9D00FF;
-
-            /* Digital Timer Accessibility Color (Warm Soft Amber/Gold) */
-            --digital-timer-color: #FFD000;
-            --digital-timer-glow: rgba(255, 208, 0, 0.25);
-
-            /* Fonts */
-            --font-ui: 'Chakra Petch', sans-serif;
-            --font-digital: 'VT323', monospace;
-            --font-mono: 'Share Tech Mono', monospace;
-
-            /* Sizing Defaults */
-            --card-padding: 12px;
-            --font-size-base: 13px;
-            --font-size-title: 15px;
-            --font-size-lg: 18px;
-            --header-height: 52px;
-            --nav-width: 220px;
+        /* Retro Game & Journal Aesthetic Styles */
+        .bg-grid-pattern {
+            background-size: 24px 24px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+        .light .bg-grid-pattern {
+            background-size: 24px 24px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+        }
+        
+        /* Japanese Manga/Grid Accent */
+        .manga-dots {
+            background-image: radial-gradient(rgba(0, 240, 255, 0.15) 1px, transparent 0);
+            background-size: 8px 8px;
+        }
+        .light .manga-dots {
+            background-image: radial-gradient(rgba(217, 56, 30, 0.12) 1px, transparent 0);
+            background-size: 8px 8px;
         }
 
-        [data-theme="light"] {
-            --bg-main: #F0F4F8;
-            --bg-card: #FFFFFF;
-            --bg-card-hover: #F8FAFC;
-            --border-color: #CBD5E1;
-            --text-main: #0F172A;
-            --text-muted: #64748B;
-            
-            --accent-primary: #0088CC;
-            --accent-primary-dim: rgba(0, 136, 204, 0.12);
-            --accent-secondary: #E11D48;
-            --accent-green: #10B981;
-            --accent-yellow: #D97706;
-            --accent-purple: #7C3AED;
-
-            --digital-timer-color: #D97706;
-            --digital-timer-glow: rgba(217, 119, 6, 0.15);
+        /* Floating Skill Pop Animation */
+        @keyframes skillPop {
+            0% { opacity: 0; transform: translateY(15px) scale(0.8); }
+            20% { opacity: 1; transform: translateY(0px) scale(1.1); }
+            80% { opacity: 1; transform: translateY(-25px) scale(1); }
+            100% { opacity: 0; transform: translateY(-45px) scale(0.9); }
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            font-family: var(--font-ui);
-            font-size: var(--font-size-base);
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* App Container Layout */
-        #app-layout {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-
-        /* Header */
-        header {
-            height: var(--header-height);
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 16px;
-            z-index: 10;
-            flex-shrink: 0;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 700;
-            font-size: var(--font-size-lg);
-            letter-spacing: 1px;
-            color: var(--text-main);
-        }
-
-        .brand-icon {
-            width: 24px;
-            height: 24px;
-            background: var(--accent-primary);
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-            display: inline-block;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        /* Main View Container */
-        .main-content {
-            flex: 1;
-            position: relative;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 16px;
-            scroll-behavior: smooth;
-        }
-
-        .view-pane {
-            display: none;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-            animation: fadeIn 0.2s ease-in-out;
-        }
-
-        .view-pane.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Navigation Layout Refactor (Problem 1) */
-        nav.nav-bar {
-            background: var(--bg-card);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 6px 0;
-            z-index: 20;
-            flex-shrink: 0;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            color: var(--text-muted);
-            background: none;
-            border: none;
-            font-family: var(--font-ui);
-            font-size: 11px;
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 6px;
-            transition: all 0.2s;
-            width: 100%;
-        }
-
-        .nav-item .nav-icon {
-            font-size: 18px;
-        }
-
-        .nav-item.active, .nav-item:hover {
-            color: var(--accent-primary);
-            background: var(--accent-primary-dim);
-        }
-
-        .nav-item .tab-label {
-            display: block;
-            font-weight: 600;
-        }
-
-        /* Desktop & Tablet Navigation: Right Side Sidebar + Smaller Elements */
-        @media (min-width: 768px) {
-            #app-layout {
-                flex-direction: row-reverse; /* Sidebar on the Right */
-            }
-
-            header {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: var(--nav-width);
-                height: var(--header-height);
-            }
-
-            nav.nav-bar {
-                width: var(--nav-width);
-                height: 100%;
-                flex-direction: column;
-                justify-content: flex-start;
-                padding: 24px 12px;
-                gap: 8px;
-                border-top: none;
-                border-left: 1px solid var(--border-color);
-            }
-
-            .nav-item {
-                flex-direction: row;
-                justify-content: flex-start;
-                gap: 12px;
-                padding: 10px 14px;
-                font-size: 13px;
-                border-radius: 8px;
-            }
-
-            .nav-item .nav-icon {
-                font-size: 16px;
-            }
-
-            .main-content {
-                margin-top: var(--header-height);
-                height: calc(100vh - var(--header-height));
-                padding: 20px 28px;
-            }
-
-            /* Responsive Scaling down for PC/Tablet */
-            :root {
-                --card-padding: 10px;
-                --font-size-base: 12px;
-                --font-size-title: 14px;
-            }
-        }
-
-        /* General UI Components & Cards */
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: var(--card-padding);
-            margin-bottom: 14px;
-            position: relative;
-            transition: border-color 0.2s;
-        }
-
-        .card:hover {
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .card-title {
-            font-size: var(--font-size-title);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* Buttons */
-        .btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 6px 12px;
-            font-family: var(--font-ui);
-            font-size: 12px;
-            font-weight: 600;
-            border-radius: 4px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.15s;
-        }
-
-        .btn:hover {
-            background: var(--bg-card-hover);
-            border-color: var(--text-muted);
-        }
-
-        .btn-primary {
-            background: var(--accent-primary);
-            color: #000;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            opacity: 0.9;
-            background: var(--accent-primary);
-        }
-
-        .btn-danger {
-            background: rgba(255, 0, 85, 0.15);
-            color: var(--accent-secondary);
-            border: 1px solid var(--accent-secondary);
-        }
-
-        /* Digital Timer Font & Color (Problem 2) */
-        .digital-clock-display {
-            font-family: var(--font-digital);
-            font-size: 2.2rem;
-            color: var(--digital-timer-color);
-            text-shadow: 0 0 8px var(--digital-timer-glow);
-            letter-spacing: 2px;
-            line-height: 1;
-            background: rgba(0,0,0,0.3);
-            padding: 4px 10px;
-            border-radius: 4px;
-            border: 1px solid rgba(255, 208, 0, 0.2);
-            display: inline-block;
-        }
-
-        /* Activity Trading Cards Grid */
-        .deck-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 12px;
-        }
-
-        .activity-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .activity-card.active {
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 10px var(--accent-primary-dim);
-        }
-
-        .activity-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .activity-name {
-            font-weight: 700;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .intensity-badge {
-            font-size: 9px;
-            font-weight: 700;
-            padding: 2px 6px;
-            border-radius: 3px;
-            text-transform: uppercase;
-        }
-
-        .intensity-HARD { background: rgba(255, 0, 85, 0.2); color: var(--accent-secondary); border: 1px solid var(--accent-secondary); }
-        .intensity-MID { background: rgba(255, 184, 0, 0.2); color: var(--accent-yellow); border: 1px solid var(--accent-yellow); }
-        .intensity-EASY { background: rgba(0, 255, 102, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
-
-        .skills-list {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        .skill-tag {
-            background: rgba(255,255,255,0.05);
-            padding: 2px 5px;
-            border-radius: 3px;
-            border: 1px solid var(--border-color);
-        }
-
-        /* Floating / Popping FX Layer (Problem 4) */
-        #fx-canvas-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 9999;
-        }
-
-        .pop-text {
-            position: absolute;
-            font-family: var(--font-ui);
-            font-weight: 700;
-            font-size: 16px;
-            animation: floatUpAndFade 1.8s forwards cubic-bezier(0.18, 0.89, 0.32, 1.28);
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        .animate-skill-pop {
+            animation: skillPop 2.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
             pointer-events: none;
         }
 
-        @keyframes floatUpAndFade {
-            0% {
-                opacity: 0;
-                transform: translateY(0) scale(0.6);
-            }
-            15% {
-                opacity: 1;
-                transform: translateY(-10px) scale(1.1);
-            }
-            80% {
-                opacity: 0.9;
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-50px) scale(0.9);
-            }
-        }
-
-        /* Stats & Clock Chart Layout (Problem 3) */
-        .chart-container-wrapper {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 16px;
-        }
-
-        .clock-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        /* Trading Card Holographic/Border Effect */
+        .tcg-card {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
         }
-
-        .chart-box {
-            position: relative;
-            width: 100%;
-            max-width: 320px;
-            height: 320px;
-            margin: 0 auto;
+        .tcg-card:hover {
+            transform: translateY(-3px);
         }
 
-        /* Vitality HP Meter */
-        .vitality-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            padding: 10px 16px;
-            border-radius: 6px;
-        }
-
-        .hp-bar-bg {
-            flex: 1;
-            height: 14px;
-            background: rgba(0,0,0,0.4);
-            border-radius: 7px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            position: relative;
-        }
-
-        .hp-bar-fill {
-            height: 100%;
-            width: 100%;
-            background: linear-gradient(90deg, #FF0055, #FFB800, #00FF66);
-            transition: width 0.4s ease;
-        }
-
-        /* Form Inputs */
-        input, select {
-            background: var(--bg-main);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 6px 10px;
-            border-radius: 4px;
-            font-family: var(--font-ui);
-            font-size: 12px;
-        }
-
-        /* Profile ID Card Scrapbook Style */
-        .profile-id-card {
-            background: var(--bg-card);
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            padding: 16px;
-            display: grid;
-            grid-template-columns: 140px 1fr;
-            gap: 16px;
-            position: relative;
-        }
-
-        @media (max-width: 500px) {
-            .profile-id-card {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .id-photo-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
-        #avatar-canvas {
-            background: #000;
-            border: 1px dashed var(--border-color);
-            border-radius: 6px;
-            cursor: crosshair;
-        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        .dark ::-webkit-scrollbar-thumb { background: #2A3241; border-radius: 4px; }
+        .light ::-webkit-scrollbar-thumb { background: #E2DDD5; border-radius: 4px; }
     </style>
 </head>
-<body>
+<body class="bg-jp-bg text-jp-text light:bg-journal-bg light:text-journal-text font-sans min-h-screen antialiased flex flex-col md:flex-row bg-grid-pattern selection:bg-jp-accent selection:text-white transition-colors duration-300">
 
-    <div id="fx-canvas-container"></div>
+    <!-- FLOATING SKILL POP CONTAINER (GLOBAL) -->
+    <div id="pop-container" class="fixed inset-0 pointer-events-none z-50 overflow-hidden"></div>
 
-    <div id="app-layout">
-        <!-- Header -->
-        <header>
-            <div class="brand">
-                <span class="brand-icon"></span>
-                <span>SKILL ISSUE</span>
+    <!-- LEFT NAVIGATION BAR (Desktop & Tablet Optimized) -->
+    <aside class="w-full md:w-64 lg:w-72 md:min-h-screen bg-jp-panel light:bg-journal-panel border-b md:border-b-0 md:border-r border-jp-border light:border-journal-border flex flex-col justify-between z-40 shrink-0">
+        <div>
+            <!-- LOGO HEADER -->
+            <div class="p-4 lg:p-5 border-b border-jp-border light:border-journal-border flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-jp-accent flex items-center justify-center font-tech font-black text-white text-lg tracking-tighter shadow-lg shadow-jp-accent/30">
+                        SK
+                    </div>
+                    <div>
+                        <h1 class="font-tech font-bold text-base lg:text-lg tracking-wider text-jp-text light:text-journal-text uppercase flex items-center gap-1.5">
+                            SKILL ISSUE <span class="text-[10px] px-1.5 py-0.5 rounded bg-jp-cyan/20 text-jp-cyan light:bg-journal-cyan/20 light:text-journal-cyan font-mono">v2.5</span>
+                        </h1>
+                        <p class="text-[11px] text-jp-sub light:text-journal-sub tracking-widest font-mono uppercase">System Active</p>
+                    </div>
+                </div>
+                <!-- Theme Toggle -->
+                <button id="theme-toggle" class="p-2 rounded-lg bg-jp-card light:bg-journal-card border border-jp-border light:border-journal-border text-jp-sub hover:text-jp-text light:text-journal-sub light:hover:text-journal-text transition">
+                    <span class="dark:hidden">🌙</span>
+                    <span class="hidden dark:inline">☀️</span>
+                </button>
             </div>
 
-            <div class="header-actions">
-                <div class="vitality-container" style="padding: 4px 8px; gap: 8px;">
-                    <span style="font-weight:700; font-size:11px;">HP</span>
-                    <div class="hp-bar-bg" style="width: 80px; height: 10px;">
-                        <div id="header-hp-fill" class="hp-bar-fill" style="width: 100%;"></div>
+            <!-- VITALITY (HP) COMPACT DISPLAY -->
+            <div class="p-4 border-b border-jp-border light:border-journal-border bg-jp-bg/50 light:bg-journal-bg/50">
+                <div class="flex justify-between items-center text-xs font-mono mb-1.5">
+                    <span class="text-jp-sub light:text-journal-sub uppercase tracking-wider flex items-center gap-1">
+                        <span class="inline-block w-2 h-2 rounded-full bg-jp-accent animate-pulse"></span> VITALITY
+                    </span>
+                    <span id="sidebar-hp-text" class="font-bold text-jp-text light:text-journal-text">84 / 100 HP</span>
+                </div>
+                <div class="w-full bg-jp-card light:bg-journal-card h-2.5 rounded-full overflow-hidden border border-jp-border light:border-journal-border p-0.5">
+                    <div id="sidebar-hp-bar" class="bg-gradient-to-r from-jp-accent via-jp-gold to-jp-cyan h-full rounded-full transition-all duration-500" style="width: 84%;"></div>
+                </div>
+            </div>
+
+            <!-- MAIN NAVIGATION LINKS WITH LABELS -->
+            <nav class="p-3 lg:p-4 space-y-1.5">
+                <button onclick="switchTab('action')" id="nav-action" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-medium text-xs lg:text-sm transition text-white bg-jp-accent shadow-md shadow-jp-accent/20">
+                    <span class="text-base lg:text-lg">⚡</span>
+                    <span class="font-bold tracking-wide uppercase">Action Deck</span>
+                </button>
+                <button onclick="switchTab('recovery')" id="nav-recovery" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-medium text-xs lg:text-sm text-jp-sub light:text-journal-sub hover:bg-jp-card light:hover:bg-journal-card transition">
+                    <span class="text-base lg:text-lg">🌿</span>
+                    <span class="font-bold tracking-wide uppercase">Recovery</span>
+                </button>
+                <button onclick="switchTab('stats')" id="nav-stats" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-medium text-xs lg:text-sm text-jp-sub light:text-journal-sub hover:bg-jp-card light:hover:bg-journal-card transition">
+                    <span class="text-base lg:text-lg">📊</span>
+                    <span class="font-bold tracking-wide uppercase">Analytics</span>
+                </button>
+                <button onclick="switchTab('profile')" id="nav-profile" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-medium text-xs lg:text-sm text-jp-sub light:text-journal-sub hover:bg-jp-card light:hover:bg-journal-card transition">
+                    <span class="text-base lg:text-lg">👤</span>
+                    <span class="font-bold tracking-wide uppercase">Identity Card</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- FOOTER USER TAG -->
+        <div class="p-4 border-t border-jp-border light:border-journal-border bg-jp-bg/30 light:bg-journal-bg/30 hidden md:block">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-jp-cyan/20 border border-jp-cyan flex items-center justify-center font-bold text-xs text-jp-cyan">
+                    ID
+                </div>
+                <div class="overflow-hidden">
+                    <p class="text-xs font-bold truncate text-jp-text light:text-journal-text">REN_PLAYER_01</p>
+                    <p class="text-[10px] text-jp-sub light:text-journal-sub font-mono truncate">House of Artisans</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT VIEW AREA -->
+    <main class="flex-1 p-3 sm:p-5 lg:p-6 overflow-y-auto max-w-7xl mx-auto w-full space-y-6">
+
+        <!-- ==========================================
+             VIEW 1: ACTION DECK (TRADING CARDS)
+             ========================================== -->
+        <section id="view-action" class="space-y-6">
+            
+            <!-- ACTIVE EQUIPMENT SLOTS (DECK) -->
+            <div class="bg-jp-panel light:bg-journal-panel p-4 lg:p-5 rounded-2xl border border-jp-border light:border-journal-border manga-dots relative overflow-hidden">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-sm font-bold font-tech text-jp-cyan light:text-journal-cyan uppercase tracking-wider flex items-center gap-2">
+                            <span class="inline-block w-2 h-2 rounded-full bg-jp-cyan"></span> Equipped Activity Deck
+                        </h2>
+                        <p class="text-xs text-jp-sub light:text-journal-sub">Currently equipped cards active in memory.</p>
                     </div>
-                    <span id="header-hp-text" style="font-family:var(--font-mono); font-size:11px;">100/100</span>
+                    <span class="text-xs font-mono px-2.5 py-1 rounded bg-jp-card light:bg-journal-card border border-jp-border light:border-journal-border text-jp-sub" id="deck-count-badge">
+                        2 / 3 EQUIPPED
+                    </span>
                 </div>
 
-                <button class="btn" id="theme-toggle" title="Toggle Theme">🌙</button>
+                <!-- EQUIPPED CARDS GRID -->
+                <div id="equipped-deck-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Populated dynamically via JS -->
+                </div>
             </div>
-        </header>
 
-        <!-- Navigation (Right Side on PC/Tablet, Bottom on Mobile) -->
-        <nav class="nav-bar">
-            <button class="nav-item active" onclick="switchTab('action')">
-                <span class="nav-icon">⚡</span>
-                <span class="tab-label">Action</span>
-            </button>
-            <button class="nav-item" onclick="switchTab('recovery')">
-                <span class="nav-icon">🌿</span>
-                <span class="tab-label">Recovery</span>
-            </button>
-            <button class="nav-item" onclick="switchTab('stats')">
-                <span class="nav-icon">📊</span>
-                <span class="tab-label">Stats</span>
-            </button>
-            <button class="nav-item" onclick="switchTab('profile')">
-                <span class="nav-icon">👤</span>
-                <span class="tab-label">Profile ID</span>
-            </button>
-        </nav>
+            <!-- CARD COLLECTION & CREATOR HEADER -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-jp-border light:border-journal-border pb-3">
+                <div>
+                    <h2 class="text-base font-bold font-tech text-jp-text light:text-journal-text uppercase tracking-wider">
+                        Trading Card Inventory
+                    </h2>
+                    <p class="text-xs text-jp-sub light:text-journal-sub">Equip tasks from your collection or generate new skill cards.</p>
+                </div>
+                <button onclick="openCardCreatorModal()" class="px-3.5 py-2 rounded-xl bg-jp-card hover:bg-jp-border light:bg-journal-card light:hover:bg-journal-border border border-jp-border light:border-journal-border text-xs font-bold text-jp-text light:text-journal-text flex items-center gap-2 transition self-start sm:self-auto">
+                    <span>✨</span> CREATE TRADING CARD
+                </button>
+            </div>
 
-        <!-- Main Content Area -->
-        <main class="main-content">
-
-            <!-- 1. ACTION VIEW -->
-            <section id="view-action" class="view-pane active">
-                
-                <!-- Active Tracker Banner -->
-                <div class="card" style="border-left: 4px solid var(--accent-primary);">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span>CURRENT FOCUS SESSION</span>
-                        </div>
-                        <span id="active-session-badge" class="intensity-badge intensity-MID">IDLE</span>
+            <!-- CATEGORY COLLECTION RAILS -->
+            <div class="space-y-6">
+                <!-- CATEGORY: WORK / WORKOUT -->
+                <div>
+                    <h3 class="text-xs font-mono uppercase tracking-widest text-jp-sub light:text-journal-sub mb-3 flex items-center gap-2">
+                        <span class="text-jp-accent">■</span> Work & Focus Tasks
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 lg:gap-4" id="category-work-grid">
+                        <!-- Card Items Inserted Dynamically -->
                     </div>
+                </div>
 
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <!-- CATEGORY: HOBBIES & SKILLS -->
+                <div>
+                    <h3 class="text-xs font-mono uppercase tracking-widest text-jp-sub light:text-journal-sub mb-3 flex items-center gap-2">
+                        <span class="text-jp-cyan">■</span> Hobbies & Creative Operations
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 lg:gap-4" id="category-hobbies-grid">
+                        <!-- Card Items Inserted Dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==========================================
+             VIEW 2: RECOVERY MATRIX
+             ========================================== -->
+        <section id="view-recovery" class="hidden space-y-6">
+            <div class="bg-jp-panel light:bg-journal-panel p-5 rounded-2xl border border-jp-border light:border-journal-border">
+                <h2 class="text-base font-bold font-tech text-jp-text light:text-journal-text uppercase tracking-wider mb-1">
+                    System Recovery Matrix
+                </h2>
+                <p class="text-xs text-jp-sub light:text-journal-sub mb-6">Rest restores Vitality (HP). Trigger recovery protocols to maintain daily endurance.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- RECOVERY CARD 1 -->
+                    <div class="bg-jp-card light:bg-journal-card p-4 rounded-xl border border-jp-border light:border-journal-border space-y-3">
+                        <div class="flex justify-between items-start">
+                            <div class="text-2xl">😴</div>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">+15 HP / HR</span>
+                        </div>
                         <div>
-                            <h2 id="active-task-name" style="font-size: 16px; margin-bottom: 4px;">No Activity Selected</h2>
-                            <p id="active-task-sub" style="color: var(--text-muted); font-size: 11px;">Select a card from your deck below to begin grinding.</p>
+                            <h3 class="font-bold text-xs uppercase text-jp-text light:text-journal-text">Deep Rest / Nap</h3>
+                            <p class="text-[11px] text-jp-sub light:text-journal-sub">System full reboot & cell regeneration.</p>
                         </div>
+                        <button onclick="triggerRecovery(15, 'Deep Rest')" class="w-full py-2 bg-jp-panel hover:bg-jp-border light:bg-journal-panel light:hover:bg-journal-border border border-jp-border light:border-journal-border rounded-lg font-bold text-xs text-jp-text light:text-journal-text transition">
+                            INITIATE RECOVERY
+                        </button>
+                    </div>
 
-                        <!-- Refactored Accessibility Digital Timer -->
-                        <div class="digital-clock-display" id="session-timer-display">
-                            00:00:00
+                    <!-- RECOVERY CARD 2 -->
+                    <div class="bg-jp-card light:bg-journal-card p-4 rounded-xl border border-jp-border light:border-journal-border space-y-3">
+                        <div class="flex justify-between items-start">
+                            <div class="text-2xl">💧</div>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">+5 HP</span>
                         </div>
+                        <div>
+                            <h3 class="font-bold text-xs uppercase text-jp-text light:text-journal-text">Hydration Protocol</h3>
+                            <p class="text-[11px] text-jp-sub light:text-journal-sub">Log 500ml water intake.</p>
+                        </div>
+                        <button onclick="triggerRecovery(5, 'Hydration')" class="w-full py-2 bg-jp-panel hover:bg-jp-border light:bg-journal-panel light:hover:bg-journal-border border border-jp-border light:border-journal-border rounded-lg font-bold text-xs text-jp-text light:text-journal-text transition">
+                            CONSUME (+5 HP)
+                        </button>
+                    </div>
 
-                        <div style="display: flex; gap: 8px;">
-                            <button class="btn btn-primary" id="btn-toggle-timer" onclick="toggleActiveSession()">START</button>
-                            <button class="btn btn-danger" onclick="stopActiveSession()">STOP</button>
+                    <!-- RECOVERY CARD 3 -->
+                    <div class="bg-jp-card light:bg-journal-card p-4 rounded-xl border border-jp-border light:border-journal-border space-y-3">
+                        <div class="flex justify-between items-start">
+                            <div class="text-2xl">🧘</div>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">+10 HP</span>
                         </div>
+                        <div>
+                            <h3 class="font-bold text-xs uppercase text-jp-text light:text-journal-text">Mind Reset / Meditate</h3>
+                            <p class="text-[11px] text-jp-sub light:text-journal-sub">10 min quiet breathing meditation.</p>
+                        </div>
+                        <button onclick="triggerRecovery(10, 'Mind Reset')" class="w-full py-2 bg-jp-panel hover:bg-jp-border light:bg-journal-panel light:hover:bg-journal-border border border-jp-border light:border-journal-border rounded-lg font-bold text-xs text-jp-text light:text-journal-text transition">
+                            EXECUTE RESET
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==========================================
+             VIEW 3: STATS & TIME ANALYTICS
+             ========================================== -->
+        <section id="view-stats" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- ANALOG/PIE TIME CLOCK CARD -->
+                <div class="bg-jp-panel light:bg-journal-panel p-5 rounded-2xl border border-jp-border light:border-journal-border flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <h2 class="text-sm font-bold font-tech text-jp-text light:text-journal-text uppercase tracking-wider">
+                                Daily Time Allocation Clock
+                            </h2>
+                            <span class="text-xs font-mono text-jp-sub light:text-journal-sub">24-HR CYCLE</span>
+                        </div>
+                        <p class="text-xs text-jp-sub light:text-journal-sub mb-4">
+                            Real-time proportional activity wheel. Shows logged time distribution accurately without preset hourly blocks.
+                        </p>
+                    </div>
+
+                    <!-- CHART CONTAINER -->
+                    <div class="relative w-full max-w-[280px] sm:max-w-[320px] aspect-square mx-auto my-2">
+                        <canvas id="timePieChart"></canvas>
+                    </div>
+
+                    <div id="clock-legend" class="mt-4 flex flex-wrap justify-center gap-3 text-xs font-mono text-jp-sub">
+                        <!-- Populated dynamically -->
                     </div>
                 </div>
 
-                <!-- Custom Activity Creator -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">➕ Create Activity Card</div>
+                <!-- TIME METRICS & LOG HISTORY -->
+                <div class="bg-jp-panel light:bg-journal-panel p-5 rounded-2xl border border-jp-border light:border-journal-border space-y-4 flex flex-col">
+                    <h2 class="text-sm font-bold font-tech text-jp-text light:text-journal-text uppercase tracking-wider">
+                        Session Activity Breakdown
+                    </h2>
+
+                    <!-- STATS SUMMARY CARDS -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-jp-card light:bg-journal-card p-3 rounded-xl border border-jp-border light:border-journal-border">
+                            <p class="text-[10px] font-mono text-jp-sub uppercase">Total Focus Time</p>
+                            <p id="total-focus-time-text" class="text-lg font-tech font-bold text-jp-cyan light:text-journal-cyan">00h 00m</p>
+                        </div>
+                        <div class="bg-jp-card light:bg-journal-card p-3 rounded-xl border border-jp-border light:border-journal-border">
+                            <p class="text-[10px] font-mono text-jp-sub uppercase">HP Expended</p>
+                            <p id="total-hp-drained-text" class="text-lg font-tech font-bold text-jp-accent light:text-journal-accent">-0.0 HP</p>
+                        </div>
                     </div>
-                    <form id="create-card-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) gap: 8px;" onsubmit="handleCreateCard(event)">
-                        <input type="text" id="card-name-input" placeholder="Task Name" required />
-                        <select id="card-cat-input">
-                            <option value="Work">Work</option>
-                            <option value="Hobbies">Hobbies</option>
-                            <option value="Media">Media</option>
-                            <option value="Chores">Chores</option>
-                            <option value="Social">Social</option>
+
+                    <!-- LOG LIST -->
+                    <div class="flex-1">
+                        <h3 class="text-xs font-mono uppercase text-jp-sub mb-2">Logged Activity Sessions</h3>
+                        <div id="session-log-list" class="space-y-2 max-h-[220px] overflow-y-auto pr-1">
+                            <p class="text-xs text-jp-sub italic">No sessions logged for today yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==========================================
+             VIEW 4: USER IDENTITY CARD (PROFILE)
+             ========================================== -->
+        <section id="view-profile" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- ID SCRAPBOOK CARD -->
+                <div class="bg-jp-panel light:bg-journal-panel p-5 rounded-2xl border border-jp-border light:border-journal-border space-y-4 relative">
+                    <div class="flex items-center justify-between border-b border-jp-border light:border-journal-border pb-3">
+                        <span class="text-xs font-mono text-jp-cyan light:text-journal-cyan font-bold">OFFICIAL ID PASS</span>
+                        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-jp-card light:bg-journal-card text-jp-sub border border-jp-border">RANK #4</span>
+                    </div>
+
+                    <!-- AVATAR SKETCH CANVAS AREA -->
+                    <div class="flex flex-col items-center space-y-3">
+                        <div class="relative group">
+                            <canvas id="avatarCanvas" width="140" height="140" class="bg-jp-card light:bg-journal-card border-2 border-dashed border-jp-border light:border-journal-border rounded-2xl cursor-crosshair shadow-inner"></canvas>
+                            <span class="absolute bottom-1 right-1 text-[9px] bg-jp-bg/80 px-1.5 py-0.5 rounded text-jp-sub font-mono pointer-events-none">DRAW HERE</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="clearAvatarCanvas()" class="px-2.5 py-1 rounded bg-jp-card hover:bg-jp-border text-[10px] font-mono text-jp-sub border border-jp-border">Clear Sketch</button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1 text-center">
+                        <h3 class="text-base font-bold font-tech text-jp-text light:text-journal-text uppercase">REN_PLAYER_01</h3>
+                        <p class="text-xs text-jp-accent light:text-journal-accent font-mono font-semibold">Archetype: Zenith Craftsman</p>
+                    </div>
+                </div>
+
+                <!-- ATTRIBUTE RADAR WEB CHART -->
+                <div class="lg:col-span-2 bg-jp-panel light:bg-journal-panel p-5 rounded-2xl border border-jp-border light:border-journal-border flex flex-col justify-between">
+                    <div>
+                        <h2 class="text-sm font-bold font-tech text-jp-text light:text-journal-text uppercase tracking-wider mb-1">
+                            Attribute Growth Radar
+                        </h2>
+                        <p class="text-xs text-jp-sub light:text-journal-sub mb-4">Calculated strength balance across core attributes based on completed tasks.</p>
+                    </div>
+
+                    <div class="w-full max-w-[300px] aspect-square mx-auto">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==========================================
+         MODAL: CUSTOM CARD CREATOR
+         ========================================== -->
+    <div id="creator-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-jp-panel light:bg-journal-panel w-full max-w-md rounded-2xl border border-jp-border light:border-journal-border p-5 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-jp-border light:border-journal-border pb-3">
+                <h3 class="font-tech font-bold text-sm text-jp-text light:text-journal-text uppercase">Create New Trading Card</h3>
+                <button onclick="closeCardCreatorModal()" class="text-jp-sub hover:text-jp-text text-lg font-mono">✕</button>
+            </div>
+
+            <form id="card-creator-form" onsubmit="handleCreateCard(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-mono text-jp-sub mb-1">TASK NAME</label>
+                    <input type="text" id="new-card-title" required placeholder="e.g., UI Component Design" class="w-full px-3 py-2 rounded-lg bg-jp-card light:bg-journal-card border border-jp-border light:border-journal-border text-jp-text light:text-journal-text focus:outline-none focus:border-jp-cyan">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-mono text-jp-sub mb-1">CATEGORY</label>
+                        <select id="new-card-category" class="w-full px-3 py-2 rounded-lg bg-jp-card light:bg-journal-card border border-jp-border light:border-journal-border text-jp-text light:text-journal-text">
+                            <option value="work">Work & Focus</option>
+                            <option value="hobbies">Hobbies & Creative</option>
                         </select>
-                        <select id="card-intensity-input">
+                    </div>
+                    <div>
+                        <label class="block font-mono text-jp-sub mb-1">DIFFICULTY (HP/HR)</label>
+                        <select id="new-card-difficulty" class="w-full px-3 py-2 rounded-lg bg-jp-card light:bg-journal-card border border-jp-border light:border-journal-border text-jp-text light:text-journal-text">
                             <option value="EASY">EASY (-3 HP/hr)</option>
                             <option value="MID" selected>MID (-6 HP/hr)</option>
                             <option value="HARD">HARD (-12 HP/hr)</option>
                         </select>
-                        <select id="card-primary-skill">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-mono text-jp-sub mb-1">PRIMARY SKILL</label>
+                        <select id="new-card-skill1" class="w-full px-3 py-2 rounded-lg bg-jp-card light:bg-journal-card border border-jp-border light:border-journal-border text-jp-text light:text-journal-text">
                             <option value="Intellect">Intellect</option>
                             <option value="Creativity">Creativity</option>
                             <option value="Discipline">Discipline</option>
                             <option value="Empathy">Empathy</option>
                         </select>
-                        <button type="submit" class="btn btn-primary" style="grid-column: 1 / -1; justify-content: center; margin-top: 4px;">Add to Deck</button>
-                    </form>
-                </div>
-
-                <!-- Deck Grid -->
-                <div class="card-title" style="margin: 16px 0 8px 0;">YOUR ACTIVITY DECK</div>
-                <div class="deck-grid" id="activity-deck-container">
-                    <!-- Dynamic Activity Cards Rendered Here -->
-                </div>
-            </section>
-
-            <!-- 2. RECOVERY VIEW -->
-            <section id="view-recovery" class="view-pane">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">🌿 Vitality & HP Management</div>
-                    </div>
-                    <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 12px;">
-                        Running activities consumes HP based on intensity. Rest or use recovery matrix routines to restore vitality.
-                    </p>
-
-                    <div class="vitality-container" style="margin-bottom: 16px;">
-                        <span style="font-weight:700;">HP</span>
-                        <div class="hp-bar-bg">
-                            <div id="recovery-hp-fill" class="hp-bar-fill" style="width: 100%;"></div>
-                        </div>
-                        <span id="recovery-hp-text" style="font-family:var(--font-mono);">100 / 100</span>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
-                        <button class="btn" onclick="restoreHP(15)" style="justify-content: center; padding: 12px;">💧 Quick Hydration (+15 HP)</button>
-                        <button class="btn" onclick="restoreHP(30)" style="justify-content: center; padding: 12px;">🧘 Mind Reset 10m (+30 HP)</button>
-                        <button class="btn" onclick="restoreHP(100)" style="justify-content: center; padding: 12px;">😴 Full Rest (+100 HP)</button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 3. STATS VIEW (Refactored Clock Charts) -->
-            <section id="view-stats" class="view-pane">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">📊 Daily Focus Clock Analytics</div>
-                        <span style="font-size: 11px; color: var(--text-muted);">Real-time Activity Log</span>
-                    </div>
-                    <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 16px;">
-                        Tracks exact logged duration. Unfilled time represents unlogged or rest periods.
-                    </p>
-
-                    <div class="chart-container-wrapper">
-                        <!-- AM Clock -->
-                        <div class="clock-box card">
-                            <div class="card-title" style="margin-bottom: 8px;">AM Clock (00:00 - 12:00)</div>
-                            <div class="chart-box">
-                                <canvas id="amClockChart"></canvas>
-                            </div>
-                        </div>
-
-                        <!-- PM Clock -->
-                        <div class="clock-box card">
-                            <div class="card-title" style="margin-bottom: 8px;">PM Clock (12:00 - 24:00)</div>
-                            <div class="chart-box">
-                                <canvas id="pmClockChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 4. PROFILE VIEW -->
-            <section id="view-profile" class="view-pane">
-                <div class="profile-id-card">
-                    <div class="id-photo-area">
-                        <canvas id="avatar-canvas" width="110" height="110"></canvas>
-                        <button class="btn" style="font-size: 10px; width: 100%; justify-content: center;" onclick="clearAvatarCanvas()">Clear Doodle</button>
                     </div>
                     <div>
-                        <div class="card-title" style="font-size: 16px;">OPERATOR IDENTITY</div>
-                        <div style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-primary); margin-bottom: 8px;">RANK: ARCHITECT</div>
-                        
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px;">
-                            <div>🧠 Intellect: <span id="stat-intellect">LVL 1</span></div>
-                            <div>🎨 Creativity: <span id="stat-creativity">LVL 1</span></div>
-                            <div>⚔️ Discipline: <span id="stat-discipline">LVL 1</span></div>
-                            <div>🤝 Empathy: <span id="stat-empathy">LVL 1</span></div>
-                        </div>
+                        <label class="block font-mono text-jp-sub mb-1">STRENGTH (1-5★)</label>
+                        <input type="number" id="new-card-val1" min="1" max="5" value="4" class="w-full px-3 py-2 rounded-lg bg-jp-card light:bg-journal-card border border-jp-border light:border-journal-border text-jp-text light:text-journal-text">
                     </div>
                 </div>
-            </section>
 
-        </main>
+                <div>
+                    <label class="block font-mono text-jp-sub mb-1">EMOJI ICON</label>
+                    <input type="text" id="new-card-emoji" maxlength="2" value="🎨" class="w-16 text-center px-3 py-2 rounded-lg bg-jp-card light:bg-journal-card border border-jp-border light:border-journal-border text-jp-text light:text-journal-text">
+                </div>
+
+                <div class="pt-2 flex gap-2">
+                    <button type="button" onclick="closeCardCreatorModal()" class="flex-1 py-2.5 rounded-xl border border-jp-border text-jp-sub font-bold hover:bg-jp-card transition">CANCEL</button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-xl bg-jp-accent text-white font-bold hover:opacity-90 shadow-md shadow-jp-accent/20 transition">MINT CARD</button>
+                </div>
+            </form>
+        </div>
     </div>
 
+
+    <!-- ==========================================
+         JAVASCRIPT LOGIC & ENGINE
+         ========================================== -->
     <script>
-        /* ==========================================================================
-           STATE MANAGEMENT
-           ========================================================================== */
-        const state = {
-            hp: 100,
-            maxHp: 100,
-            activeTask: null,
-            isTimerRunning: false,
-            timerInterval: null,
-            elapsedSeconds: 0,
-            popFXInterval: null,
-            skills: {
-                Intellect: 0,
-                Creativity: 0,
-                Discipline: 0,
-                Empathy: 0
-            },
-            cards: [
-                { id: '1', name: 'Deep Work / Coding', category: 'Work', intensity: 'HARD', skill: 'Intellect', stars: 5 },
-                { id: '2', name: 'UI/UX Design', category: 'Hobbies', intensity: 'MID', skill: 'Creativity', stars: 4 },
-                { id: '3', name: 'Reading Documentation', category: 'Work', intensity: 'EASY', skill: 'Discipline', stars: 3 }
-            ],
-            // Time log segments array: { name, category, startHour (0-24 float), durationHours }
-            logs: []
+        // GLOBAL STATE
+        let userHP = 84;
+        const maxHP = 100;
+        let activeTimers = {}; // Stores running card timers & intervals
+        let loggedSessions = [];
+
+        // INITIAL CARDS DATABASE
+        let cardInventory = [
+            { id: 'c1', title: 'Framer Layout Build', category: 'work', difficulty: 'HARD', emoji: '💻', skills: { Intellect: 5, Discipline: 3 }, isEquipped: true, activeSeconds: 0, isRunning: false },
+            { id: 'c2', title: 'Japanese Kanji Study', category: 'work', difficulty: 'MID', emoji: '⛩️', skills: { Intellect: 4, Discipline: 2 }, isEquipped: true, activeSeconds: 0, isRunning: false },
+            { id: 'c3', title: 'Character Sketching', category: 'hobbies', difficulty: 'EASY', emoji: '🎨', skills: { Creativity: 5, Empathy: 1 }, isEquipped: false, activeSeconds: 0, isRunning: false },
+            { id: 'c4', title: 'Lo-Fi Beat Mixing', category: 'hobbies', difficulty: 'MID', emoji: '🎧', skills: { Creativity: 4, Discipline: 2 }, isEquipped: false, activeSeconds: 0, isRunning: false }
+        ];
+
+        // SKILL POP CONFIG
+        const HP_DRAIN_RATES = {
+            'EASY': -0.5, // per 10 mins (-3 per hr)
+            'MID': -1.0,  // per 10 mins (-6 per hr)
+            'HARD': -2.0  // per 10 mins (-12 per hr)
         };
 
-        /* ==========================================================================
-           NAVIGATION & TAB SWITCHING
-           ========================================================================== */
-        function switchTab(tabId) {
-            document.querySelectorAll('.view-pane').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            
-            document.getElementById(`view-${tabId}`).classList.add('active');
-            event.currentTarget.classList.add('active');
+        // CHARTS INSTANCES
+        let pieChartInstance = null;
+        let radarChartInstance = null;
 
-            if (tabId === 'stats') {
-                renderClockCharts();
+        // INIT APP
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            renderAllCards();
+            initCharts();
+            initAvatarCanvas();
+        });
+
+        // ==========================================
+        // NAVIGATION & TAB SWITCHING
+        // ==========================================
+        function switchTab(tabId) {
+            const views = ['action', 'recovery', 'stats', 'profile'];
+            views.forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hidden');
+                const btn = document.getElementById(`nav-${v}`);
+                if(btn) {
+                    btn.classList.remove('bg-jp-accent', 'text-white', 'shadow-md', 'shadow-jp-accent/20');
+                    btn.classList.add('text-jp-sub', 'light:text-journal-sub');
+                }
+            });
+
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if(activeBtn) {
+                activeBtn.classList.add('bg-jp-accent', 'text-white', 'shadow-md', 'shadow-jp-accent/20');
+                activeBtn.classList.remove('text-jp-sub', 'light:text-journal-sub');
+            }
+
+            if(tabId === 'stats') updateCharts();
+        }
+
+        // ==========================================
+        // CARD RENDERING & EQUIP ENGINE
+        // ==========================================
+        function renderAllCards() {
+            const equippedGrid = document.getElementById('equipped-deck-grid');
+            const workGrid = document.getElementById('category-work-grid');
+            const hobbiesGrid = document.getElementById('category-hobbies-grid');
+
+            equippedGrid.innerHTML = '';
+            workGrid.innerHTML = '';
+            hobbiesGrid.innerHTML = '';
+
+            let equippedCount = 0;
+
+            cardInventory.forEach(card => {
+                if (card.isEquipped) {
+                    equippedCount++;
+                    equippedGrid.appendChild(createCardElement(card, true));
+                } else {
+                    const cardEl = createCardElement(card, false);
+                    if (card.category === 'work') workGrid.appendChild(cardEl);
+                    else hobbiesGrid.appendChild(cardEl);
+                }
+            });
+
+            document.getElementById('deck-count-badge').textContent = `${equippedCount} / 3 EQUIPPED`;
+        }
+
+        function createCardElement(card, isDeckView) {
+            const el = document.createElement('div');
+            el.className = `tcg-card bg-jp-card light:bg-journal-card p-3.5 rounded-xl border border-jp-border light:border-journal-border flex flex-col justify-between space-y-3 relative overflow-hidden ${card.isRunning ? 'ring-1 ring-jp-cyan shadow-lg shadow-jp-cyan/10' : ''}`;
+            
+            // Skill tags html
+            const skillEntries = Object.entries(card.skills);
+            const skillsHTML = skillEntries.map(([sName, sVal]) => 
+                `<span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-jp-panel light:bg-journal-panel text-jp-sub border border-jp-border/50">${sName} ★${sVal}</span>`
+            ).join(' ');
+
+            // Formatted Timer Display using Digital Font
+            const formattedTime = formatTimerDisplay(card.activeSeconds);
+
+            el.innerHTML = `
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-2xl">${card.emoji}</span>
+                        <div>
+                            <h4 class="font-bold text-xs text-jp-text light:text-journal-text uppercase tracking-wide leading-snug">${card.title}</h4>
+                            <div class="flex items-center gap-1.5 mt-0.5">
+                                <span class="text-[9px] font-mono uppercase px-1.5 py-0.2 rounded ${getDifficultyBadgeStyle(card.difficulty)}">${card.difficulty}</span>
+                            </div>
+                        </div>
+                    </div>
+                    ${card.isEquipped ? `
+                        <button onclick="unequipTask('${card.id}')" class="text-[10px] font-mono text-jp-sub hover:text-jp-accent p-1">✕ UNEQUIP</button>
+                    ` : ''}
+                </div>
+
+                <div class="flex flex-wrap gap-1">
+                    ${skillsHTML}
+                </div>
+
+                <!-- TIMER DISPLAY (Replicated Digital Font & Comfortable Color) -->
+                <div class="bg-jp-bg light:bg-journal-bg p-2 rounded-lg border border-jp-border light:border-journal-border flex items-center justify-between">
+                    <span class="text-[10px] font-mono text-jp-sub">TIMER</span>
+                    <span class="font-digital text-xl text-emerald-400 dark:text-emerald-300 font-bold tracking-wider">${formattedTime}</span>
+                </div>
+
+                <!-- ACTIONS -->
+                <div class="pt-1">
+                    ${card.isEquipped ? `
+                        <button onclick="toggleTimer('${card.id}')" class="w-full py-2 rounded-lg font-bold text-xs font-mono uppercase transition ${card.isRunning ? 'bg-jp-accent text-white shadow-md shadow-jp-accent/20' : 'bg-jp-cyan/10 text-jp-cyan border border-jp-cyan/30 hover:bg-jp-cyan/20'}">
+                            ${card.isRunning ? '⏸ PAUSE TIMER' : '▶ START TASK'}
+                        </button>
+                    ` : `
+                        <button onclick="equipTask('${card.id}')" class="w-full py-2 rounded-lg font-bold text-xs font-mono uppercase transition bg-jp-panel hover:bg-jp-border light:bg-journal-panel light:hover:bg-journal-border border border-jp-border light:border-journal-border text-jp-text light:text-journal-text flex items-center justify-center gap-1">
+                            <span>🛡️</span> EQUIP TASK
+                        </button>
+                    `}
+                </div>
+            `;
+            return el;
+        }
+
+        function getDifficultyBadgeStyle(diff) {
+            if(diff === 'HARD') return 'bg-jp-accent/10 text-jp-accent border border-jp-accent/20';
+            if(diff === 'MID') return 'bg-jp-gold/10 text-jp-gold border border-jp-gold/20';
+            return 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+        }
+
+        function formatTimerDisplay(totalSecs) {
+            const h = Math.floor(totalSecs / 3600).toString().padStart(2, '0');
+            const m = Math.floor((totalSecs % 3600) / 60).toString().padStart(2, '0');
+            const s = (totalSecs % 60).toString().padStart(2, '0');
+            return `${h}:${m}:${s}`;
+        }
+
+        // ==========================================
+        // EQUIP & UNEQUIP LOGIC
+        // ==========================================
+        function equipTask(id) {
+            const equippedCount = cardInventory.filter(c => c.isEquipped).length;
+            if(equippedCount >= 3) {
+                alert("Equipped Deck is full! Unequip a card first.");
+                return;
+            }
+            const card = cardInventory.find(c => c.id === id);
+            if(card) {
+                card.isEquipped = true;
+                renderAllCards();
             }
         }
 
-        /* ==========================================================================
-           THEME TOGGLE
-           ========================================================================== */
-        const themeBtn = document.getElementById('theme-toggle');
-        themeBtn.addEventListener('click', () => {
-            const currentTheme = document.body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            document.body.setAttribute('data-theme', newTheme);
-            themeBtn.textContent = newTheme === 'light' ? '☀️' : '🌙';
-            renderClockCharts();
-        });
+        function unequipTask(id) {
+            const card = cardInventory.find(c => c.id === id);
+            if(card) {
+                if(card.isRunning) toggleTimer(card.id); // Stop if running
+                card.isEquipped = false;
+                renderAllCards();
+            }
+        }
 
-        /* ==========================================================================
-           DECK & CARD MANAGEMENT
-           ========================================================================== */
-        function renderDeck() {
-            const container = document.getElementById('activity-deck-container');
-            container.innerHTML = '';
+        // ==========================================
+        // TIMER & SKILL POPPING ENGINE (PROBLEM 4)
+        // ==========================================
+        function toggleTimer(id) {
+            const card = cardInventory.find(c => c.id === id);
+            if(!card) return;
 
-            state.cards.forEach(card => {
-                const isSelected = state.activeTask && state.activeTask.id === card.id;
-                const el = document.createElement('div');
-                el.className = `activity-card ${isSelected ? 'active' : ''}`;
-                el.innerHTML = `
-                    <div class="activity-card-header">
-                        <div class="activity-name">${card.name}</div>
-                        <span class="intensity-badge intensity-${card.intensity}">${card.intensity}</span>
-                    </div>
-                    <div class="skills-list">
-                        <span class="skill-tag">★ ${card.stars} ${card.skill}</span>
-                        <span class="skill-tag">${card.category}</span>
-                    </div>
-                    <button class="btn btn-primary" style="margin-top:4px; justify-content:center;" onclick="selectCardForSession('${card.id}')">
-                        ${isSelected ? 'Selected' : 'Equip Task'}
-                    </button>
-                `;
-                container.appendChild(el);
+            if(card.isRunning) {
+                // Pause Timer
+                card.isRunning = false;
+                clearInterval(activeTimers[id].interval);
+                clearInterval(activeTimers[id].skillPopInterval);
+                clearInterval(activeTimers[id].hpDrainInterval);
+                delete activeTimers[id];
+            } else {
+                // Start Timer
+                card.isRunning = true;
+                
+                // 1. Seconds Counter
+                const interval = setInterval(() => {
+                    card.activeSeconds++;
+                    renderAllCards();
+                }, 1000);
+
+                // 2. Skill Popping Feature (Random 10-20 sec trigger)
+                const triggerSkillPop = () => {
+                    const skillsList = Object.entries(card.skills);
+                    if(skillsList.length === 0) return;
+                    
+                    // Pick random skill from card's attribute pool
+                    const randomSkill = skillsList[Math.floor(Math.random() * skillsList.length)];
+                    spawnFloatingText(`+${randomSkill[1]} ${randomSkill[0]}`, 'cyan');
+                };
+
+                // Skill Pop Interval (every 12 seconds)
+                const skillPopInterval = setInterval(triggerSkillPop, 12000);
+
+                // 3. HP Depletion Engine (Calculated every 10 mins = simulated here every 10 secs for demo responsive feel)
+                const hpDrainInterval = setInterval(() => {
+                    const drainAmount = HP_DRAIN_RATES[card.difficulty] || -1.0;
+                    updateHP(drainAmount);
+                    spawnFloatingText(`${drainAmount} HP`, 'accent');
+                }, 10000);
+
+                activeTimers[id] = { interval, skillPopInterval, hpDrainInterval };
+            }
+            renderAllCards();
+        }
+
+        // FLOATING SKILL POP ANIMATION
+        function spawnFloatingText(text, colorType) {
+            const container = document.getElementById('pop-container');
+            const pop = document.createElement('div');
+            
+            // Random Screen Coordinates near center/deck
+            const randomX = Math.floor(Math.random() * 60) + 20; // 20% - 80%
+            const randomY = Math.floor(Math.random() * 40) + 30; // 30% - 70%
+
+            const textColor = colorType === 'accent' ? 'text-jp-accent font-black' : 'text-jp-cyan font-black';
+            
+            pop.className = `fixed animate-skill-pop font-tech text-base sm:text-xl ${textColor} bg-jp-card/90 light:bg-journal-card/90 px-3 py-1.5 rounded-lg border border-jp-border shadow-2xl z-50`;
+            pop.style.left = `${randomX}%`;
+            pop.style.top = `${randomY}%`;
+            pop.textContent = text;
+
+            container.appendChild(pop);
+            setTimeout(() => pop.remove(), 2200);
+        }
+
+        // HP UPDATE
+        function updateHP(delta) {
+            userHP = Math.max(0, Math.min(maxHP, userHP + delta));
+            const hpBar = document.getElementById('sidebar-hp-bar');
+            const hpText = document.getElementById('sidebar-hp-text');
+            
+            hpBar.style.width = `${userHP}%`;
+            hpText.textContent = `${Math.round(userHP)} / ${maxHP} HP`;
+        }
+
+        function triggerRecovery(hpGain, type) {
+            updateHP(hpGain);
+            spawnFloatingText(`+${hpGain} HP (${type})`, 'cyan');
+        }
+
+        // ==========================================
+        // TIME ALLOCATION CLOCK (PROBLEM 3 FIX)
+        // ==========================================
+        function initCharts() {
+            // 1. Time Pie Chart (Proportional Chart.js)
+            const pieCtx = document.getElementById('timePieChart').getContext('2d');
+            
+            pieChartInstance = new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Unallocated Rest'],
+                    datasets: [{
+                        data: [100],
+                        backgroundColor: ['#1E232D'],
+                        borderWidth: 2,
+                        borderColor: '#0B0E14'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    cutout: '65%'
+                }
             });
+
+            // 2. Radar Attribute Chart
+            const radarCtx = document.getElementById('radarChart').getContext('2d');
+            radarChartInstance = new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Intellect', 'Creativity', 'Discipline', 'Empathy'],
+                    datasets: [{
+                        label: 'Skill Points',
+                        data: [12, 19, 8, 5],
+                        backgroundColor: 'rgba(0, 240, 255, 0.2)',
+                        borderColor: '#00F0FF',
+                        pointBackgroundColor: '#FF2A5F'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: '#2A3241' },
+                            grid: { color: '#2A3241' },
+                            pointLabels: { color: '#94A3B8', font: { family: 'Plus Jakarta Sans', size: 11 } },
+                            ticks: { display: false }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function updateCharts() {
+            if (!pieChartInstance) return;
+
+            // Compute exact real active times
+            const activeCards = cardInventory.filter(c => c.activeSeconds > 0);
+            
+            if (activeCards.length === 0) {
+                pieChartInstance.data.labels = ['Unallocated Rest'];
+                pieChartInstance.data.datasets[0].data = [100];
+                pieChartInstance.data.datasets[0].backgroundColor = ['#1E232D'];
+            } else {
+                const labels = activeCards.map(c => c.title);
+                const data = activeCards.map(c => Math.round(c.activeSeconds / 60)); // minutes
+                const colors = ['#FF2A5F', '#00F0FF', '#FFB800', '#10B981', '#A855F7'];
+
+                pieChartInstance.data.labels = labels;
+                pieChartInstance.data.datasets[0].data = data;
+                pieChartInstance.data.datasets[0].backgroundColor = colors.slice(0, labels.length);
+            }
+            
+            pieChartInstance.update();
+
+            // Update Stats text
+            let totalSecs = 0;
+            cardInventory.forEach(c => totalSecs += c.activeSeconds);
+            const hrs = Math.floor(totalSecs / 3600);
+            const mins = Math.floor((totalSecs % 3600) / 60);
+            document.getElementById('total-focus-time-text').textContent = `${hrs.toString().padStart(2,'0')}h ${mins.toString().padStart(2,'0')}m`;
+        }
+
+        // ==========================================
+        // ID AVATAR SKETCH CANVAS
+        // ==========================================
+        function initAvatarCanvas() {
+            const canvas = document.getElementById('avatarCanvas');
+            const ctx = canvas.getContext('2d');
+            let drawing = false;
+
+            ctx.strokeStyle = '#00F0FF';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+
+            canvas.addEventListener('mousedown', () => drawing = true);
+            canvas.addEventListener('mouseup', () => { drawing = false; ctx.beginPath(); });
+            canvas.addEventListener('mousemove', draw);
+
+            function draw(e) {
+                if(!drawing) return;
+                const rect = canvas.getBoundingClientRect();
+                ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+            }
+        }
+
+        function clearAvatarCanvas() {
+            const canvas = document.getElementById('avatarCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // ==========================================
+        // CUSTOM CARD CREATOR MODAL
+        // ==========================================
+        function openCardCreatorModal() {
+            document.getElementById('creator-modal').classList.remove('hidden');
+        }
+
+        function closeCardCreatorModal() {
+            document.getElementById('creator-modal').classList.add('hidden');
         }
 
         function handleCreateCard(e) {
             e.preventDefault();
-            const name = document.getElementById('card-name-input').value;
-            const category = document.getElementById('card-cat-input').value;
-            const intensity = document.getElementById('card-intensity-input').value;
-            const skill = document.getElementById('card-primary-skill').value;
+            const title = document.getElementById('new-card-title').value;
+            const category = document.getElementById('new-card-category').value;
+            const difficulty = document.getElementById('new-card-difficulty').value;
+            const skill1 = document.getElementById('new-card-skill1').value;
+            const val1 = parseInt(document.getElementById('new-card-val1').value);
+            const emoji = document.getElementById('new-card-emoji').value || '✨';
 
             const newCard = {
-                id: Date.now().toString(),
-                name,
+                id: 'c_' + Date.now(),
+                title,
                 category,
-                intensity,
-                skill,
-                stars: Math.floor(Math.random() * 3) + 3
+                difficulty,
+                emoji,
+                skills: { [skill1]: val1 },
+                isEquipped: false,
+                activeSeconds: 0,
+                isRunning: false
             };
 
-            state.cards.push(newCard);
-            renderDeck();
-            e.target.reset();
+            cardInventory.push(newCard);
+            renderAllCards();
+            closeCardCreatorModal();
         }
 
-        function selectCardForSession(id) {
-            const card = state.cards.find(c => c.id === id);
-            if (!card) return;
-
-            if (state.isTimerRunning) {
-                stopActiveSession();
-            }
-
-            state.activeTask = card;
-            document.getElementById('active-task-name').textContent = card.name;
-            document.getElementById('active-task-sub').textContent = `Category: ${card.category} | Primary: ${card.skill}`;
-            
-            const badge = document.getElementById('active-session-badge');
-            badge.textContent = card.intensity;
-            badge.className = `intensity-badge intensity-${card.intensity}`;
-
-            renderDeck();
-        }
-
-        /* ==========================================================================
-           TIMER & SKILL POPPING / HP DEPLETION LOGIC (Problem 4 Solutions)
-           ========================================================================== */
-        function toggleActiveSession() {
-            if (!state.activeTask) {
-                alert('Please select an activity card from your deck first!');
-                return;
-            }
-
-            if (state.isTimerRunning) {
-                pauseActiveSession();
-            } else {
-                startActiveSession();
-            }
-        }
-
-        function startActiveSession() {
-            state.isTimerRunning = true;
-            document.getElementById('btn-toggle-timer').textContent = 'PAUSE';
-
-            // Main 1s Timer Loop
-            state.timerInterval = setInterval(() => {
-                state.elapsedSeconds++;
-                updateTimerDisplay();
-
-                // HP Depletion logic every 10 minutes (600 seconds)
-                if (state.elapsedSeconds % 600 === 0) {
-                    depleteHpForActiveTask();
-                }
-            }, 1000);
-
-            // Skill Popping Feature Loop (Random 10-20 seconds)
-            scheduleNextSkillPop();
-        }
-
-        function pauseActiveSession() {
-            state.isTimerRunning = false;
-            document.getElementById('btn-toggle-timer').textContent = 'RESUME';
-            clearInterval(state.timerInterval);
-            clearTimeout(state.popFXInterval);
-        }
-
-        function stopActiveSession() {
-            if (state.elapsedSeconds > 0 && state.activeTask) {
-                // Save log segment for clock chart
-                const durationHours = state.elapsedSeconds / 3600;
-                const now = new Date();
-                const endHourFloat = now.getHours() + (now.getMinutes() / 60);
-                const startHourFloat = Math.max(0, endHourFloat - durationHours);
-
-                state.logs.push({
-                    name: state.activeTask.name,
-                    category: state.activeTask.category,
-                    startHour: startHourFloat,
-                    durationHours: durationHours
-                });
-            }
-
-            pauseActiveSession();
-            state.elapsedSeconds = 0;
-            updateTimerDisplay();
-            document.getElementById('btn-toggle-timer').textContent = 'START';
-        }
-
-        function updateTimerDisplay() {
-            const hrs = String(Math.floor(state.elapsedSeconds / 3600)).padStart(2, '0');
-            const mins = String(Math.floor((state.elapsedSeconds % 3600) / 60)).padStart(2, '0');
-            const secs = String(state.elapsedSeconds % 60).padStart(2, '0');
-            document.getElementById('session-timer-display').textContent = `${hrs}:${mins}:${secs}`;
-        }
-
-        // Logic for HP Depletion based on Intensity
-        // HARD = -12 HP/hr (-2 HP per 10 mins)
-        // MID  = -6 HP/hr  (-1 HP per 10 mins)
-        // EASY = -3 HP/hr  (-0.5 HP per 10 mins)
-        function depleteHpForActiveTask() {
-            if (!state.activeTask) return;
-            
-            let hpLoss = 1;
-            if (state.activeTask.intensity === 'HARD') hpLoss = 2;
-            else if (state.activeTask.intensity === 'MID') hpLoss = 1;
-            else if (state.activeTask.intensity === 'EASY') hpLoss = 0.5;
-
-            state.hp = Math.max(0, state.hp - hpLoss);
-            updateHpUI();
-            triggerPopText(`-${hpLoss} HP`, '#FF0055');
-        }
-
-        function restoreHP(amount) {
-            state.hp = Math.min(state.maxHp, state.hp + amount);
-            updateHpUI();
-            triggerPopText(`+${amount} HP`, '#00FF66');
-        }
-
-        function updateHpUI() {
-            const pct = (state.hp / state.maxHp) * 100;
-            document.getElementById('header-hp-fill').style.width = `${pct}%`;
-            document.getElementById('header-hp-text').textContent = `${Math.ceil(state.hp)}/${state.maxHp}`;
-            document.getElementById('recovery-hp-fill').style.width = `${pct}%`;
-            document.getElementById('recovery-hp-text').textContent = `${Math.ceil(state.hp)} / ${state.maxHp}`;
-        }
-
-        // Skill Popping Feature
-        function scheduleNextSkillPop() {
-            if (!state.isTimerRunning) return;
-
-            // Random delay between 10 to 20 seconds
-            const randomDelay = Math.floor(Math.random() * 10000) + 10000;
-
-            state.popFXInterval = setTimeout(() => {
-                if (state.isTimerRunning && state.activeTask) {
-                    popRandomSkillGain();
-                    scheduleNextSkillPop();
-                }
-            }, randomDelay);
-        }
-
-        function popRandomSkillGain() {
-            const primarySkill = state.activeTask.skill;
-            const secondarySkills = ['Intellect', 'Creativity', 'Discipline', 'Empathy'].filter(s => s !== primarySkill);
-            
-            // Alternates randomly, weighted toward card's main skill
-            const selectedSkill = Math.random() < 0.7 ? primarySkill : secondarySkills[Math.floor(Math.random() * secondarySkills.length)];
-            const gainAmount = selectedSkill === primarySkill ? state.activeTask.stars : 1;
-
-            state.skills[selectedSkill] += gainAmount;
-            updateProfileStatsUI();
-
-            const colors = {
-                Intellect: '#00F0FF',
-                Creativity: '#FF0055',
-                Discipline: '#FFB800',
-                Empathy: '#00FF66'
-            };
-
-            triggerPopText(`+${gainAmount} ${selectedSkill}`, colors[selectedSkill] || '#00F0FF');
-        }
-
-        function triggerPopText(text, color) {
-            const container = document.getElementById('fx-canvas-container');
-            const pop = document.createElement('div');
-            pop.className = 'pop-text';
-            pop.textContent = text;
-            pop.style.color = color;
-
-            // Random position near screen center / top region
-            const x = Math.random() * (window.innerWidth * 0.6) + (window.innerWidth * 0.2);
-            const y = Math.random() * (window.innerHeight * 0.4) + (window.innerHeight * 0.3);
-
-            pop.style.left = `${x}px`;
-            pop.style.top = `${y}px`;
-
-            container.appendChild(pop);
-            setTimeout(() => pop.remove(), 1800);
-        }
-
-        function updateProfileStatsUI() {
-            document.getElementById('stat-intellect').textContent = `LVL ${state.skills.Intellect}`;
-            document.getElementById('stat-creativity').textContent = `LVL ${state.skills.Creativity}`;
-            document.getElementById('stat-discipline').textContent = `LVL ${state.skills.Discipline}`;
-            document.getElementById('stat-empathy').textContent = `LVL ${state.skills.Empathy}`;
-        }
-
-        /* ==========================================================================
-           CLOCK CHARTS REFACTOR (Problem 3 Solution)
-           ========================================================================== */
-        let amChartInstance = null;
-        let pmChartInstance = null;
-
-        function buildClockDataset(isPM) {
-            const startOffset = isPM ? 12 : 0;
-            const endOffset = isPM ? 24 : 12;
-
-            // Filter logs falling inside this 12-hour window
-            const windowLogs = state.logs.filter(l => l.startHour < endOffset && (l.startHour + l.durationHours) > startOffset);
-
-            const slices = [];
-            const colors = [];
-            const labels = [];
-
-            let currentPointer = startOffset;
-
-            windowLogs.sort((a, b) => a.startHour - b.startHour);
-
-            windowLogs.forEach(log => {
-                const effectiveStart = Math.max(currentPointer, log.startHour);
-                const effectiveEnd = Math.min(endOffset, log.startHour + log.durationHours);
-
-                if (effectiveStart > currentPointer) {
-                    // Unused time gap slice
-                    slices.push(effectiveStart - currentPointer);
-                    colors.push('transparent');
-                    labels.push('Unlogged / Rest');
-                }
-
-                if (effectiveEnd > effectiveStart) {
-                    // Active activity slice (Proportional to exact duration)
-                    slices.push(effectiveEnd - effectiveStart);
-                    colors.push('#00F0FF');
-                    labels.push(log.name);
-                    currentPointer = effectiveEnd;
-                }
-            });
-
-            // Remaining unused slice up to 12 hours
-            if (currentPointer < endOffset) {
-                slices.push(endOffset - currentPointer);
-                colors.push('transparent');
-                labels.push('Unlogged / Rest');
-            }
-
-            return { slices, colors, labels };
-        }
-
-        function renderClockCharts() {
-            const isLight = document.body.getAttribute('data-theme') === 'light';
-            const ringBorderColor = isLight ? '#CBD5E1' : '#2A3447';
-
-            // AM Chart
-            const amData = buildClockDataset(false);
-            const ctxAM = document.getElementById('amClockChart').getContext('2d');
-            if (amChartInstance) amChartInstance.destroy();
-
-            amChartInstance = new Chart(ctxAM, {
-                type: 'doughnut',
-                data: {
-                    labels: amData.labels,
-                    datasets: [{
-                        data: amData.slices,
-                        backgroundColor: amData.colors,
-                        borderColor: ringBorderColor,
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '70%',
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: (ctx) => `${ctx.label}: ${(ctx.raw * 60).toFixed(0)} mins`
-                            }
-                        }
-                    }
-                }
-            });
-
-            // PM Chart
-            const pmData = buildClockDataset(true);
-            const ctxPM = document.getElementById('pmClockChart').getContext('2d');
-            if (pmChartInstance) pmChartInstance.destroy();
-
-            pmChartInstance = new Chart(ctxPM, {
-                type: 'doughnut',
-                data: {
-                    labels: pmData.labels,
-                    datasets: [{
-                        data: pmData.slices,
-                        backgroundColor: pmData.colors,
-                        borderColor: ringBorderColor,
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '70%',
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: (ctx) => `${ctx.label}: ${(ctx.raw * 60).toFixed(0)} mins`
-                            }
-                        }
-                    }
-                }
+        // THEME TOGGLE
+        function initTheme() {
+            document.getElementById('theme-toggle').addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                document.documentElement.classList.toggle('light');
             });
         }
-
-        /* ==========================================================================
-           AVATAR DOODLE CANVAS
-           ========================================================================== */
-        const avatarCanvas = document.getElementById('avatar-canvas');
-        const ctx = avatarCanvas.getContext('2d');
-        let isDrawing = false;
-
-        function initAvatarCanvas() {
-            ctx.strokeStyle = '#00F0FF';
-            ctx.lineWidth = 2;
-            ctx.lineCap = 'round';
-
-            avatarCanvas.addEventListener('mousedown', startDraw);
-            avatarCanvas.addEventListener('mousemove', draw);
-            avatarCanvas.addEventListener('mouseup', endDraw);
-            avatarCanvas.addEventListener('mouseleave', endDraw);
-        }
-
-        function startDraw(e) {
-            isDrawing = true;
-            ctx.beginPath();
-            ctx.moveTo(e.offsetX, e.offsetY);
-        }
-
-        function draw(e) {
-            if (!isDrawing) return;
-            ctx.lineTo(e.offsetX, e.offsetY);
-            ctx.stroke();
-        }
-
-        function endDraw() {
-            isDrawing = false;
-        }
-
-        function clearAvatarCanvas() {
-            ctx.clearRect(0, 0, avatarCanvas.width, avatarCanvas.height);
-        }
-
-        /* ==========================================================================
-           INITIALIZATION
-           ========================================================================== */
-        window.addEventListener('DOMContentLoaded', () => {
-            renderDeck();
-            updateHpUI();
-            initAvatarCanvas();
-            renderClockCharts();
-        });
     </script>
 </body>
 </html>
