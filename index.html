@@ -1,2752 +1,1188 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-  <link rel="manifest" href="manifest.json">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Skill Issue</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=Instrument+Serif&display=swap" rel="stylesheet">
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    :root {
-      --bg: #f4f2ff;
-      --card-bg: rgba(255, 255, 255, 0.92);
-      --card-border: rgba(0, 180, 216, 0.25);
-      --text: #0d0926;
-      --text-muted: #5a577d;
-
-      --font-serif: 'Instrument Serif', serif;
-      --font-mono: 'Geist Mono', monospace;
-
-      --color-intellect: #008da8;
-      --color-creativity: #801072;
-      --color-discipline: #b35f00;
-      --color-empathy: #c2004d;
-
-      --color-work: #c2004d;
-      --color-hobbies: #b35f00;
-      --color-media: #801072;
-      --color-chores: #007a93;
-      --color-social: #b30059;
-      --color-other: #5200b3;
-      --color-recovery: #008da8;
-
-      --nav-pink: #c20060;
-      --nav-pink-bg: rgba(230, 0, 115, 0.1);
-      --neon-cyan: #008da8;
-
-      --glow-intensity: 0 2px 8px rgba(0, 180, 216, 0.12);
-      --card-inner-bg: rgba(255, 255, 255, 0.95);
-
-      --bg-gradient-1: rgba(112, 0, 255, 0.04);
-      --bg-gradient-2: rgba(255, 0, 127, 0.04);
-      --bg-grid: rgba(0, 180, 216, 0.05);
-
-      --folder-tab-bg: rgba(0, 141, 168, 0.12);
-      --folder-border: rgba(0, 141, 168, 0.4);
-
-      /* Brand doodle palette */
-      --swatch-cyan: #00b4d8;
-      --swatch-amber: #e08a00;
-      --swatch-magenta: #d6005f;
-      --swatch-violet: #7b2cbf;
-    }
-
-    [data-theme="dark"] {
-      --bg: #181623;
-      --card-bg: #232035;
-      --card-border: rgba(0, 240, 255, 0.25);
-      --text: #f0f2fe;
-      --text-muted: #a0a3cd;
-
-      --color-intellect: #00e5ff;
-      --color-creativity: #e040fb;
-      --color-discipline: #ffb300;
-      --color-empathy: #ff2a70;
-
-      --color-work: #ff2a70;
-      --color-hobbies: #ffb300;
-      --color-media: #e040fb;
-      --color-chores: #00e5ff;
-      --color-social: #ff40a0;
-      --color-other: #9d4edd;
-      --color-recovery: #00e5ff;
-
-      --nav-pink: #ff007f;
-      --nav-pink-bg: rgba(255, 0, 127, 0.18);
-      --neon-cyan: #00e5ff;
-      --glow-intensity: 0 4px 12px rgba(0, 0, 0, 0.35);
-      --card-inner-bg: #2b2740;
-
-      --bg-gradient-1: rgba(112, 0, 255, 0.15);
-      --bg-gradient-2: rgba(255, 0, 127, 0.12);
-      --bg-grid: rgba(0, 240, 255, 0.04);
-
-      --folder-tab-bg: rgba(0, 229, 255, 0.15);
-      --folder-border: rgba(0, 229, 255, 0.35);
-
-      --swatch-cyan: #00e5ff;
-      --swatch-amber: #ffb300;
-      --swatch-magenta: #ff2a70;
-      --swatch-violet: #9d4edd;
-    }
-
-    /* PROBLEM 1: bump the root scale so every rem-based size in the app grows together */
-    html { font-size: 19px; }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-mono); }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
-      background-image:
-        radial-gradient(circle at 50% 0%, var(--bg-gradient-1), transparent 60%),
-        radial-gradient(circle at 85% 90%, var(--bg-gradient-2), transparent 50%),
-        linear-gradient(var(--bg-grid) 1px, transparent 1px),
-        linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 20px 20px, 20px 20px;
-      background-attachment: fixed;
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
-      transition: background-color 0.2s ease, color 0.2s ease;
-    }
-
-    .app-container {
-      width: 100%;
-      max-width: 540px;
-      padding: 18px 16px 120px 16px;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-
-    @media (min-width: 768px) {
-      .app-container { max-width: 780px; padding-bottom: 130px; }
-      .matrix-grid { grid-template-columns: repeat(4, 1fr) !important; }
-      html { font-size: 20px; }
-    }
-
-    .calming-bg-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0; transition: opacity 1s ease; }
-    .calming-bg-overlay.active { opacity: 1; }
-    .calming-orb { position: absolute; border-radius: 50%; filter: blur(50px); animation: floatMotion 12s infinite ease-in-out alternate; }
-    .calming-orb-1 { width: 260px; height: 260px; background: rgba(0, 240, 255, 0.12); top: 10%; left: -10%; }
-    .calming-orb-2 { width: 300px; height: 300px; background: rgba(255, 0, 127, 0.1); bottom: 15%; right: -10%; animation-delay: -6s; }
-
-    @keyframes floatMotion {
-      0% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(30px, -40px) scale(1.1); }
-      100% { transform: translate(-20px, 30px) scale(0.95); }
-    }
-
-    .skill-pop-particle {
-      position: fixed; pointer-events: none; z-index: 300;
-      font-family: var(--font-mono); font-size: 1.1rem; font-weight: 800;
-      text-shadow: none;
-      animation: floatUpAndFade 4s forwards ease-out;
-    }
-
-    @keyframes floatUpAndFade {
-      0% { opacity: 0; transform: translateY(10px) scale(0.8); }
-      20% { opacity: 1; transform: translateY(-10px) scale(1.1); }
-      80% { opacity: 1; transform: translateY(-40px) scale(1); }
-      100% { opacity: 0; transform: translateY(-60px) scale(0.9); }
-    }
-
-    .top-bar-clean {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--neon-cyan);
-      position: relative; z-index: 2;
-    }
-
-    .hamburger-btn-minimal { background: transparent; border: none; color: var(--neon-cyan); font-size: 1.6rem; cursor: pointer; }
-    .theme-toggle-btn { background: var(--card-bg); border: 1px solid var(--neon-cyan); color: var(--text); padding: 7px 14px; border-radius: 14px; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
-    .top-bar-date { font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700; color: var(--neon-cyan); letter-spacing: 1.5px; text-transform: uppercase; }
-
-    .drawer {
-      position: fixed; top: 0; left: -100%; width: 300px; height: 100%;
-      background: var(--bg); border-right: 1px solid var(--neon-cyan);
-      box-shadow: 5px 0 20px rgba(0, 0, 0, 0.2); z-index: 100; padding: 28px;
-      transition: left 0.25s ease-out; display: flex; flex-direction: column; gap: 18px;
-    }
-    .drawer.open { left: 0; }
-    .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 99; display: none; }
-    .drawer-overlay.show { display: block; }
-
-    .toast-notification {
-      position: fixed; top: 24px; left: 50%; transform: translateX(-50%) translateY(-100px);
-      background: var(--card-inner-bg); border: 2px solid var(--neon-cyan); color: var(--text);
-      padding: 13px 22px; border-radius: 22px; font-size: 0.9rem; font-weight: 700;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.25); z-index: 400; opacity: 0;
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
-      pointer-events: none; text-align: center; max-width: 90%;
-    }
-    .toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-
-    .view { display: none; flex-direction: column; gap: 20px; position: relative; z-index: 2; }
-    .view.active { display: flex; }
-
-    .hero-deck-section {
-      background: var(--card-bg); border: 1px solid var(--neon-cyan); box-shadow: var(--glow-intensity);
-      border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 12px; position: relative;
-    }
-    .hero-deck-section::before {
-      content: 'DECK // ACTIVE'; position: absolute; top: -10px; right: 16px;
-      font-size: 0.65rem; background: var(--bg); color: var(--neon-cyan);
-      padding: 0 8px; border: 1px solid var(--neon-cyan); letter-spacing: 1px;
-    }
-
-    .hero-deck-header { font-family: var(--font-serif); font-size: 1.42rem; color: var(--text); display: flex; align-items: center; gap: 8px; }
-    .hero-slots-scroll { display: flex; gap: 14px; overflow-x: auto; scrollbar-width: none; padding: 8px 3px; }
-    .hero-slots-scroll::-webkit-scrollbar { display: none; }
-
-    .deck-slot-wrapper { min-width: 165px; max-width: 165px; height: 250px; flex-shrink: 0; position: relative; }
-    .deck-slot-empty {
-      width: 100%; height: 100%; border: 1px dashed var(--neon-cyan); border-radius: 14px;
-      display: flex; align-items: center; justify-content: center; background: rgba(0, 240, 255, 0.02);
-      color: var(--neon-cyan); font-size: 1.4rem; font-weight: 700; opacity: 0.7;
-    }
-
-    .rail-section { display: flex; flex-direction: column; gap: 10px; }
-    .rail-header { font-family: var(--font-serif); font-size: 1.45rem; color: var(--neon-cyan); letter-spacing: 0.5px; }
-    .rail-container { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
-    .rail-container::-webkit-scrollbar { display: none; }
-
-    .trading-card-outer {
-      min-width: 165px; max-width: 165px; height: 250px; position: relative; border-radius: 14px;
-      flex-shrink: 0; cursor: pointer; background: var(--card-inner-bg);
-      border: 2px solid var(--card-color, var(--neon-cyan));
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1), inset 0 0 6px var(--card-color, var(--neon-cyan));
-      overflow: hidden; display: flex; flex-direction: column; padding: 8px; isolation: isolate;
-      transition: transform 0.15s ease, box-shadow 0.3s ease;
-    }
-    .trading-card-outer:hover { transform: translateY(-2px); }
-
-    .trading-card-outer.is-active-running {
-      border-color: var(--card-color, var(--neon-cyan));
-      box-shadow: 0 0 10px 1px color-mix(in srgb, var(--card-color, var(--neon-cyan)) 55%, transparent);
-    }
-    /* PROBLEM 2: a narrow shimmer point traces just the border ring, clockwise, at a steady pace */
-    .trading-card-outer.is-active-running::after {
-      content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none;
-      border-radius: inherit; padding: 2px;
-      background: conic-gradient(from var(--border-angle),
-        transparent 0deg,
-        transparent 336deg,
-        #ffffff 350deg,
-        var(--card-color, var(--neon-cyan)) 360deg);
-      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      animation: rotateBorder 3.6s linear infinite;
-      will-change: transform;
-    }
-    .trading-card-outer.is-active-running > * { position: relative; z-index: 2; }
-
-    @property --border-angle {
-      syntax: '<angle>'; initial-value: 0deg; inherits: false;
-    }
-    @keyframes rotateBorder { to { --border-angle: 360deg; } }
-
-    .trading-card-outer::before {
-      content: ''; position: absolute; inset: 2px;
-      border: 1px solid var(--card-color, var(--neon-cyan));
-      border-radius: 11px; pointer-events: none; opacity: 0.5; z-index: 3;
-    }
-
-    .trading-card-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 2px 5px 4px 5px; z-index: 4; }
-    .trading-card-hp-tag { font-size: 0.72rem; font-weight: 700; color: var(--card-color, var(--neon-cyan)); }
-
-    .trading-card-halftone {
-      width: 100%; height: 48%; position: relative; display: flex; align-items: center; justify-content: center;
-      border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.08);
-    }
-    .trading-card-halftone::before {
-      content: ''; position: absolute; inset: 0;
-      background-image: radial-gradient(var(--card-color, var(--neon-cyan)) 0.75px, transparent 0.75px);
-      background-size: 4px 4px; opacity: 0.18;
-      pointer-events: none;
-    }
-
-    .trading-card-icon { font-size: 2.9rem; z-index: 2; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); }
-
-    .trading-card-banner {
-      width: 100%; flex: 1; background: var(--card-bg);
-      border-top: 1px solid var(--card-color, var(--neon-cyan)); border-radius: 0 0 8px 8px;
-      display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-      padding: 6px 3px; position: relative; z-index: 2; margin-top: 4px;
-    }
-
-    .trading-card-name {
-      font-family: var(--font-mono); font-size: 0.9rem; font-weight: 700;
-      color: var(--text); text-transform: uppercase; text-align: center;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; letter-spacing: 0.3px;
-    }
-
-    .trading-card-timer-hero { font-family: var(--font-mono); font-size: 1rem; color: var(--neon-cyan); font-weight: 700; letter-spacing: 0.5px; }
-
-    .trading-card-circle-btn-lg {
-      width: 44px; height: 44px; border-radius: 50%;
-      background: var(--card-color, var(--neon-cyan)); border: 2px solid #ffffff; color: #ffffff;
-      font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; justify-content: center;
-      cursor: pointer; outline: none; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: transform 0.1s ease; margin-bottom: 2px;
-    }
-    .trading-card-circle-btn-lg:active { transform: scale(0.92); }
-
-    .trading-card-category-tag { position: absolute; top: 4px; left: 5px; font-size: 0.55rem; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px; }
-
-    .empty-add-card {
-      min-width: 165px; height: 250px; border: 1px dashed var(--neon-cyan); border-radius: 14px;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      cursor: pointer; flex-shrink: 0; color: var(--text-muted); background: rgba(0, 240, 255, 0.02); gap: 6px;
-    }
-    .empty-add-card span:first-child { font-size: 1.8rem; }
-    .empty-add-card span:last-child { font-size: 0.75rem; }
-
-    .hp-container { background: var(--card-bg); border: 1px solid var(--neon-cyan); box-shadow: var(--glow-intensity); border-radius: 16px; padding: 18px; margin-bottom: 6px; }
-    .hp-header { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-serif); font-size: 1.22rem; margin-bottom: 10px; }
-    .hp-bar-bg { width: 100%; height: 18px; background: rgba(0, 0, 0, 0.1); border-radius: 10px; overflow: hidden; border: 1px solid var(--neon-cyan); position: relative; }
-    .hp-bar-fill { height: 100%; width: 100%; background: var(--color-recovery); border-radius: 9px; transition: width 0.3s ease; }
-
-    .matrix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .matrix-card-wrapper { border-radius: 16px; cursor: pointer; }
-    .matrix-card {
-      background: var(--card-bg); border: 1px solid var(--neon-cyan); box-shadow: var(--glow-intensity);
-      border-radius: 16px; padding: 20px 12px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 165px;
-    }
-    .matrix-card > div:first-child { font-size: 2.3rem; }
-    .matrix-card > div:nth-child(2) { font-size: 1.25rem; }
-    .matrix-card > div:nth-child(3) { font-size: 0.85rem; }
-
-    .tumbler-container { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 18px 0; }
-    .tumbler-item { width: 50px; height: 80px; border: 1px solid var(--neon-cyan); border-radius: 5px 5px 12px 12px; position: relative; overflow: hidden; cursor: pointer; background: rgba(0,240,255,0.03); }
-    .tumbler-fill { position: absolute; bottom: 0; left: 0; right: 0; background: var(--color-recovery); }
-
-    .date-picker-bar { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 13px 18px; border: 1px solid var(--neon-cyan); border-radius: 14px; font-family: var(--font-mono); font-size: 0.92rem; }
-    .date-picker-bar button { font-size: 1.2rem; }
-    .timeline-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
-    .timeline-item { background: var(--card-bg); border: 1px solid var(--neon-cyan); border-left: 3px solid var(--nav-pink); padding: 15px 18px; border-radius: 0 14px 14px 0; display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; }
-    .stats-pie-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .stats-pie-card { background: var(--card-bg); border: 1px solid var(--neon-cyan); border-radius: 14px; padding: 12px; text-align: center; min-width: 0; }
-    .stats-pie-title { color: var(--neon-cyan); font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; margin-bottom: 8px; }
-    .stats-pie-card canvas { width: 100% !important; height: auto !important; aspect-ratio: 1; }
-
-    /* PROBLEM 3: AM/PM toggle for the clock chart */
-    .clock-toggle-row { display: flex; justify-content: center; gap: 8px; }
-    .clock-toggle-btn {
-      background: var(--card-bg); border: 1px solid var(--neon-cyan); color: var(--text-muted);
-      padding: 7px 22px; border-radius: 14px; font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; cursor: pointer;
-    }
-    .clock-toggle-btn.active { background: var(--nav-pink-bg); border-color: var(--nav-pink); color: var(--text); }
-
-    /* PROBLEM 5: activity list doubles as the chart legend; header holds the category sort/filter */
-    .activity-list-header { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
-    .activity-list-header select {
-      background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text);
-      font-family: var(--font-mono); font-size: 0.75rem; border-radius: 8px; padding: 5px 8px;
-    }
-    .stats-empty { color: var(--text-muted); font-family: var(--font-mono); font-size: 0.78rem; text-align: center; padding: 18px 8px; }
-    .stats-bar-track { flex: 1; height: 8px; background: rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; margin: 0 12px; }
-    .stats-bar-fill { height: 100%; border-radius: inherit; background: var(--nav-pink); }
-    .drawer-section-title { color: var(--neon-cyan); font-family: var(--font-mono); font-size: 0.76rem; font-weight: 700; letter-spacing: 0.8px; margin-top: 2px; }
-    .category-editor-list { display: flex; flex-direction: column; gap: 8px; }
-    .category-editor-row { display: flex; gap: 6px; align-items: center; }
-    .category-editor-row input { min-width: 0; flex: 1; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 7px; color: var(--text); padding: 7px 8px; font-family: var(--font-mono); font-size: 0.76rem; }
-    .category-editor-row button { background: var(--neon-cyan); border: none; border-radius: 7px; color: #fff; padding: 7px 8px; font-size: 0.68rem; font-weight: 700; cursor: pointer; }
-    .recovery-empty-card { min-height: 165px; border: 1px dashed var(--neon-cyan); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); gap: 6px; background: rgba(0,240,255,0.02); }
-    .recovery-empty-card span:first-child { font-size: 2rem; color: var(--neon-cyan); }
-
-    .profile-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      box-shadow: var(--glow-intensity);
-      padding: 30px 18px 22px 18px;
-      border-radius: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-      position: relative;
-    }
-
-    .scrapbook-tape {
-      position: absolute;
-      width: 82px;
-      height: 24px;
-      background: rgba(255, 255, 255, 0.45);
-      border: 1px dashed rgba(0, 0, 0, 0.15);
-      backdrop-filter: blur(2px);
-      z-index: 10;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-    }
-    .tape-top-left { top: -10px; left: 22px; transform: rotate(-5deg); }
-    .tape-top-right { top: -10px; right: 22px; transform: rotate(6deg); }
-    .tape-bottom-right { bottom: 12px; right: -12px; transform: rotate(-12deg); }
-
-    .scrapbook-sticker {
-      position: absolute;
-      top: -14px;
-      right: 16px;
-      background: #ff0055;
-      color: #fff;
-      font-size: 0.65rem;
-      font-weight: 800;
-      padding: 5px 10px;
-      border-radius: 5px;
-      transform: rotate(8deg);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      letter-spacing: 1px;
-      border: 1px dashed #fff;
-      z-index: 11;
-    }
-
-    .profile-share-btn {
-      position: absolute;
-      bottom: 14px;
-      right: 16px;
-      background: var(--card-bg);
-      border: 1px solid var(--neon-cyan);
-      color: var(--neon-cyan);
-      padding: 9px 16px;
-      border-radius: 10px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-      transition: transform 0.15s ease;
-    }
-    .profile-share-btn:active { transform: scale(0.94); }
-
-    .profile-header-social {
-      display: flex;
-      align-items: flex-start;
-      gap: 18px;
-      border-bottom: 1px dashed var(--card-border);
-      padding-bottom: 20px;
-      position: relative;
-    }
-
-    /* PROBLEM 4: large square "2x2 ID photo" avatar, taped in at a skew, pinned with a clip */
-    .profile-avatar-container {
-      position: relative;
-      flex-shrink: 0;
-      margin-top: 6px;
-    }
-    .profile-avatar {
-      width: 118px; height: 118px; border-radius: 4px;
-      border: 5px solid #fdfdfd;
-      background: linear-gradient(135deg, rgba(0,180,216,0.25), rgba(230,0,115,0.25));
-      display: flex; align-items: center; justify-content: center; font-size: 3rem;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.25);
-      transform: rotate(-4deg);
-      cursor: pointer;
-      background-size: cover;
-      background-position: center;
-      position: relative;
-      transition: transform 0.15s ease;
-    }
-    .profile-avatar:active { transform: rotate(-4deg) scale(0.96); }
-    .profile-avatar-edit-hint {
-      position: absolute; bottom: -9px; left: 50%; transform: translateX(-50%) rotate(-4deg);
-      background: var(--nav-pink); color: #fff; font-size: 0.55rem; font-weight: 800;
-      padding: 2px 8px; border-radius: 6px; letter-spacing: 0.5px; white-space: nowrap;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    /* the "clip" pinning the photo to the page */
-    .photo-clip {
-      position: absolute;
-      top: -16px;
-      left: 50%;
-      transform: translateX(-50%) rotate(-4deg);
-      width: 34px;
-      height: 20px;
-      z-index: 12;
-      pointer-events: none;
-    }
-    .photo-clip::before {
-      content: '';
-      position: absolute;
-      top: 8px; left: 3px; right: 3px;
-      height: 7px;
-      background: linear-gradient(180deg, #e8e8e8, #a8a8a8);
-      border-radius: 4px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-    }
-    .photo-clip::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 9px;
-      width: 16px; height: 16px;
-      border: 3px solid #b8b8b8;
-      border-bottom-color: transparent;
-      border-radius: 50%;
-      transform: rotate(20deg);
-    }
-
-    .profile-live-badge {
-      position: absolute; bottom: 0px; right: -2px; width: 18px; height: 18px;
-      background: #00ff66; border: 3px solid var(--bg); border-radius: 50%; z-index: 13;
-    }
-
-    .profile-identity-info { display: flex; flex-direction: column; gap: 4px; padding-top: 6px; }
-    .profile-display-name { font-family: var(--font-serif); font-size: 1.7rem; font-weight: 700; color: var(--text); cursor: pointer; }
-    .profile-username { font-size: 0.85rem; color: var(--text-muted); cursor: pointer; }
-    .profile-archetype-tag {
-      font-size: 0.72rem; font-weight: 800; color: var(--neon-cyan);
-      background: rgba(0,240,255,0.08); border: 1px solid var(--neon-cyan);
-      padding: 4px 10px; border-radius: 8px; margin-top: 6px; align-self: flex-start; letter-spacing: 0.5px;
-    }
-
-    .folder-card-wrapper { position: relative; margin-top: 14px; }
-    .folder-tab-flap {
-      display: inline-block;
-      background: var(--folder-tab-bg);
-      border: 1px solid var(--folder-border);
-      border-bottom: none;
-      border-radius: 10px 10px 0 0;
-      padding: 6px 14px;
-      font-size: 0.75rem;
-      font-weight: 800;
-      color: var(--neon-cyan);
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      position: absolute;
-      top: -25px;
-      left: 12px;
-      z-index: 2;
-    }
-    .folder-card-body {
-      background: var(--card-bg);
-      border: 1px solid var(--folder-border);
-      border-radius: 0 12px 12px 12px;
-      padding: 18px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      position: relative;
-    }
-
-    .personality-bar-container { display: flex; flex-direction: column; gap: 8px; }
-    .personality-bar-track { width: 100%; height: 15px; background: rgba(0, 0, 0, 0.1); border-radius: 8px; overflow: hidden; display: flex; }
-    .personality-segment { height: 100%; transition: width 0.3s ease; }
-    .personality-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.78rem; font-weight: 600; }
-    .legend-item { display: flex; align-items: center; gap: 6px; }
-    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
-
-    .top-activities-cards-rail { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
-    .top-activities-cards-rail::-webkit-scrollbar { display: none; }
-
-    /* PROBLEM 3: Friends rail */
-    .friends-rail { display: flex; gap: 16px; overflow-x: auto; padding: 6px 2px; scrollbar-width: none; }
-    .friends-rail::-webkit-scrollbar { display: none; }
-    .friend-chip {
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
-      min-width: 78px; cursor: pointer; flex-shrink: 0;
-    }
-    .friend-chip-avatar {
-      width: 62px; height: 62px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; font-size: 1.7rem;
-      background: var(--card-inner-bg);
-      border: 2px solid var(--card-color, var(--neon-cyan));
-      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-    }
-    .friend-chip-name { font-size: 0.72rem; font-weight: 700; color: var(--text); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 78px; }
-    .add-friend-btn {
-      background: var(--nav-pink); color: #fff; border: none; border-radius: 10px;
-      padding: 8px 14px; font-size: 0.78rem; font-weight: 700; cursor: pointer;
-      display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-    .friend-chip-add {
-      width: 62px; height: 62px; border-radius: 50%; border: 1px dashed var(--neon-cyan);
-      display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--neon-cyan);
-      background: rgba(0,240,255,0.02);
-    }
-    .discover-user-row {
-      display: flex; align-items: center; justify-content: space-between; gap: 10px;
-      padding: 10px 4px; border-bottom: 1px dashed var(--card-border);
-    }
-    .discover-user-row:last-child { border-bottom: none; }
-    .discover-user-left { display: flex; align-items: center; gap: 10px; }
-    .discover-user-avatar {
-      width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 1.3rem; background: var(--card-inner-bg); border: 2px solid var(--card-color, var(--neon-cyan));
-    }
-    .discover-user-name { font-size: 0.85rem; font-weight: 700; }
-    .discover-user-sub { font-size: 0.68rem; color: var(--text-muted); }
-    .btn-add-small {
-      background: var(--neon-cyan); color: #fff; border: none; border-radius: 8px;
-      padding: 7px 14px; font-size: 0.72rem; font-weight: 700; cursor: pointer; flex-shrink: 0;
-    }
-    .btn-add-small:disabled { background: var(--text-muted); cursor: default; }
-
-    .privacy-controls-grid { display: flex; flex-direction: column; gap: 10px; font-size: 0.82rem; }
-    .privacy-row { display: flex; justify-content: space-between; align-items: center; }
-    .privacy-row input[type="checkbox"] { width: 20px; height: 20px; }
-
-    .scroll-top-btn {
-      position: fixed; bottom: 82px; left: 50%; transform: translateX(-50%);
-      width: 44px; height: 44px; border-radius: 50%;
-      background: var(--card-bg); border: 1px solid var(--neon-cyan); color: var(--neon-cyan);
-      font-size: 1.2rem; font-weight: bold; display: none; align-items: center; justify-content: center;
-      cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 60;
-      transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-    .scroll-top-btn.show { display: flex; }
-    .scroll-top-btn:active { transform: translateX(-50%) scale(0.9); }
-
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(2, 1, 8, 0.82);
-      z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px;
-      backdrop-filter: blur(4px);
-    }
-    .modal-overlay.active { display: flex; }
-
-    .modal-card-wrapper { width: 100%; max-width: 400px; max-height: 92vh; overflow-y: auto; }
-
-    .full-trading-card {
-      background: var(--card-inner-bg);
-      border: 3px solid var(--modal-color, var(--neon-cyan));
-      border-radius: 20px;
-      padding: 18px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      transition: border-color 0.3s ease;
-    }
-
-    .full-trading-card.card-active-glow {
-      box-shadow: 0 0 12px 1px color-mix(in srgb, var(--modal-color, var(--neon-cyan)) 55%, transparent);
-      border-color: var(--modal-color, var(--neon-cyan));
-      isolation: isolate;
-    }
-    /* PROBLEM 2: narrow shimmer point tracing the card border, clockwise */
-    .full-trading-card.card-active-glow::after {
-      content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
-      border-radius: inherit; padding: 3px;
-      background: conic-gradient(from var(--border-angle),
-        transparent 0deg,
-        transparent 336deg,
-        #ffffff 350deg,
-        var(--modal-color, var(--neon-cyan)) 360deg);
-      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      animation: rotateBorder 3.6s linear infinite;
-      will-change: transform;
-    }
-    .full-trading-card.card-active-glow > * { position: relative; z-index: 1; }
-
-    .tc-header {
-      display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 1px solid var(--modal-color, var(--neon-cyan)); padding-bottom: 8px;
-      gap: 10px;
-    }
-    .tc-title { font-family: var(--font-serif); font-size: 1.7rem; font-weight: bold; color: var(--text); }
-    .tc-hp-badge {
-      font-family: var(--font-mono); font-weight: 700; font-size: 0.85rem;
-      background: var(--modal-color, var(--neon-cyan)); color: #fff; padding: 4px 10px; border-radius: 12px;
-      white-space: nowrap;
-    }
-
-    .tc-art-frame {
-      width: 100%; height: 170px; border: 1px solid var(--modal-color, var(--neon-cyan));
-      border-radius: 12px; position: relative; display: flex; align-items: center;
-      justify-content: center; overflow: hidden; background: rgba(0, 0, 0, 0.04);
-    }
-    /* PROBLEM 2: this decorative dot layer was sitting above the tappable icon field. pointer-events:none lets clicks pass through */
-    .tc-art-frame::before {
-      content: ''; position: absolute; inset: 0;
-      background-image: radial-gradient(var(--modal-color, var(--neon-cyan)) 0.75px, transparent 0.75px);
-      background-size: 5px 5px; opacity: 0.15;
-      pointer-events: none;
-      z-index: 1;
-    }
-    .tc-art-icon { font-size: 4.4rem; z-index: 2; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); }
-    .tc-category-sub { position: absolute; top: 8px; left: 10px; font-size: 0.7rem; color: var(--text-muted); font-weight: 700; z-index: 2; }
-
-    .tc-stats-box {
-      background: var(--card-bg); border: 1px solid var(--modal-color, var(--neon-cyan));
-      border-radius: 12px; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px;
-    }
-    .tc-skills-title {
-      font-size: 0.78rem; font-weight: 700; color: var(--neon-cyan); letter-spacing: 0.5px;
-      border-bottom: 1px dashed rgba(0, 240, 255, 0.2); padding-bottom: 5px; text-transform: uppercase;
-    }
-    .tc-stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 600; }
-    .tc-stars-interactive { color: #ffb703; letter-spacing: 3px; font-size: 1.35rem; line-height: 1; cursor: pointer; user-select: none; }
-
-    .timer-display-modal { font-family: var(--font-mono); font-size: 2.4rem; font-weight: 700; text-align: center; color: var(--neon-cyan); margin: 4px 0; }
-
-    .tc-bottom-action-row { display: flex; gap: 10px; width: 100%; align-items: center; margin-top: 4px; }
-
-    .btn-square-icon {
-      width: 50px; height: 50px; border-radius: 12px;
-      background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text);
-      font-size: 1.35rem; display: flex; align-items: center; justify-content: center;
-      cursor: pointer; flex-shrink: 0; transition: background 0.2s, border-color 0.2s;
-    }
-    .btn-square-icon:hover { border-color: var(--neon-cyan); }
-    .btn-square-icon.danger { color: #ff0055; }
-    .btn-square-icon.danger:hover { border-color: #ff0055; background: rgba(255, 0, 85, 0.1); }
-    .btn-square-icon.selected-tool { border-color: var(--neon-cyan); background: var(--nav-pink-bg); }
-
-    .btn-action-primary-compact {
-      flex: 1; height: 50px; background: var(--nav-pink); border: none; border-radius: 12px;
-      color: #fff; font-family: var(--font-mono); font-weight: 700; cursor: pointer; font-size: 0.92rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;
-      padding: 0 8px; white-space: nowrap;
-    }
-    .btn-action-primary-compact:disabled { background: #7a7a8c; cursor: not-allowed; opacity: 0.6; box-shadow: none; }
-
-    .btn-dual-group-compact { display: flex; gap: 8px; flex: 1; height: 50px; }
-    .btn-action-pause-compact {
-      flex: 1; height: 100%; background: #d97706; border: none; border-radius: 12px;
-      color: #fff; font-family: var(--font-mono); font-weight: 700; cursor: pointer;
-      font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 5px;
-    }
-    .btn-action-stop-compact {
-      flex: 1; height: 100%; background: #e6005c; border: none; border-radius: 12px;
-      color: #fff; font-family: var(--font-mono); font-weight: 700; cursor: pointer;
-      font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 5px;
-    }
-
-    .form-input-clean {
-      background: transparent; border: none; border-bottom: 1px solid var(--text-muted);
-      color: var(--text); font-family: var(--font-mono); font-size: 1rem;
-      padding: 6px 4px; outline: none; width: 100%;
-    }
-    .form-input-clean:focus { border-bottom-color: var(--neon-cyan); }
-
-    /* PROBLEM 2: make the emoji field an obviously large, tappable box */
-    .emoji-input-box {
-      width: 84px; height: 84px; text-align: center; font-size: 3.2rem;
-      border: 2px dashed var(--modal-color, var(--neon-cyan)) !important;
-      border-radius: 14px; background: rgba(0,240,255,0.04) !important;
-      cursor: text; position: relative; z-index: 5;
-    }
-
-    .bottom-nav-container { position: fixed; bottom: 22px; left: 0; right: 0; display: flex; justify-content: center; z-index: 50; }
-    .bottom-nav-wrapper { border-radius: 24px; }
-    .bottom-nav {
-      background: var(--card-bg); border: 1px solid var(--neon-cyan);
-      box-shadow: var(--glow-intensity); padding: 7px 10px; border-radius: 24px; display: flex; gap: 5px;
-    }
-    .nav-btn {
-      background: transparent; border: 1px solid transparent; color: var(--text-muted);
-      padding: 10px 15px; font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600;
-      border-radius: 16px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer;
-    }
-    .nav-btn span:first-child { font-size: 1.15rem; }
-    .nav-btn.active { background: var(--nav-pink-bg); color: var(--text); border-color: var(--nav-pink); }
-
-    /* Doodle modal */
-    #doodleCanvas { width: 100%; height: auto; aspect-ratio: 1 / 1; border-radius: 12px; touch-action: none; cursor: crosshair; }
-    .doodle-swatch-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-    .doodle-swatch {
-      width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
-      border: 3px solid transparent; box-shadow: 0 2px 5px rgba(0,0,0,0.25);
-    }
-    .doodle-swatch.selected { border-color: var(--text); transform: scale(1.12); }
-    .doodle-tool-row { display: flex; gap: 10px; justify-content: center; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Issue - Gamified Focus & Life Tracker</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,600;0,700;1,400&family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            /* Theme Colors - Default Dark Neon */
+            --bg-main: #0B0E14;
+            --bg-card: #151A23;
+            --bg-card-hover: #1E2532;
+            --border-color: #2A3447;
+            --text-main: #E2E8F0;
+            --text-muted: #8A99AD;
+            
+            --accent-primary: #00F0FF;
+            --accent-primary-dim: rgba(0, 240, 255, 0.15);
+            --accent-secondary: #FF0055;
+            --accent-green: #00FF66;
+            --accent-yellow: #FFB800;
+            --accent-purple: #9D00FF;
+
+            /* Digital Timer Accessibility Color (Warm Soft Amber/Gold) */
+            --digital-timer-color: #FFD000;
+            --digital-timer-glow: rgba(255, 208, 0, 0.25);
+
+            /* Fonts */
+            --font-ui: 'Chakra Petch', sans-serif;
+            --font-digital: 'VT323', monospace;
+            --font-mono: 'Share Tech Mono', monospace;
+
+            /* Sizing Defaults */
+            --card-padding: 12px;
+            --font-size-base: 13px;
+            --font-size-title: 15px;
+            --font-size-lg: 18px;
+            --header-height: 52px;
+            --nav-width: 220px;
+        }
+
+        [data-theme="light"] {
+            --bg-main: #F0F4F8;
+            --bg-card: #FFFFFF;
+            --bg-card-hover: #F8FAFC;
+            --border-color: #CBD5E1;
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            
+            --accent-primary: #0088CC;
+            --accent-primary-dim: rgba(0, 136, 204, 0.12);
+            --accent-secondary: #E11D48;
+            --accent-green: #10B981;
+            --accent-yellow: #D97706;
+            --accent-purple: #7C3AED;
+
+            --digital-timer-color: #D97706;
+            --digital-timer-glow: rgba(217, 119, 6, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: var(--font-ui);
+            font-size: var(--font-size-base);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* App Container Layout */
+        #app-layout {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Header */
+        header {
+            height: var(--header-height);
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: var(--font-size-lg);
+            letter-spacing: 1px;
+            color: var(--text-main);
+        }
+
+        .brand-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--accent-primary);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: inline-block;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Main View Container */
+        .main-content {
+            flex: 1;
+            position: relative;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 16px;
+            scroll-behavior: smooth;
+        }
+
+        .view-pane {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        .view-pane.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Navigation Layout Refactor (Problem 1) */
+        nav.nav-bar {
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 6px 0;
+            z-index: 20;
+            flex-shrink: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            font-family: var(--font-ui);
+            font-size: 11px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .nav-item .nav-icon {
+            font-size: 18px;
+        }
+
+        .nav-item.active, .nav-item:hover {
+            color: var(--accent-primary);
+            background: var(--accent-primary-dim);
+        }
+
+        .nav-item .tab-label {
+            display: block;
+            font-weight: 600;
+        }
+
+        /* Desktop & Tablet Navigation: Right Side Sidebar + Smaller Elements */
+        @media (min-width: 768px) {
+            #app-layout {
+                flex-direction: row-reverse; /* Sidebar on the Right */
+            }
+
+            header {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: var(--nav-width);
+                height: var(--header-height);
+            }
+
+            nav.nav-bar {
+                width: var(--nav-width);
+                height: 100%;
+                flex-direction: column;
+                justify-content: flex-start;
+                padding: 24px 12px;
+                gap: 8px;
+                border-top: none;
+                border-left: 1px solid var(--border-color);
+            }
+
+            .nav-item {
+                flex-direction: row;
+                justify-content: flex-start;
+                gap: 12px;
+                padding: 10px 14px;
+                font-size: 13px;
+                border-radius: 8px;
+            }
+
+            .nav-item .nav-icon {
+                font-size: 16px;
+            }
+
+            .main-content {
+                margin-top: var(--header-height);
+                height: calc(100vh - var(--header-height));
+                padding: 20px 28px;
+            }
+
+            /* Responsive Scaling down for PC/Tablet */
+            :root {
+                --card-padding: 10px;
+                --font-size-base: 12px;
+                --font-size-title: 14px;
+            }
+        }
+
+        /* General UI Components & Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: var(--card-padding);
+            margin-bottom: 14px;
+            position: relative;
+            transition: border-color 0.2s;
+        }
+
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: var(--font-size-title);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 6px 12px;
+            font-family: var(--font-ui);
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--text-muted);
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: #000;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            background: var(--accent-primary);
+        }
+
+        .btn-danger {
+            background: rgba(255, 0, 85, 0.15);
+            color: var(--accent-secondary);
+            border: 1px solid var(--accent-secondary);
+        }
+
+        /* Digital Timer Font & Color (Problem 2) */
+        .digital-clock-display {
+            font-family: var(--font-digital);
+            font-size: 2.2rem;
+            color: var(--digital-timer-color);
+            text-shadow: 0 0 8px var(--digital-timer-glow);
+            letter-spacing: 2px;
+            line-height: 1;
+            background: rgba(0,0,0,0.3);
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 208, 0, 0.2);
+            display: inline-block;
+        }
+
+        /* Activity Trading Cards Grid */
+        .deck-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .activity-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .activity-card.active {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 10px var(--accent-primary-dim);
+        }
+
+        .activity-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .activity-name {
+            font-weight: 700;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .intensity-badge {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 3px;
+            text-transform: uppercase;
+        }
+
+        .intensity-HARD { background: rgba(255, 0, 85, 0.2); color: var(--accent-secondary); border: 1px solid var(--accent-secondary); }
+        .intensity-MID { background: rgba(255, 184, 0, 0.2); color: var(--accent-yellow); border: 1px solid var(--accent-yellow); }
+        .intensity-EASY { background: rgba(0, 255, 102, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
+
+        .skills-list {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .skill-tag {
+            background: rgba(255,255,255,0.05);
+            padding: 2px 5px;
+            border-radius: 3px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Floating / Popping FX Layer (Problem 4) */
+        #fx-canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .pop-text {
+            position: absolute;
+            font-family: var(--font-ui);
+            font-weight: 700;
+            font-size: 16px;
+            animation: floatUpAndFade 1.8s forwards cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            pointer-events: none;
+        }
+
+        @keyframes floatUpAndFade {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.6);
+            }
+            15% {
+                opacity: 1;
+                transform: translateY(-10px) scale(1.1);
+            }
+            80% {
+                opacity: 0.9;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+        }
+
+        /* Stats & Clock Chart Layout (Problem 3) */
+        .chart-container-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .clock-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .chart-box {
+            position: relative;
+            width: 100%;
+            max-width: 320px;
+            height: 320px;
+            margin: 0 auto;
+        }
+
+        /* Vitality HP Meter */
+        .vitality-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 10px 16px;
+            border-radius: 6px;
+        }
+
+        .hp-bar-bg {
+            flex: 1;
+            height: 14px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 7px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .hp-bar-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #FF0055, #FFB800, #00FF66);
+            transition: width 0.4s ease;
+        }
+
+        /* Form Inputs */
+        input, select {
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-family: var(--font-ui);
+            font-size: 12px;
+        }
+
+        /* Profile ID Card Scrapbook Style */
+        .profile-id-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 16px;
+            position: relative;
+        }
+
+        @media (max-width: 500px) {
+            .profile-id-card {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .id-photo-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #avatar-canvas {
+            background: #000;
+            border: 1px dashed var(--border-color);
+            border-radius: 6px;
+            cursor: crosshair;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="calming-bg-overlay" id="calmingBgOverlay">
-    <div class="calming-orb calming-orb-1"></div>
-    <div class="calming-orb calming-orb-2"></div>
-  </div>
+    <div id="fx-canvas-container"></div>
 
-  <div class="toast-notification" id="toastNotice"></div>
-
-  <div class="app-container">
-
-    <div class="top-bar-clean">
-      <button class="hamburger-btn-minimal" onclick="toggleDrawer()">☰</button>
-      <span class="top-bar-date" id="topBarDate"></span>
-      <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()">☀️ LIGHT</button>
-    </div>
-
-    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
-    <div class="drawer" id="sideDrawer">
-      <div style="font-family: var(--font-serif); font-size: 1.6rem; border-bottom: 1px solid var(--neon-cyan); padding-bottom: 12px; color:var(--neon-cyan);">SYSTEM MENU</div>
-
-      <!-- PROBLEM 7: category renaming now lives nested inside this button, no standalone Close Menu row -->
-      <div style="padding:14px; background:rgba(0, 240, 255, 0.05); border:1px solid var(--neon-cyan); cursor:pointer; border-radius:10px; font-size:0.9rem; display:flex; justify-content:space-between; align-items:center;" onclick="toggleCategoryEditor()">
-        <span>⚙️ Edit Categories</span>
-        <span id="categoryEditorChevron">▾</span>
-      </div>
-      <div class="category-editor-list" id="categoryEditorList" style="display:none; padding-left:4px;"></div>
-
-      <!-- PROBLEM 8: Log History entry point -->
-      <div style="padding:14px; background:rgba(0, 240, 255, 0.05); border:1px solid var(--neon-cyan); cursor:pointer; border-radius:10px; font-size:0.9rem;" onclick="openLogHistory()">🕘 Log History</div>
-    </div>
-
-    <!-- TAB 1: ACTION VIEW -->
-    <div id="actionView" class="view active">
-      <div class="hero-deck-section" id="heroSection">
-        <div class="hero-deck-header">
-          <span>Activity Deck</span>
-        </div>
-        <div class="hero-slots-scroll" id="heroSlotsContainer"></div>
-      </div>
-
-      <div class="rail-section">
-        <div class="rail-header" id="railTitleWork">Work</div>
-        <div class="rail-container" id="railWork"></div>
-      </div>
-
-      <div class="rail-section">
-        <div class="rail-header" id="railTitleHobbies">Hobbies</div>
-        <div class="rail-container" id="railHobbies"></div>
-      </div>
-
-      <div class="rail-section">
-        <div class="rail-header" id="railTitleMedia">Media</div>
-        <div class="rail-container" id="railMedia"></div>
-      </div>
-
-      <div class="rail-section">
-        <div class="rail-header" id="railTitleChores">Chores</div>
-        <div class="rail-container" id="railChores"></div>
-      </div>
-
-      <div class="rail-section">
-        <div class="rail-header" id="railTitleSocial">Social</div>
-        <div class="rail-container" id="railSocial"></div>
-      </div>
-
-      <div class="rail-section">
-        <div class="rail-header" id="railTitleOther">Other</div>
-        <div class="rail-container" id="railOther"></div>
-      </div>
-    </div>
-
-    <!-- TAB 2: RECOVERY VIEW -->
-    <div id="recoveryView" class="view">
-      <div class="hp-container">
-        <div class="hp-header">
-          <span style="color: var(--text);">System Vitality (HP)</span>
-          <span id="hpPercentageText" style="color: var(--color-recovery); font-family: var(--font-mono); font-weight:700;">100%</span>
-        </div>
-        <div class="hp-bar-bg">
-          <div class="hp-bar-fill" id="hpBarFill"></div>
-        </div>
-      </div>
-
-      <div style="font-family: var(--font-serif); font-size: 1.5rem; color: var(--neon-cyan); text-align: center;">RECOVERY MATRIX</div>
-      <div class="matrix-grid" id="recoveryGrid"></div>
-    </div>
-
-    <!-- TAB 3: STATS VIEW -->
-    <div id="statsView" class="view">
-      <div class="date-picker-bar">
-        <button id="statsPrevBtn" onclick="shiftStatsDate(-1)" style="background:none; border:none; color:var(--neon-cyan); cursor:pointer;">◄</button>
-        <span id="statsDateLabel">LOG</span>
-        <button id="statsNextBtn" onclick="shiftStatsDate(1)" style="background:none; border:none; color:var(--neon-cyan); cursor:pointer;">►</button>
-      </div>
-      <div style="font-family: var(--font-serif); font-size: 1.35rem; color: var(--neon-cyan); margin-top: 8px;">Activity Time Analytics</div>
-
-      <div class="clock-toggle-row">
-        <button class="clock-toggle-btn active" id="clockToggleAM" onclick="setStatsClockHalf('AM')">AM</button>
-        <button class="clock-toggle-btn" id="clockTogglePM" onclick="setStatsClockHalf('PM')">PM</button>
-      </div>
-      <div class="stats-pie-card" style="max-width:280px; margin:0 auto; width:100%;">
-        <div class="stats-pie-title" id="clockCardTitle">AM CLOCK // 12AM – 12PM</div>
-        <canvas id="activityClockChart"></canvas>
-      </div>
-
-      <div class="activity-list-header">
-        <span style="font-size:0.78rem; color:var(--text-muted); font-weight:700;">TIME BY ACTIVITY</span>
-        <select id="timelineCategoryFilter" onchange="renderTimelineStats()">
-          <option value="all">All Categories</option>
-        </select>
-      </div>
-      <div class="timeline-list" id="timelineList"></div>
-    </div>
-
-    <!-- PROBLEM 8: LOG HISTORY VIEW (accessed from the menu, not a bottom-nav tab) -->
-    <div id="logHistoryView" class="view">
-      <div class="date-picker-bar" style="justify-content:flex-start; gap:14px;">
-        <button onclick="closeLogHistory()" style="background:none; border:none; color:var(--neon-cyan); font-size:1.3rem; cursor:pointer;">←</button>
-        <span style="font-family: var(--font-serif); font-size: 1.3rem; color: var(--neon-cyan);">Log History</span>
-      </div>
-      <div class="timeline-list" id="logHistoryList"></div>
-    </div>
-
-    <!-- TAB 4: PROFILE VIEW -->
-    <div id="profileView" class="view">
-      <div class="profile-card" id="profileCardMain">
-
-        <div class="scrapbook-tape tape-top-left"></div>
-        <div class="scrapbook-tape tape-top-right"></div>
-        <div class="scrapbook-tape tape-bottom-right"></div>
-        <div class="scrapbook-sticker">OFFICIAL ID</div>
-
-        <!-- Social / ID Header -->
-        <div class="profile-header-social">
-          <div class="profile-avatar-container">
-            <div class="photo-clip"></div>
-            <div class="profile-avatar" id="profileAvatarEl" onclick="openDoodleModal()">⚡</div>
-            <div class="profile-avatar-edit-hint">✏️ SKETCH</div>
-            <div class="profile-live-badge" id="profileLiveSignal" title="Live Signal Active"></div>
-          </div>
-          <div class="profile-identity-info">
-            <div class="profile-display-name" id="profileDisplayNameEl" onclick="editProfileField('displayName')" title="Tap to edit">Alex Vance ✏️</div>
-            <div class="profile-username" id="profileUsernameEl" onclick="editProfileField('username')" title="Tap to edit">ID // @alex_vance2026 ✏️</div>
-            <div class="profile-archetype-tag" id="profileArchetypeBadge">ZENITH CRAFTSMAN</div>
-          </div>
-        </div>
-
-        <!-- Folder Section 1: Identity Matrix -->
-        <div class="folder-card-wrapper">
-          <div class="folder-tab-flap">Identity Matrix</div>
-          <div class="folder-card-body">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">30-DAY ATTRIBUTES</span>
-              <span id="profileHouseTitle" style="font-size:0.75rem; color:var(--neon-cyan); font-weight:800;">House of Artisans</span>
+    <div id="app-layout">
+        <!-- Header -->
+        <header>
+            <div class="brand">
+                <span class="brand-icon"></span>
+                <span>SKILL ISSUE</span>
             </div>
 
-            <div class="personality-bar-container">
-              <div class="personality-bar-track" id="personalityBarTrack"></div>
-              <div class="personality-legend" id="personalityLegend"></div>
+            <div class="header-actions">
+                <div class="vitality-container" style="padding: 4px 8px; gap: 8px;">
+                    <span style="font-weight:700; font-size:11px;">HP</span>
+                    <div class="hp-bar-bg" style="width: 80px; height: 10px;">
+                        <div id="header-hp-fill" class="hp-bar-fill" style="width: 100%;"></div>
+                    </div>
+                    <span id="header-hp-text" style="font-family:var(--font-mono); font-size:11px;">100/100</span>
+                </div>
+
+                <button class="btn" id="theme-toggle" title="Toggle Theme">🌙</button>
             </div>
+        </header>
 
-            <div style="position: relative; display: flex; justify-content: center; margin-top: 6px;">
-              <canvas id="radarChart" width="250" height="250"></canvas>
-            </div>
-          </div>
-        </div>
+        <!-- Navigation (Right Side on PC/Tablet, Bottom on Mobile) -->
+        <nav class="nav-bar">
+            <button class="nav-item active" onclick="switchTab('action')">
+                <span class="nav-icon">⚡</span>
+                <span class="tab-label">Action</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('recovery')">
+                <span class="nav-icon">🌿</span>
+                <span class="tab-label">Recovery</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('stats')">
+                <span class="nav-icon">📊</span>
+                <span class="tab-label">Stats</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('profile')">
+                <span class="nav-icon">👤</span>
+                <span class="tab-label">Profile ID</span>
+            </button>
+        </nav>
 
-        <!-- Folder Section 2: Top 3 Activity Cards -->
-        <div class="folder-card-wrapper" id="topActivitiesCard">
-          <div class="folder-tab-flap">Core Drivers</div>
-          <div class="folder-card-body">
-            <div style="font-size:0.72rem; color:var(--text-muted); font-weight:700;">TOP 3 LOGGED ACTIVITIES</div>
-            <div class="top-activities-cards-rail" id="topActivitiesList"></div>
-          </div>
-        </div>
+        <!-- Main Content Area -->
+        <main class="main-content">
 
-        <!-- PROBLEM 3: Friends -->
-        <div class="folder-card-wrapper">
-          <div class="folder-tab-flap">Friends Network</div>
-          <div class="folder-card-body">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span style="font-size:0.72rem; color:var(--text-muted); font-weight:700;" id="friendsCountLabel">0 FRIENDS</span>
-              <button class="add-friend-btn" onclick="openAddFriendModal()">+ ADD FRIEND</button>
-            </div>
-            <div class="friends-rail" id="friendsRail"></div>
-          </div>
-        </div>
+            <!-- 1. ACTION VIEW -->
+            <section id="view-action" class="view-pane active">
+                
+                <!-- Active Tracker Banner -->
+                <div class="card" style="border-left: 4px solid var(--accent-primary);">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span>CURRENT FOCUS SESSION</span>
+                        </div>
+                        <span id="active-session-badge" class="intensity-badge intensity-MID">IDLE</span>
+                    </div>
 
-        <!-- Folder Section 3: House Breakdown -->
-        <div class="folder-card-wrapper">
-          <div class="folder-tab-flap">House Distribution</div>
-          <div class="folder-card-body">
-            <div id="houseDistributionList" style="display:flex; flex-direction:column; gap:8px; font-size:0.8rem;"></div>
-          </div>
-        </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                        <div>
+                            <h2 id="active-task-name" style="font-size: 16px; margin-bottom: 4px;">No Activity Selected</h2>
+                            <p id="active-task-sub" style="color: var(--text-muted); font-size: 11px;">Select a card from your deck below to begin grinding.</p>
+                        </div>
 
-        <!-- Folder Section 4: Privacy Settings -->
-        <div class="folder-card-wrapper">
-          <div class="folder-tab-flap">Privacy Controls</div>
-          <div class="folder-card-body">
-            <div class="privacy-controls-grid">
-              <div class="privacy-row">
-                <span>Show Unlocked Archetype</span>
-                <input type="checkbox" id="privacyShowArchetype" checked onchange="togglePrivacySetting('archetype')">
-              </div>
-              <div class="privacy-row">
-                <span>Show Attribute Radar Web</span>
-                <input type="checkbox" id="privacyShowRadar" checked onchange="togglePrivacySetting('radar')">
-              </div>
-              <div class="privacy-row">
-                <span>Show Top 3 Activities</span>
-                <input type="checkbox" id="privacyShowTop3" checked onchange="togglePrivacySetting('top3')">
-              </div>
-              <div class="privacy-row">
-                <span>Show Live Signal</span>
-                <input type="checkbox" id="privacyShowLive" checked onchange="togglePrivacySetting('live')">
-              </div>
-            </div>
-          </div>
-        </div>
+                        <!-- Refactored Accessibility Digital Timer -->
+                        <div class="digital-clock-display" id="session-timer-display">
+                            00:00:00
+                        </div>
 
-        <button class="profile-share-btn" onclick="shareProfile()"><span style="font-size:0.9rem;">📤</span> SHARE ID</button>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-primary" id="btn-toggle-timer" onclick="toggleActiveSession()">START</button>
+                            <button class="btn btn-danger" onclick="stopActiveSession()">STOP</button>
+                        </div>
+                    </div>
+                </div>
 
-      </div>
+                <!-- Custom Activity Creator -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">➕ Create Activity Card</div>
+                    </div>
+                    <form id="create-card-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) gap: 8px;" onsubmit="handleCreateCard(event)">
+                        <input type="text" id="card-name-input" placeholder="Task Name" required />
+                        <select id="card-cat-input">
+                            <option value="Work">Work</option>
+                            <option value="Hobbies">Hobbies</option>
+                            <option value="Media">Media</option>
+                            <option value="Chores">Chores</option>
+                            <option value="Social">Social</option>
+                        </select>
+                        <select id="card-intensity-input">
+                            <option value="EASY">EASY (-3 HP/hr)</option>
+                            <option value="MID" selected>MID (-6 HP/hr)</option>
+                            <option value="HARD">HARD (-12 HP/hr)</option>
+                        </select>
+                        <select id="card-primary-skill">
+                            <option value="Intellect">Intellect</option>
+                            <option value="Creativity">Creativity</option>
+                            <option value="Discipline">Discipline</option>
+                            <option value="Empathy">Empathy</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary" style="grid-column: 1 / -1; justify-content: center; margin-top: 4px;">Add to Deck</button>
+                    </form>
+                </div>
+
+                <!-- Deck Grid -->
+                <div class="card-title" style="margin: 16px 0 8px 0;">YOUR ACTIVITY DECK</div>
+                <div class="deck-grid" id="activity-deck-container">
+                    <!-- Dynamic Activity Cards Rendered Here -->
+                </div>
+            </section>
+
+            <!-- 2. RECOVERY VIEW -->
+            <section id="view-recovery" class="view-pane">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🌿 Vitality & HP Management</div>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 12px;">
+                        Running activities consumes HP based on intensity. Rest or use recovery matrix routines to restore vitality.
+                    </p>
+
+                    <div class="vitality-container" style="margin-bottom: 16px;">
+                        <span style="font-weight:700;">HP</span>
+                        <div class="hp-bar-bg">
+                            <div id="recovery-hp-fill" class="hp-bar-fill" style="width: 100%;"></div>
+                        </div>
+                        <span id="recovery-hp-text" style="font-family:var(--font-mono);">100 / 100</span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                        <button class="btn" onclick="restoreHP(15)" style="justify-content: center; padding: 12px;">💧 Quick Hydration (+15 HP)</button>
+                        <button class="btn" onclick="restoreHP(30)" style="justify-content: center; padding: 12px;">🧘 Mind Reset 10m (+30 HP)</button>
+                        <button class="btn" onclick="restoreHP(100)" style="justify-content: center; padding: 12px;">😴 Full Rest (+100 HP)</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. STATS VIEW (Refactored Clock Charts) -->
+            <section id="view-stats" class="view-pane">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">📊 Daily Focus Clock Analytics</div>
+                        <span style="font-size: 11px; color: var(--text-muted);">Real-time Activity Log</span>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 16px;">
+                        Tracks exact logged duration. Unfilled time represents unlogged or rest periods.
+                    </p>
+
+                    <div class="chart-container-wrapper">
+                        <!-- AM Clock -->
+                        <div class="clock-box card">
+                            <div class="card-title" style="margin-bottom: 8px;">AM Clock (00:00 - 12:00)</div>
+                            <div class="chart-box">
+                                <canvas id="amClockChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- PM Clock -->
+                        <div class="clock-box card">
+                            <div class="card-title" style="margin-bottom: 8px;">PM Clock (12:00 - 24:00)</div>
+                            <div class="chart-box">
+                                <canvas id="pmClockChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. PROFILE VIEW -->
+            <section id="view-profile" class="view-pane">
+                <div class="profile-id-card">
+                    <div class="id-photo-area">
+                        <canvas id="avatar-canvas" width="110" height="110"></canvas>
+                        <button class="btn" style="font-size: 10px; width: 100%; justify-content: center;" onclick="clearAvatarCanvas()">Clear Doodle</button>
+                    </div>
+                    <div>
+                        <div class="card-title" style="font-size: 16px;">OPERATOR IDENTITY</div>
+                        <div style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-primary); margin-bottom: 8px;">RANK: ARCHITECT</div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px;">
+                            <div>🧠 Intellect: <span id="stat-intellect">LVL 1</span></div>
+                            <div>🎨 Creativity: <span id="stat-creativity">LVL 1</span></div>
+                            <div>⚔️ Discipline: <span id="stat-discipline">LVL 1</span></div>
+                            <div>🤝 Empathy: <span id="stat-empathy">LVL 1</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
     </div>
 
-    <button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToHeroSection()">▲</button>
-
-  </div>
-
-  <!-- Detail Modal - Trading Card Layout -->
-  <div class="modal-overlay" id="cardDetailModal" onclick="closeCardModal(event)">
-    <div class="modal-card-wrapper" id="modalCardWrapper">
-      <div class="full-trading-card" id="tcModalCard">
-
-        <div class="tc-header">
-          <span class="tc-title" id="modalTitle">Physics 2</span>
-          <span class="tc-hp-badge" id="modalHpBadge">-10 HP</span>
-        </div>
-        <div class="tc-art-frame">
-          <span class="tc-category-sub" id="modalCategory">WORK</span>
-          <div class="tc-art-icon" id="modalIcon">🍎</div>
-        </div>
-
-        <div class="tc-stats-box">
-          <div class="tc-skills-title">SKILLS GAINED</div>
-          <div id="modalSkillsContainer" style="display:flex; flex-direction:column; gap:6px;"></div>
-        </div>
-
-        <div id="modalInteractiveBody"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Create / Edit Activity Card Modal -->
-  <div class="modal-overlay" id="cardFormModal" onclick="closeFormModal(event)">
-    <div class="modal-card-wrapper">
-      <div class="full-trading-card" id="createFormTradingCard" style="--modal-color: #888888;">
-
-        <div class="tc-header">
-          <input type="text" id="createFormName" class="form-input-clean" placeholder="Activity Name..." oninput="validateCreateCardForm()" style="font-weight:bold; font-size:1.25rem;">
-          <select id="createFormHpCost" onchange="validateCreateCardForm()" style="background:transparent; border:1px solid var(--text-muted); color:var(--text); font-size:0.78rem; border-radius:8px; padding:6px;">
-            <option value="">HP Cost (default 5)</option>
-            <option value="2">2 HP (Easy)</option>
-            <option value="5">5 HP (Mid)</option>
-            <option value="10">10 HP (Hard)</option>
-          </select>
-        </div>
-
-        <!-- PROBLEM 2 fix: the decorative dot overlay in .tc-art-frame::before now has pointer-events:none,
-             and this field is a real, large, clearly-tappable box (z-index above it as extra safety) -->
-        <div class="tc-art-frame">
-          <span class="tc-category-sub" id="createFormCategoryTag">CARD CREATION</span>
-          <input type="text" id="createFormIcon" class="form-input-clean emoji-input-box" placeholder="😀" maxlength="2" oninput="validateCreateCardForm()">
-        </div>
-
-        <div id="createCategoryField" style="display:flex; flex-direction:column; gap:6px;">
-          <label style="font-size:0.7rem; color:var(--neon-cyan); font-weight:700;">CATEGORY</label>
-          <select id="createFormCategory" onchange="onCategorySelectChange()" style="background:var(--card-bg); border:1px solid var(--card-border); color:var(--text); font-size:0.9rem; border-radius:8px; padding:8px;">
-            <option value="">-- Select Category --</option>
-            <option value="work">Work</option>
-            <option value="hobbies">Hobbies</option>
-            <option value="media">Media</option>
-            <option value="chores">Chores</option>
-            <option value="social">Social</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-
-        <div class="tc-stats-box">
-          <div class="tc-skills-title">SKILLS GAINED</div>
-
-          <div class="tc-stat-row">
-            <select id="createFormSkill1" onchange="validateCreateCardForm()" style="background:transparent; border:none; border-bottom:1px solid var(--text-muted); color:var(--text); font-size:0.85rem; padding:4px 0;">
-              <option value="">Select Skill 1</option>
-              <option value="Intellect">Intellect</option>
-              <option value="Creativity">Creativity</option>
-              <option value="Discipline">Discipline</option>
-              <option value="Empathy">Empathy</option>
-            </select>
-            <span class="tc-stars-interactive" id="starSelector1" onclick="handleStarClick(1, event)">☆☆☆☆☆</span>
-          </div>
-
-          <div class="tc-stat-row">
-            <select id="createFormSkill2" onchange="validateCreateCardForm()" style="background:transparent; border:none; border-bottom:1px solid var(--text-muted); color:var(--text); font-size:0.85rem; padding:4px 0;">
-              <option value="">Select Skill 2</option>
-              <option value="Intellect">Intellect</option>
-              <option value="Creativity">Creativity</option>
-              <option value="Discipline">Discipline</option>
-              <option value="Empathy">Empathy</option>
-            </select>
-            <span class="tc-stars-interactive" id="starSelector2" onclick="handleStarClick(2, event)">☆☆☆☆☆</span>
-          </div>
-        </div>
-
-        <button class="btn-action-primary-compact" id="btnSaveCard" disabled onclick="saveCardForm()" style="height:46px; width:100%;">SAVE CARD</button>
-        <button class="btn-square-icon" style="width:100%; height:36px; font-size:0.85rem;" onclick="closeFormModal(null, true)">CANCEL</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- PROBLEM 3: Add Friend Modal -->
-  <div class="modal-overlay" id="addFriendModal" onclick="closeAddFriendModal(event)">
-    <div class="modal-card-wrapper">
-      <div class="full-trading-card" style="--modal-color: var(--neon-cyan);">
-        <div class="tc-header">
-          <span class="tc-title" style="font-size:1.4rem;">Add Friends</span>
-        </div>
-        <div id="discoverUsersList" style="display:flex; flex-direction:column;"></div>
-        <button class="btn-square-icon" style="width:100%; height:36px; font-size:0.85rem;" onclick="closeAddFriendModal(null, true)">CLOSE</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- PROBLEM 3: Friend Profile Modal -->
-  <!-- PROBLEM 6: full info-sheet modal for viewing any user's profile (friends or discoverable users) -->
-  <div class="modal-overlay" id="friendProfileModal" onclick="closeFriendProfileModal(event)">
-    <div class="modal-card-wrapper">
-      <div class="full-trading-card" id="friendProfileCard" style="--modal-color: var(--neon-cyan); gap:16px;">
-        <div class="tc-header">
-          <span class="tc-title" id="friendProfileName" style="font-size:1.4rem;">Friend Name</span>
-        </div>
-        <div class="tc-art-frame" style="height:120px;">
-          <div class="tc-art-icon" id="friendProfileIcon">🌙</div>
-        </div>
-        <div class="tc-stats-box">
-          <div class="tc-skills-title">ID CARD</div>
-          <div class="tc-stat-row"><span>Username</span><span id="friendProfileUsername">@handle</span></div>
-          <div class="tc-stat-row"><span>Archetype</span><span id="friendProfileArchetype">-</span></div>
-          <div class="tc-stat-row"><span>House</span><span id="friendProfileHouse">-</span></div>
-        </div>
-
-        <div class="folder-card-wrapper" style="margin-top:0;">
-          <div class="folder-tab-flap">Identity Matrix</div>
-          <div class="folder-card-body">
-            <div class="personality-bar-container">
-              <div class="personality-bar-track" id="friendPersonalityBarTrack"></div>
-              <div class="personality-legend" id="friendPersonalityLegend"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="folder-card-wrapper">
-          <div class="folder-tab-flap">Core Drivers</div>
-          <div class="folder-card-body">
-            <div style="font-size:0.72rem; color:var(--text-muted); font-weight:700;">TOP LOGGED ACTIVITIES</div>
-            <div class="top-activities-cards-rail" id="friendTopActivitiesList"></div>
-          </div>
-        </div>
-
-        <div class="folder-card-wrapper">
-          <div class="folder-tab-flap">House Distribution</div>
-          <div class="folder-card-body">
-            <div id="friendHouseDistributionList" style="display:flex; flex-direction:column; gap:8px; font-size:0.8rem;"></div>
-          </div>
-        </div>
-
-        <div class="tc-bottom-action-row">
-          <button class="btn-square-icon danger" title="Remove Friend" id="friendRemoveBtn" onclick="removeFriend()">🗑️</button>
-          <button class="btn-add-small" id="friendAddBtn" style="display:none; height:50px; flex-shrink:0; padding:0 16px;" onclick="addFriendFromProfile()">+ ADD</button>
-          <button class="btn-action-primary-compact" onclick="closeFriendProfileModal(null, true)">CLOSE</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- PROBLEM 5: Doodle Profile Photo Modal -->
-  <div class="modal-overlay" id="doodleModal" onclick="closeDoodleModal(event)">
-    <div class="modal-card-wrapper" style="max-width:360px;">
-      <div class="full-trading-card" style="--modal-color: var(--neon-cyan);">
-        <div class="tc-header">
-          <span class="tc-title" style="font-size:1.4rem;">Sketch Your ID Photo</span>
-        </div>
-        <canvas id="doodleCanvas" width="300" height="300"></canvas>
-        <div class="doodle-swatch-row" id="doodleSwatchRow"></div>
-        <div class="doodle-tool-row">
-          <button class="btn-square-icon selected-tool" id="toolPencilBtn" title="Pencil" onclick="setDoodleTool('pencil')">✏️</button>
-          <button class="btn-square-icon" id="toolFillBtn" title="Fill" onclick="setDoodleTool('fill')">🪣</button>
-          <button class="btn-square-icon" id="toolEraserBtn" title="Eraser" onclick="setDoodleTool('eraser')">🧽</button>
-          <button class="btn-square-icon" title="Clear" onclick="clearDoodle()">↺</button>
-        </div>
-        <div class="tc-bottom-action-row">
-          <button class="btn-square-icon" title="Cancel" onclick="closeDoodleModal(null, true)">✕</button>
-          <button class="btn-action-primary-compact" onclick="saveDoodle()">SAVE PHOTO</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="bottom-nav-container">
-    <div class="bottom-nav-wrapper">
-      <div class="bottom-nav">
-        <button class="nav-btn active" id="btnNavAction" onclick="switchMainTab('action')"><span>⚡</span> Action</button>
-        <button class="nav-btn" id="btnNavRecovery" onclick="switchMainTab('recovery')"><span>🌿</span> Recovery</button>
-        <button class="nav-btn" id="btnNavStats" onclick="switchMainTab('stats')"><span>📊</span> Stats</button>
-        <button class="nav-btn" id="btnNavProfile" onclick="switchMainTab('profile')"><span>👤</span> Profile</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const GROWTH_CATEGORIES = {
-      work: { name: 'Work', color: 'var(--color-work)' },
-      hobbies: { name: 'Hobbies', color: 'var(--color-hobbies)' },
-      media: { name: 'Media', color: 'var(--color-media)' },
-      chores: { name: 'Chores', color: 'var(--color-chores)' },
-      social: { name: 'Social', color: 'var(--color-social)' },
-      other: { name: 'Other', color: 'var(--color-other)' }
-    };
-
-    const ARCHETYPE_TABLE = {
-      'Intellect-Intellect': { name: 'Pattern Master', house: 'House of Tacticians' },
-      'Intellect-Discipline': { name: 'Cyber-Architect', house: 'House of Tacticians' },
-      'Intellect-Creativity': { name: 'Vector One', house: 'House of Tacticians' },
-      'Intellect-Empathy': { name: 'Apex Lead', house: 'House of Tacticians' },
-      'Creativity-Creativity': { name: 'Deep Creator', house: 'House of Artisans' },
-      'Creativity-Discipline': { name: 'Zenith Craftsman', house: 'House of Artisans' },
-      'Creativity-Empathy': { name: 'Culture Shaper', house: 'House of Artisans' },
-      'Creativity-Intellect': { name: 'Polymath Prime', house: 'House of Artisans' },
-      'Discipline-Discipline': { name: 'Iron Mind', house: 'House of Monks' },
-      'Discipline-Intellect': { name: 'Grandmaster', house: 'House of Monks' },
-      'Discipline-Empathy': { name: 'Silent Sentinel', house: 'House of Monks' },
-      'Discipline-Creativity': { name: 'Forge Master', house: 'House of Monks' },
-      'Empathy-Empathy': { name: 'Beacon Prime', house: 'House of Beacons' },
-      'Empathy-Intellect': { name: 'Harmonic Guide', house: 'House of Beacons' },
-      'Empathy-Creativity': { name: 'Unity Weaver', house: 'House of Beacons' },
-      'Empathy-Discipline': { name: 'Vanguard Shield', house: 'House of Beacons' }
-    };
-
-    let growthTasks = [
-      {
-        id: 'physics-2', name: 'Physics 2', icon: '🍎', category: 'work', hpCost: 10,
-         customColor: 'var(--color-work)', secondsLogged: 0, isPlaying: false,
-        skills: [ { name: 'Intellect', stars: 5 }, { name: 'Discipline', stars: 4 } ]
-      },
-      {
-        id: 'painting', name: 'Painting', icon: '🎨', category: 'hobbies', hpCost: 5,
-         customColor: 'var(--color-hobbies)', secondsLogged: 0, isPlaying: false,
-        skills: [ { name: 'Creativity', stars: 5 }, { name: 'Discipline', stars: 3 } ]
-      },
-      {
-        id: 'marvel', name: 'Marvel', icon: '🎬', category: 'media', hpCost: 2,
-         customColor: 'var(--color-media)', secondsLogged: 0, isPlaying: false,
-        skills: [ { name: 'Empathy', stars: 3 }, { name: 'Creativity', stars: 2 } ]
-      },
-      {
-        id: 'laundry', name: 'Laundry', icon: '🧺', category: 'chores', hpCost: 5,
-         customColor: 'var(--color-chores)', secondsLogged: 0, isPlaying: false,
-        skills: [ { name: 'Discipline', stars: 3 }, { name: 'Intellect', stars: 1 } ]
-      },
-      {
-        id: 'uni-friends', name: 'Uni Friends', icon: '👩‍❤️‍👩', category: 'social', hpCost: 5,
-         customColor: 'var(--color-social)', secondsLogged: 0, isPlaying: false,
-        skills: [ { name: 'Empathy', stars: 5 }, { name: 'Creativity', stars: 3 } ]
-      },
-      {
-        id: 'phone', name: 'Phone', icon: '📱', category: 'other', hpCost: 2,
-         customColor: 'var(--color-other)', secondsLogged: 0, isPlaying: false,
-        skills: [ { name: 'Intellect', stars: 2 }, { name: 'Empathy', stars: 2 } ]
-      }
-    ];
-
-    let recoveryTasks = [
-      { id: 'sleep', name: 'Sleep & Rest', icon: '🌙', type: 'timer', secondsLogged: 0, hpCost: -30, skills: [{ name: 'Discipline', stars: 4 }, { name: 'Intellect', stars: 3 }] },
-      { id: 'mind', name: 'Mind Reset', icon: '🧘', type: 'timer', secondsLogged: 0, hpCost: -15, skills: [{ name: 'Empathy', stars: 4 }, { name: 'Discipline', stars: 4 }] },
-      { id: 'shower', name: 'Shower', icon: '🚿', type: 'timer', secondsLogged: 0, hpCost: -5, skills: [{ name: 'Discipline', stars: 2 }] },
-      { id: 'brush-teeth', name: 'Brush Teeth', icon: '🪥', type: 'timer', secondsLogged: 0, hpCost: -2, skills: [{ name: 'Discipline', stars: 2 }] },
-      { id: 'hydration', name: 'Hydration', icon: '🥛', type: 'fluid', targetML: 2700, containerML: 500, currentML: 1250, hpCost: -10, skills: [{ name: 'Discipline', stars: 3 }, { name: 'Intellect', stars: 2 }] },
-      { id: 'nutrition', name: 'Nutrition', icon: '🥗', type: 'fluid', targetML: 2000, containerML: 400, currentML: 800, hpCost: -15, skills: [{ name: 'Discipline', stars: 4 }, { name: 'Creativity', stars: 2 }] }
-    ];
-
-    // PROBLEM 3/6: friends + discoverable users data, with identity-matrix totals and top activities
-    // so their full info sheet (Problem 6) has something real to render.
-    let friendsList = [
-      { id: 'friend1', name: 'Jordan Lee', username: '@jordan_lee', icon: '🌙', archetype: 'Iron Mind', house: 'House of Monks', color: 'var(--color-hobbies)',
-        totals: { Intellect: 22, Creativity: 14, Discipline: 48, Empathy: 16 },
-        topActivities: [
-          { name: 'Gym', icon: '🏋️', hours: 5.2, hpCost: 10, color: 'var(--color-hobbies)' },
-          { name: 'Reading', icon: '📚', hours: 3.4, hpCost: 5, color: 'var(--color-work)' }
-        ] },
-      { id: 'friend2', name: 'Sam Rivera', username: '@sam_rivera', icon: '🔥', archetype: 'Beacon Prime', house: 'House of Beacons', color: 'var(--color-work)',
-        totals: { Intellect: 18, Creativity: 20, Discipline: 15, Empathy: 47 },
-        topActivities: [
-          { name: 'Volunteering', icon: '🤝', hours: 4.1, hpCost: 5, color: 'var(--color-social)' },
-          { name: 'Journaling', icon: '📓', hours: 2.6, hpCost: 2, color: 'var(--color-other)' }
-        ] }
-    ];
-    let discoverableUsers = [
-      { id: 'user3', name: 'Taylor Chen', username: '@taylor_chen', icon: '⭐', archetype: 'Deep Creator', house: 'House of Artisans', color: 'var(--color-media)',
-        totals: { Intellect: 12, Creativity: 51, Discipline: 19, Empathy: 18 },
-        topActivities: [
-          { name: 'Digital Art', icon: '🎨', hours: 6.0, hpCost: 5, color: 'var(--color-media)' },
-          { name: 'Photography', icon: '📷', hours: 2.9, hpCost: 5, color: 'var(--color-hobbies)' }
-        ] },
-      { id: 'user4', name: 'Morgan Blake', username: '@morgan_blake', icon: '🌊', archetype: 'Grandmaster', house: 'House of Monks', color: 'var(--color-chores)',
-        totals: { Intellect: 34, Creativity: 10, Discipline: 44, Empathy: 12 },
-        topActivities: [
-          { name: 'Meal Prep', icon: '🍱', hours: 3.3, hpCost: 5, color: 'var(--color-chores)' },
-          { name: 'Coding', icon: '💻', hours: 5.5, hpCost: 10, color: 'var(--color-work)' }
-        ] },
-      { id: 'user5', name: 'Riley Park', username: '@riley_park', icon: '💫', archetype: 'Vector One', house: 'House of Tacticians', color: 'var(--color-social)',
-        totals: { Intellect: 40, Creativity: 22, Discipline: 20, Empathy: 18 },
-        topActivities: [
-          { name: 'Chess', icon: '♟️', hours: 4.7, hpCost: 5, color: 'var(--color-work)' },
-          { name: 'Podcasts', icon: '🎧', hours: 2.1, hpCost: 2, color: 'var(--color-media)' }
-        ] }
-    ];
-    let activeFriendId = null;
-
-    let heroDeckSlots = [ growthTasks[0] ];
-    let currentHP = 100;
-    let activeSelectedTask = null;
-    let sleepPopTimerCounter = 0;
-    let statsDate = new Date();
-    let activityHistory = {};
-    let activityClockChartInstance = null;
-    let statsClockHalf = new Date().getHours() < 12 ? 'AM' : 'PM';
-    let creatingRecoveryCard = false;
-    let selectedStarRating1 = 0;
-    let selectedStarRating2 = 0;
-
-    let privacySettings = { archetype: true, radar: true, top3: true, live: true };
-
-    // PROBLEM 9: editable identity
-    let userProfile = { displayName: 'Alex Vance', username: '@alex_vance2026' };
-
-    // PROBLEM 5: doodle state
-    let profileAvatarDataUrl = null;
-    const DOODLE_COLORS = [
-      { name: 'Cyan', hex: '#00b4d8' },
-      { name: 'Amber', hex: '#e08a00' },
-      { name: 'Magenta', hex: '#d6005f' },
-      { name: 'Violet', hex: '#7b2cbf' },
-      { name: 'Black', hex: '#0d0926' },
-      { name: 'White', hex: '#ffffff' }
-    ];
-    let doodleColor = DOODLE_COLORS[0].hex;
-    let doodleTool = 'pencil';
-    let doodleDrawing = false;
-    let doodleCtx = null;
-    let doodleLastPoint = null;
-
-    window.addEventListener('scroll', () => {
-      const scrollBtn = document.getElementById('scrollTopBtn');
-      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 30) {
-        scrollBtn.classList.add('show');
-      } else {
-        scrollBtn.classList.remove('show');
-      }
-    });
-
-    function getDateKey(date = new Date()) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    }
-
-    function formatStatsDate(date) {
-      return date.toLocaleDateString(undefined, { month: 'short', day: '2-digit', year: 'numeric' }).toUpperCase();
-    }
-
-    function updateHealthDisplay() {
-      const hp = Math.max(0, Math.min(100, currentHP));
-      document.getElementById('hpPercentageText').innerText = `${hp % 1 ? hp.toFixed(2) : hp}%`;
-      document.getElementById('hpBarFill').style.width = `${hp}%`;
-    }
-
-    function recordActivityTime(task) {
-      const key = getDateKey();
-      if (!activityHistory[key]) activityHistory[key] = {};
-      if (!activityHistory[key][task.id]) {
-        activityHistory[key][task.id] = {
-          id: task.id, name: task.name, icon: task.icon,
-          category: task.category || 'recovery',
-           color: task.customColor || 'var(--color-recovery)', seconds: 0, amSeconds: 0, pmSeconds: 0,
-          hourSeconds: new Array(24).fill(0)
+    <script>
+        /* ==========================================================================
+           STATE MANAGEMENT
+           ========================================================================== */
+        const state = {
+            hp: 100,
+            maxHp: 100,
+            activeTask: null,
+            isTimerRunning: false,
+            timerInterval: null,
+            elapsedSeconds: 0,
+            popFXInterval: null,
+            skills: {
+                Intellect: 0,
+                Creativity: 0,
+                Discipline: 0,
+                Empathy: 0
+            },
+            cards: [
+                { id: '1', name: 'Deep Work / Coding', category: 'Work', intensity: 'HARD', skill: 'Intellect', stars: 5 },
+                { id: '2', name: 'UI/UX Design', category: 'Hobbies', intensity: 'MID', skill: 'Creativity', stars: 4 },
+                { id: '3', name: 'Reading Documentation', category: 'Work', intensity: 'EASY', skill: 'Discipline', stars: 3 }
+            ],
+            // Time log segments array: { name, category, startHour (0-24 float), durationHours }
+            logs: []
         };
-      }
-      const entry = activityHistory[key][task.id];
-      const nowHour = new Date().getHours();
-      entry.seconds++;
-      if (nowHour < 12) entry.amSeconds++;
-      else entry.pmSeconds++;
-      if (!entry.hourSeconds) entry.hourSeconds = new Array(24).fill(0);
-      entry.hourSeconds[nowHour]++;
-      entry.name = task.name;
-      entry.icon = task.icon;
-      entry.category = task.category || 'recovery';
-    }
 
-    setInterval(() => {
-      let anyTaskActive = false;
-
-      growthTasks.concat(recoveryTasks).forEach(task => {
-        if (task.isPlaying) {
-          task.secondsLogged++;
-          if (task.type === 'timer' || !task.type) recordActivityTime(task);
-          anyTaskActive = true;
-
-          if (activeSelectedTask && activeSelectedTask.id === task.id) {
-            const timerEl = document.getElementById('modalTimerDisplay');
-            if (timerEl) timerEl.innerText = formatTime(task.secondsLogged);
-          }
-        }
-      });
-
-      heroDeckSlots.forEach((task, idx) => {
-        const timerHeroEl = document.getElementById(`timer-hero-${idx}`);
-        if (timerHeroEl) timerHeroEl.innerText = formatTime(task.secondsLogged);
-      });
-
-      const bgOverlay = document.getElementById('calmingBgOverlay');
-      if (anyTaskActive) {
-        bgOverlay.classList.add('active');
-      } else {
-        bgOverlay.classList.remove('active');
-      }
-      const sleepTask = recoveryTasks.find(task => task.id === 'sleep');
-      if (sleepTask && sleepTask.isPlaying) {
-        sleepPopTimerCounter++;
-        if (sleepPopTimerCounter >= 20) {
-          triggerHealthPop();
-          sleepPopTimerCounter = 0;
-        }
-      } else {
-        sleepPopTimerCounter = 0;
-      }
-    }, 1000);
-
-    function triggerHealthPop() {
-      currentHP = Math.min(100, currentHP + 0.02);
-      updateHealthDisplay();
-
-      const popEl = document.createElement('div');
-      popEl.className = 'skill-pop-particle';
-      popEl.innerText = '+.02% HP';
-
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const popColors = isDark
-        ? ['#00e5ff', '#00ff66']
-        : ['#007a93', '#008a3b'];
-
-      popEl.style.color = popColors[Math.floor(Math.random() * popColors.length)];
-
-      const randomX = Math.floor(Math.random() * (window.innerWidth - 140)) + 20;
-      const randomY = Math.floor(Math.random() * (window.innerHeight - 250)) + 120;
-
-      popEl.style.left = `${randomX}px`;
-      popEl.style.top = `${randomY}px`;
-
-      document.body.appendChild(popEl);
-      setTimeout(() => popEl.remove(), 4000);
-    }
-
-    function showToast(message) {
-      const toast = document.getElementById('toastNotice');
-      toast.innerText = message;
-      toast.classList.add('show');
-      setTimeout(() => { toast.classList.remove('show'); }, 2500);
-    }
-
-    function scrollToHeroSection() {
-      document.getElementById('heroSection').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function toggleTheme() {
-      const currentTheme = document.documentElement.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', newTheme);
-      document.getElementById('themeToggleBtn').innerText = newTheme === 'dark' ? '🌙 DARK' : '☀️ LIGHT';
-      if (document.getElementById('profileView').classList.contains('active')) renderProfileTab();
-    }
-
-    function toggleDrawer() {
-      const drawer = document.getElementById('sideDrawer');
-      drawer.classList.toggle('open');
-      document.getElementById('drawerOverlay').classList.toggle('show');
-      if (!drawer.classList.contains('open')) {
-        // collapse the nested category editor each time the drawer is closed
-        document.getElementById('categoryEditorList').style.display = 'none';
-        document.getElementById('categoryEditorChevron').innerText = '▾';
-      }
-      renderCategoryEditor();
-    }
-
-    // PROBLEM 7: category name editing is nested inside this toggle instead of always shown
-    function toggleCategoryEditor() {
-      const list = document.getElementById('categoryEditorList');
-      const chevron = document.getElementById('categoryEditorChevron');
-      const isHidden = list.style.display === 'none';
-      list.style.display = isHidden ? 'flex' : 'none';
-      list.style.flexDirection = 'column';
-      chevron.innerText = isHidden ? '▴' : '▾';
-      if (isHidden) renderCategoryEditor();
-    }
-
-    function switchMainTab(tab) {
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-
-      document.getElementById(`${tab}View`).classList.add('active');
-      document.getElementById(`btnNav${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add('active');
-
-      if (tab === 'profile') renderProfileTab();
-      if (tab === 'stats') renderTimelineStats();
-    }
-
-    function addToPlayDeck(taskId, event) {
-      if (event) event.stopPropagation();
-      const task = growthTasks.find(t => t.id === taskId);
-      if (!task) return;
-
-      if (!heroDeckSlots.some(t => t.id === taskId)) {
-        heroDeckSlots.push(task);
-        currentHP = Math.max(0, currentHP - task.hpCost);
-        updateHealthDisplay();
-        showToast(`${task.name} added to deck!`);
-      } else {
-        showToast(`${task.name} is already in the deck!`);
-      }
-      renderHeroSlots();
-      updateUI();
-      if (activeSelectedTask && activeSelectedTask.id === taskId) renderModalInteractiveBody(false);
-    }
-
-    function renderCategoryEditor() {
-      const editor = document.getElementById('categoryEditorList');
-      if (!editor) return;
-      editor.innerHTML = '';
-      Object.entries(GROWTH_CATEGORIES).forEach(([key, category]) => {
-        const row = document.createElement('div');
-        row.className = 'category-editor-row';
-        const input = document.createElement('input');
-        input.id = `category-input-${key}`;
-        input.value = category.name;
-        input.setAttribute('aria-label', `Edit ${category.name} category`);
-        const saveButton = document.createElement('button');
-        saveButton.innerText = 'SAVE';
-        saveButton.onclick = () => saveCategoryName(key);
-        row.append(input, saveButton);
-        editor.appendChild(row);
-      });
-    }
-
-    function saveCategoryName(categoryKey) {
-      const input = document.getElementById(`category-input-${categoryKey}`);
-      const nextName = input ? input.value.trim() : '';
-      if (!nextName || !GROWTH_CATEGORIES[categoryKey]) return;
-      GROWTH_CATEGORIES[categoryKey].name = nextName;
-      updateUI();
-      renderCategoryEditor();
-      showToast(`${nextName} category updated.`);
-    }
-
-    function removeFromPlayDeck(index, event) {
-      if (event) event.stopPropagation();
-      heroDeckSlots[index].isPlaying = false;
-      heroDeckSlots.splice(index, 1);
-      renderHeroSlots();
-      updateUI();
-    }
-
-    function renderHeroSlots() {
-      const container = document.getElementById('heroSlotsContainer');
-      container.innerHTML = '';
-      const totalSlotsToRender = Math.max(4, heroDeckSlots.length + 1);
-
-      for (let i = 0; i < totalSlotsToRender; i++) {
-        const slotWrapper = document.createElement('div');
-        slotWrapper.className = 'deck-slot-wrapper';
-
-        if (i < heroDeckSlots.length) {
-          const task = heroDeckSlots[i];
-          const color = task.customColor || GROWTH_CATEGORIES[task.category]?.color;
-           const categoryTag = GROWTH_CATEGORIES[task.category]?.name.toUpperCase() || 'ACTIVITY';
-          const activeClass = task.isPlaying ? 'is-active-running' : '';
-
-          slotWrapper.innerHTML = `
-            <div class="trading-card-outer ${activeClass}" style="--card-color: ${color}; width:100%; height:100%;" onclick="openCardModal(growthTasks.find(t=>t.id==='${task.id}'))">
-              <button style="position:absolute; top:4px; right:6px; z-index:20; background:none; border:none; color:var(--text); font-size:1rem; cursor:pointer;" onclick="removeFromPlayDeck(${i}, event)">✕</button>
-              <div class="trading-card-top-bar">
-                <span class="trading-card-hp-tag">-${task.hpCost} HP</span>
-              </div>
-              <div class="trading-card-halftone">
-                <span class="trading-card-category-tag">${categoryTag}</span>
-                <div class="trading-card-icon">${task.icon}</div>
-              </div>
-              <div class="trading-card-banner">
-                <div class="trading-card-name">${task.name}</div>
-                <div class="trading-card-timer-hero" id="timer-hero-${i}">${formatTime(task.secondsLogged)}</div>
-              </div>
-            </div>
-          `;
-        } else {
-          slotWrapper.innerHTML = `<div class="deck-slot-empty">${i + 1}</div>`;
-        }
-        container.appendChild(slotWrapper);
-      }
-    }
-
-    function updateUI() {
-      const topBarDate = document.getElementById('topBarDate');
-      if (topBarDate) topBarDate.innerText = `LOG // ${formatStatsDate(new Date())}`;
-      renderHeroSlots();
-
-      Object.keys(GROWTH_CATEGORIES).forEach(cat => {
-        const railEl = document.getElementById(`rail${cat.charAt(0).toUpperCase() + cat.slice(1)}`);
-        if (!railEl) return;
-        railEl.innerHTML = '';
-        const railTitle = document.getElementById(`railTitle${cat.charAt(0).toUpperCase() + cat.slice(1)}`);
-        if (railTitle) railTitle.innerText = GROWTH_CATEGORIES[cat].name;
-
-        const catTasks = growthTasks.filter(t => t.category === cat);
-
-        catTasks.forEach(task => {
-          const color = task.customColor || GROWTH_CATEGORIES[cat].color;
-          const categoryTag = GROWTH_CATEGORIES[cat]?.name.toUpperCase() || 'ACTIVITY';
-          const wrapper = document.createElement('div');
-          wrapper.className = 'trading-card-outer';
-          if (task.isPlaying) wrapper.classList.add('is-active-running');
-          wrapper.style.setProperty('--card-color', color);
-          wrapper.onclick = () => openCardModal(task);
-
-          wrapper.innerHTML = `
-            <div class="trading-card-top-bar">
-              <span class="trading-card-hp-tag">-${task.hpCost} HP</span>
-            </div>
-            <div class="trading-card-halftone">
-               <span class="trading-card-category-tag">${categoryTag}</span>
-              <div class="trading-card-icon">${task.icon}</div>
-            </div>
-            <div class="trading-card-banner">
-              <div class="trading-card-name">${task.name}</div>
-              <div class="trading-card-circle-btn-lg" onclick="addToPlayDeck('${task.id}', event)">+</div>
-            </div>
-          `;
-          railEl.appendChild(wrapper);
-        });
-
-        const emptyAddCard = document.createElement('div');
-        emptyAddCard.className = 'empty-add-card';
-        emptyAddCard.onclick = () => openNewCardModal(cat);
-        emptyAddCard.innerHTML = `<span>+</span><span style="font-family:var(--font-mono); color:var(--neon-cyan);">NEW CARD</span>`;
-        railEl.appendChild(emptyAddCard);
-      });
-
-      const recGrid = document.getElementById('recoveryGrid');
-      recGrid.innerHTML = '';
-      recoveryTasks.forEach(t => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'matrix-card-wrapper';
-        wrapper.onclick = () => openCardModal(t, true);
-        let subVal = t.type === 'timer' ? formatTime(t.secondsLogged) : `${t.currentML} / ${t.targetML} mL`;
-
-        wrapper.innerHTML = `
-          <div class="matrix-card">
-            <div>${t.icon}</div>
-            <div style="font-family: var(--font-serif); text-align:center;">${t.name}</div>
-            <div style="font-family: var(--font-mono); color: var(--color-recovery); font-weight:700;">${subVal}</div>
-          </div>
-        `;
-        recGrid.appendChild(wrapper);
-      });
-      const recoveryAddCard = document.createElement('div');
-      recoveryAddCard.className = 'recovery-empty-card';
-      recoveryAddCard.onclick = openNewRecoveryCardModal;
-      recoveryAddCard.innerHTML = '<span>+</span><span style="font-family:var(--font-mono); color:var(--neon-cyan);">NEW CARD</span>';
-      recGrid.appendChild(recoveryAddCard);
-
-      renderCategoryOptions();
-      updateStatsDateLabel();
-    }
-
-    function renderCategoryOptions() {
-      const select = document.getElementById('createFormCategory');
-      if (!select) return;
-      const currentValue = select.value;
-      select.innerHTML = '<option value="">-- Select Category --</option>';
-      Object.entries(GROWTH_CATEGORIES).forEach(([key, category]) => {
-        const option = document.createElement('option');
-        option.value = key;
-        option.innerText = category.name;
-        select.appendChild(option);
-      });
-      select.value = currentValue;
-    }
-
-    function openCardModal(task, isRecovery = false) {
-      activeSelectedTask = task;
-      const cardColor = isRecovery ? 'var(--color-recovery)' : (task.customColor || GROWTH_CATEGORIES[task.category]?.color);
-      const categoryLabel = isRecovery ? 'RECOVERY' : (GROWTH_CATEGORIES[task.category]?.name.toUpperCase() || 'ACTIVITY');
-
-      const tcCard = document.getElementById('tcModalCard');
-      tcCard.style.setProperty('--modal-color', cardColor);
-
-      if (task.isPlaying) tcCard.classList.add('card-active-glow');
-      else tcCard.classList.remove('card-active-glow');
-
-      document.getElementById('modalIcon').innerText = task.icon;
-      document.getElementById('modalTitle').innerText = task.name;
-      document.getElementById('modalCategory').innerText = categoryLabel;
-      document.getElementById('modalHpBadge').innerText = task.hpCost > 0 ? `-${task.hpCost} HP` : `+${Math.abs(task.hpCost)} HP`;
-
-      const skillsContainer = document.getElementById('modalSkillsContainer');
-      skillsContainer.innerHTML = '';
-      if (task.skills && task.skills.length > 0) {
-        task.skills.forEach(skill => {
-          const filledStars = '★'.repeat(skill.stars);
-          const emptyStars = '☆'.repeat(5 - skill.stars);
-          const row = document.createElement('div');
-          row.className = 'tc-stat-row';
-          row.innerHTML = `<span>${skill.name.toUpperCase()}</span><span class="tc-stars-interactive">${filledStars}${emptyStars}</span>`;
-          skillsContainer.appendChild(row);
-        });
-      }
-
-      renderModalInteractiveBody(isRecovery);
-      document.getElementById('cardDetailModal').classList.add('active');
-    }
-
-    function renderModalInteractiveBody(isRecovery = false) {
-      const task = activeSelectedTask;
-      const body = document.getElementById('modalInteractiveBody');
-      body.innerHTML = '';
-
-      if (isRecovery && task.type === 'fluid') {
-        const numTumblers = Math.ceil(task.targetML / task.containerML);
-        let tumblersHTML = '<div class="tumbler-container">';
-        for (let i = 0; i < numTumblers; i++) {
-          const filledInTumbler = Math.max(0, Math.min(task.containerML, task.currentML - (i * task.containerML)));
-          const fillPct = (filledInTumbler / task.containerML) * 100;
-          tumblersHTML += `<div class="tumbler-item" onclick="setFluidLevel(${i})"><div class="tumbler-fill" style="height: ${fillPct}%;"></div></div>`;
-        }
-        tumblersHTML += '</div>';
-
-        body.innerHTML = `
-          <div style="text-align:center; font-size:0.9rem; color:var(--text-muted); margin-top:8px;">
-            Container:
-            <select onchange="updateContainerSize(this.value)" style="background:var(--card-bg); color:var(--text); border:1px solid var(--neon-cyan); border-radius:6px; padding:4px 6px;">
-              <option value="250" ${task.containerML === 250 ? 'selected' : ''}>250 mL Glass</option>
-              <option value="500" ${task.containerML === 500 ? 'selected' : ''}>500 mL Tumbler</option>
-            </select>
-          </div>
-          ${tumblersHTML}
-          <div style="text-align:center; font-family:var(--font-mono); font-size:1.05rem; color:var(--color-recovery); font-weight:700;">${task.currentML} / ${task.targetML} mL</div>
-        `;
-        return;
-      }
-
-      const isEquippedInDeck = heroDeckSlots.some(t => t.id === task.id);
-
-      const timerDisplay = `<div class="timer-display-modal" id="modalTimerDisplay">${formatTime(task.secondsLogged)}</div>`;
-
-      let mainButtonArea = '';
-      if (!task.isPlaying) {
-        if (!isRecovery && !isEquippedInDeck) {
-          mainButtonArea = `<button class="btn-action-primary-compact" onclick="addToPlayDeck('${task.id}', event)">ADD TO DECK</button>`;
-        } else {
-          mainButtonArea = `<button class="btn-action-primary-compact" onclick="activateTaskTimer('${task.id}')">${task.secondsLogged > 0 ? 'RESUME' : 'START'}</button>`;
-        }
-      } else {
-        mainButtonArea = `
-          <div class="btn-dual-group-compact">
-            <button class="btn-action-pause-compact" onclick="pauseTaskTimer('${task.id}')">PAUSE</button>
-            <button class="btn-action-stop-compact" onclick="stopTaskTimer('${task.id}')">STOP</button>
-          </div>
-        `;
-      }
-
-      const editDeleteSquares = isRecovery ? '' : `
-        <button class="btn-square-icon" title="Edit Card" onclick="openEditCardModal()">✏️</button>
-        <button class="btn-square-icon danger" title="Delete Card" onclick="deleteCurrentCard()">🗑️</button>
-      `;
-
-      body.innerHTML = `
-        <div style="display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:2px;">
-          ${timerDisplay}
-          <div class="tc-bottom-action-row">
-            ${editDeleteSquares}
-            ${mainButtonArea}
-          </div>
-        </div>
-      `;
-    }
-
-    function activateTaskTimer(taskId) {
-      const task = growthTasks.concat(recoveryTasks).find(t => t.id === taskId);
-      if (task) {
-        task.isPlaying = true;
-        document.getElementById('tcModalCard').classList.add('card-active-glow');
-        renderModalInteractiveBody(recoveryTasks.some(r => r.id === taskId));
-        renderHeroSlots();
-      }
-    }
-
-    function pauseTaskTimer(taskId) {
-      const task = growthTasks.concat(recoveryTasks).find(t => t.id === taskId);
-      if (task) {
-        task.isPlaying = false;
-        document.getElementById('tcModalCard').classList.remove('card-active-glow');
-        renderModalInteractiveBody(recoveryTasks.some(r => r.id === taskId));
-        renderHeroSlots();
-      }
-    }
-
-    function stopTaskTimer(taskId) {
-      const task = growthTasks.concat(recoveryTasks).find(t => t.id === taskId);
-      if (task) {
-        task.isPlaying = false;
-        heroDeckSlots = heroDeckSlots.filter(deckTask => deckTask.id !== taskId);
-        document.getElementById('tcModalCard').classList.remove('card-active-glow');
-        closeCardModal(null, true);
-        renderHeroSlots();
-        updateUI();
-        showToast(`${task.name} stopped and removed from the deck.`);
-      }
-    }
-
-    function setFluidLevel(tumblerIndex) {
-      if (!activeSelectedTask) return;
-      const t = activeSelectedTask;
-      const currentFill = t.currentML - (tumblerIndex * t.containerML);
-      if (currentFill >= t.containerML) t.currentML = tumblerIndex * t.containerML + (t.containerML / 2);
-      else if (currentFill >= (t.containerML / 2)) t.currentML = tumblerIndex * t.containerML;
-      else t.currentML = (tumblerIndex + 1) * t.containerML;
-      openCardModal(t, true);
-    }
-
-    function updateContainerSize(val) {
-      if (!activeSelectedTask) return;
-      activeSelectedTask.containerML = parseInt(val);
-      openCardModal(activeSelectedTask, true);
-    }
-
-    function closeCardModal(e, force = false) {
-      if (activeSelectedTask && activeSelectedTask.isPlaying && !force) {
-        showToast("Pause or Stop the activity timer before closing!");
-        return;
-      }
-      if (force || (e && e.target.id === 'cardDetailModal')) {
-        document.getElementById('cardDetailModal').classList.remove('active');
-        activeSelectedTask = null;
-      }
-    }
-
-    function openNewCardModal(defaultCat = '') {
-      activeSelectedTask = null;
-      creatingRecoveryCard = false;
-      selectedStarRating1 = 0;
-      selectedStarRating2 = 0;
-
-      document.getElementById('createFormName').value = '';
-      document.getElementById('createFormIcon').value = '';
-      document.getElementById('createFormHpCost').value = '';
-      document.getElementById('createFormCategory').value = defaultCat || '';
-      document.getElementById('createCategoryField').style.display = 'flex';
-      document.getElementById('createFormSkill1').value = '';
-      document.getElementById('createFormSkill2').value = '';
-
-      document.getElementById('starSelector1').innerText = '☆☆☆☆☆';
-      document.getElementById('starSelector2').innerText = '☆☆☆☆☆';
-
-      onCategorySelectChange();
-      validateCreateCardForm();
-      document.getElementById('cardFormModal').classList.add('active');
-    }
-
-    function openNewRecoveryCardModal() {
-      activeSelectedTask = null;
-      creatingRecoveryCard = true;
-      selectedStarRating1 = 0;
-      selectedStarRating2 = 0;
-      document.getElementById('createFormName').value = '';
-      document.getElementById('createFormIcon').value = '';
-      document.getElementById('createFormHpCost').value = '2';
-      document.getElementById('createFormCategory').value = '';
-      document.getElementById('createFormSkill1').value = '';
-      document.getElementById('createFormSkill2').value = '';
-      document.getElementById('starSelector1').innerText = '☆☆☆☆☆';
-      document.getElementById('starSelector2').innerText = '☆☆☆☆☆';
-      document.getElementById('createCategoryField').style.display = 'none';
-      document.getElementById('createFormCategoryTag').innerText = 'RECOVERY';
-      validateCreateCardForm();
-      document.getElementById('cardFormModal').classList.add('active');
-    }
-
-    function openEditCardModal() {
-      if (!activeSelectedTask) return;
-      const t = activeSelectedTask;
-      creatingRecoveryCard = false;
-
-      document.getElementById('createFormName').value = t.name;
-      document.getElementById('createFormIcon').value = t.icon;
-      document.getElementById('createFormHpCost').value = t.hpCost.toString();
-      document.getElementById('createFormCategory').value = t.category;
-      document.getElementById('createCategoryField').style.display = 'flex';
-
-      if (t.skills && t.skills.length >= 2) {
-        document.getElementById('createFormSkill1').value = t.skills[0].name;
-        document.getElementById('createFormSkill2').value = t.skills[1].name;
-        selectedStarRating1 = t.skills[0].stars;
-        selectedStarRating2 = t.skills[1].stars;
-        updateStarDisplay(1, selectedStarRating1);
-        updateStarDisplay(2, selectedStarRating2);
-      }
-
-      onCategorySelectChange();
-      validateCreateCardForm();
-
-      document.getElementById('cardDetailModal').classList.remove('active');
-      document.getElementById('cardFormModal').classList.add('active');
-    }
-
-    function onCategorySelectChange() {
-      const catVal = document.getElementById('createFormCategory').value;
-      const formCard = document.getElementById('createFormTradingCard');
-      const categoryTagEl = document.getElementById('createFormCategoryTag');
-
-      if (catVal && GROWTH_CATEGORIES[catVal]) {
-        formCard.style.setProperty('--modal-color', GROWTH_CATEGORIES[catVal].color);
-        categoryTagEl.innerText = GROWTH_CATEGORIES[catVal].name.toUpperCase();
-      } else {
-        formCard.style.setProperty('--modal-color', '#888888');
-        categoryTagEl.innerText = creatingRecoveryCard ? 'RECOVERY' : 'SELECT CATEGORY';
-      }
-      validateCreateCardForm();
-    }
-
-    function handleStarClick(skillIndex, event) {
-      const rect = event.target.getBoundingClientRect();
-      const clickX = event.clientX - rect.left;
-      const starWidth = rect.width / 5;
-      const clickedStars = Math.min(5, Math.max(1, Math.ceil(clickX / starWidth)));
-
-      if (skillIndex === 1) {
-        selectedStarRating1 = clickedStars;
-        updateStarDisplay(1, selectedStarRating1);
-      } else {
-        selectedStarRating2 = clickedStars;
-        updateStarDisplay(2, selectedStarRating2);
-      }
-      validateCreateCardForm();
-    }
-
-    function updateStarDisplay(skillIndex, starCount) {
-      const filled = '★'.repeat(starCount);
-      const empty = '☆'.repeat(5 - starCount);
-      document.getElementById(`starSelector${skillIndex}`).innerText = filled + empty;
-    }
-
-    function validateCreateCardForm() {
-      const name = document.getElementById('createFormName').value.trim();
-      const icon = document.getElementById('createFormIcon').value.trim();
-      const hp = document.getElementById('createFormHpCost').value;
-      const cat = document.getElementById('createFormCategory').value;
-      const sk1 = document.getElementById('createFormSkill1').value;
-      const sk2 = document.getElementById('createFormSkill2').value;
-
-      // PROBLEM 1: only the activity name is required to save a card now.
-      // Everything else (icon, HP cost, category, skills) is optional and can be filled in later.
-      const isComplete = Boolean(name);
-      document.getElementById('btnSaveCard').disabled = !isComplete;
-    }
-
-    function saveCardForm() {
-      const name = document.getElementById('createFormName').value.trim();
-      // PROBLEM 1: everything below is optional now, so fall back to sensible defaults.
-      // 5 HP is the default cost for an unassigned/incomplete card.
-      const icon = document.getElementById('createFormIcon').value.trim() || '⭐';
-      const hpCost = parseInt(document.getElementById('createFormHpCost').value) || 5;
-      const category = document.getElementById('createFormCategory').value || 'other';
-      const skill1Name = document.getElementById('createFormSkill1').value;
-      const skill2Name = document.getElementById('createFormSkill2').value;
-      const skills = [];
-      if (skill1Name) skills.push({ name: skill1Name, stars: selectedStarRating1 || 1 });
-      if (skill2Name) skills.push({ name: skill2Name, stars: selectedStarRating2 || 1 });
-
-      if (activeSelectedTask) {
-        activeSelectedTask.name = name;
-        activeSelectedTask.icon = icon;
-        activeSelectedTask.category = category;
-        activeSelectedTask.hpCost = hpCost;
-        activeSelectedTask.customColor = GROWTH_CATEGORIES[category]?.color;
-        activeSelectedTask.skills = skills;
-        showToast(`${name} updated!`);
-      } else if (creatingRecoveryCard) {
-        recoveryTasks.push({
-          id: 'recovery-custom-' + Date.now(),
-          name,
-          icon,
-          type: 'timer',
-          secondsLogged: 0,
-          isPlaying: false,
-          hpCost: -5,
-          skills: []
-        });
-        showToast(`${name} recovery card created!`);
-      } else {
-        const newCard = {
-          id: 'custom-' + Date.now(),
-          name: name,
-          icon: icon,
-          category: category,
-          hpCost: hpCost,
-          customColor: GROWTH_CATEGORIES[category]?.color,
-          secondsLogged: 0,
-          isPlaying: false,
-          skills: skills
-        };
-        growthTasks.push(newCard);
-        showToast(`${name} created — fill in the rest anytime from Edit Card!`);
-      }
-
-      closeFormModal(null, true);
-      creatingRecoveryCard = false;
-      updateUI();
-    }
-
-    function deleteCurrentCard() {
-      if (!activeSelectedTask) return;
-      if (confirm(`Delete "${activeSelectedTask.name}"?`)) {
-        growthTasks = growthTasks.filter(t => t.id !== activeSelectedTask.id);
-        heroDeckSlots = heroDeckSlots.filter(t => t.id !== activeSelectedTask.id);
-        closeCardModal(null, true);
-        updateUI();
-        showToast("Card deleted.");
-      }
-    }
-
-    function closeFormModal(e, force = false) {
-      if (force || (e && e.target.id === 'cardFormModal')) {
-        document.getElementById('cardFormModal').classList.remove('active');
-      }
-    }
-
-    function formatTime(sec) {
-      const h = Math.floor(sec / 3600);
-      const m = Math.floor((sec % 3600) / 60);
-      const s = sec % 60;
-      return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    }
-
-    function updateStatsDateLabel() {
-      const label = document.getElementById('statsDateLabel');
-      if (label) label.innerText = `LOG // ${formatStatsDate(statsDate)}`;
-    }
-
-    function shiftStatsDate(days) {
-      statsDate.setDate(statsDate.getDate() + days);
-      renderTimelineStats();
-    }
-
-    function resolveEntryColor(entry) {
-      const raw = entry.color || GROWTH_CATEGORIES[entry.category]?.color || 'var(--neon-cyan)';
-      if (raw.startsWith('var(')) {
-        return getComputedStyle(document.documentElement).getPropertyValue(raw.slice(4, -1)).trim() || '#00b4d8';
-      }
-      return raw;
-    }
-
-    // PROBLEM 5: activity list is sorted most-timed to least-timed, and can be filtered to one category
-    function renderTimelineStats() {
-      const list = document.getElementById('timelineList');
-      list.innerHTML = '';
-      updateStatsDateLabel();
-      const dateLog = activityHistory[getDateKey(statsDate)] || {};
-      const allEntries = Object.values(dateLog);
-      renderClockChart(allEntries);
-
-      const filterSelect = document.getElementById('timelineCategoryFilter');
-      if (filterSelect && filterSelect.options.length <= 1) {
-        Object.entries(GROWTH_CATEGORIES).forEach(([key, cat]) => {
-          const opt = document.createElement('option');
-          opt.value = key;
-          opt.innerText = cat.name;
-          filterSelect.appendChild(opt);
-        });
-        const recoveryOpt = document.createElement('option');
-        recoveryOpt.value = 'recovery';
-        recoveryOpt.innerText = 'Recovery';
-        filterSelect.appendChild(recoveryOpt);
-      }
-      const filterVal = filterSelect ? filterSelect.value : 'all';
-      const entries = allEntries
-        .filter(e => filterVal === 'all' || e.category === filterVal)
-        .sort((a, b) => b.seconds - a.seconds);
-
-      if (entries.length === 0) {
-        list.innerHTML = '<div class="stats-empty">No tracked activities for this day.</div>';
-        return;
-      }
-
-      const maxSeconds = entries[0].seconds || 1;
-      entries.forEach(entry => {
-        const item = document.createElement('div');
-        item.className = 'timeline-item';
-        const color = entry.color || GROWTH_CATEGORIES[entry.category]?.color || 'var(--neon-cyan)';
-        item.innerHTML = `
-          <div style="display:flex; align-items:center; min-width:0; flex:1;">
-            <span style="font-size:1.15rem;">${entry.icon}</span>
-            <span style="font-family:var(--font-mono); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-left:8px;">${entry.name}</span>
-            <span class="stats-bar-track"><span class="stats-bar-fill" style="width:${(entry.seconds / maxSeconds) * 100}%; background:${color};"></span></span>
-          </div>
-          <div style="font-family:var(--font-mono); color:var(--neon-cyan); font-weight:700; white-space:nowrap;">${(entry.seconds / 3600).toFixed(2)}h</div>
-        `;
-        list.appendChild(item);
-      });
-    }
-
-    // PROBLEM 8: Log History — view/edit/delete individual logged entries
-    let preLogHistoryTab = 'action';
-
-    function openLogHistory() {
-      const activeNavBtn = document.querySelector('.nav-btn.active');
-      preLogHistoryTab = activeNavBtn ? activeNavBtn.id.replace('btnNav', '').toLowerCase() : 'action';
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      document.getElementById('logHistoryView').classList.add('active');
-      if (document.getElementById('sideDrawer').classList.contains('open')) toggleDrawer();
-      renderLogHistory();
-    }
-
-    function closeLogHistory() {
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      document.getElementById(`${preLogHistoryTab}View`).classList.add('active');
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      const navBtn = document.getElementById(`btnNav${preLogHistoryTab.charAt(0).toUpperCase()}${preLogHistoryTab.slice(1)}`);
-      if (navBtn) navBtn.classList.add('active');
-    }
-
-    function renderLogHistory() {
-      const container = document.getElementById('logHistoryList');
-      container.innerHTML = '';
-      const dateKeys = Object.keys(activityHistory).sort((a, b) => b.localeCompare(a));
-
-      if (dateKeys.length === 0) {
-        container.innerHTML = '<div class="stats-empty">No logs yet. Start a timer to begin tracking.</div>';
-        return;
-      }
-
-      dateKeys.forEach(dateKey => {
-        const dayEntries = Object.values(activityHistory[dateKey]).sort((a, b) => b.seconds - a.seconds);
-        if (dayEntries.length === 0) return;
-
-        const header = document.createElement('div');
-        header.className = 'drawer-section-title';
-        header.style.marginTop = '8px';
-        header.innerText = dateKey;
-        container.appendChild(header);
-
-        dayEntries.forEach(entry => {
-          const row = document.createElement('div');
-          row.className = 'timeline-item';
-          row.innerHTML = `
-            <div style="display:flex; align-items:center; min-width:0; flex:1; gap:8px;">
-              <span style="font-size:1.15rem;">${entry.icon}</span>
-              <span style="font-family:var(--font-mono); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${entry.name}</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-              <span style="font-family:var(--font-mono); color:var(--neon-cyan); font-weight:700; white-space:nowrap;">${(entry.seconds / 3600).toFixed(2)}h</span>
-              <button class="btn-square-icon" style="width:34px; height:34px; font-size:0.9rem;" title="Edit log" onclick="editLogEntry('${dateKey}','${entry.id}')">✏️</button>
-              <button class="btn-square-icon danger" style="width:34px; height:34px; font-size:0.9rem;" title="Delete log" onclick="deleteLogEntry('${dateKey}','${entry.id}')">🗑️</button>
-            </div>
-          `;
-          container.appendChild(row);
-        });
-      });
-    }
-
-    function editLogEntry(dateKey, taskId) {
-      const entry = activityHistory[dateKey]?.[taskId];
-      if (!entry) return;
-      const currentHours = (entry.seconds / 3600).toFixed(2);
-      const input = prompt(`Edit logged hours for "${entry.name}" on ${dateKey}:`, currentHours);
-      if (input === null) return;
-      const newHours = parseFloat(input);
-      if (isNaN(newHours) || newHours < 0) { showToast('Please enter a valid, non-negative number of hours.'); return; }
-
-      const newSeconds = Math.round(newHours * 3600);
-      const deltaSeconds = newSeconds - entry.seconds;
-      const scale = entry.seconds > 0 ? newSeconds / entry.seconds : 0;
-
-      entry.seconds = newSeconds;
-      entry.amSeconds = Math.round((entry.amSeconds || 0) * scale);
-      entry.pmSeconds = Math.round((entry.pmSeconds || 0) * scale);
-      if (entry.hourSeconds) entry.hourSeconds = entry.hourSeconds.map(s => Math.round(s * scale));
-
-      applyLogSecondsChange(taskId, deltaSeconds);
-      renderLogHistory();
-      showToast('Log updated.');
-    }
-
-    function deleteLogEntry(dateKey, taskId) {
-      const entry = activityHistory[dateKey]?.[taskId];
-      if (!entry) return;
-      if (!confirm(`Delete this log for "${entry.name}" on ${dateKey}?`)) return;
-
-      applyLogSecondsChange(taskId, -entry.seconds);
-      delete activityHistory[dateKey][taskId];
-      if (Object.keys(activityHistory[dateKey]).length === 0) delete activityHistory[dateKey];
-
-      renderLogHistory();
-      showToast('Log deleted — HP and stats readjusted.');
-    }
-
-    // Readjusts the underlying task's total time (which drives stats, identity matrix, top activities)
-    // and, for recovery activities that actually grant HP over time (currently just Sleep, at the
-    // same 0.02%-per-20-seconds rate used while the timer runs), readjusts HP to match.
-    function applyLogSecondsChange(taskId, deltaSeconds) {
-      const task = growthTasks.concat(recoveryTasks).find(t => t.id === taskId);
-      if (task) task.secondsLogged = Math.max(0, task.secondsLogged + deltaSeconds);
-
-      if (taskId === 'sleep') {
-        currentHP = Math.max(0, Math.min(100, currentHP + (deltaSeconds / 20) * 0.02));
-        updateHealthDisplay();
-      }
-
-      updateUI();
-      if (document.getElementById('statsView').classList.contains('active')) renderTimelineStats();
-      if (document.getElementById('profileView').classList.contains('active')) renderProfileTab();
-    }
-
-    // PROBLEM 3: toggle which 12-hour half of the day the clock chart shows
-    function setStatsClockHalf(half) {
-      statsClockHalf = half;
-      document.getElementById('clockToggleAM').classList.toggle('active', half === 'AM');
-      document.getElementById('clockTogglePM').classList.toggle('active', half === 'PM');
-      renderTimelineStats();
-    }
-
-    // PROBLEM 3+4: a real 12-hour clock face. Every hour gets an equal 30° wedge positioned at its
-    // actual clock position (12 at top, moving clockwise) — this is a PIE (no cutout), not a donut,
-    // and it's positional rather than proportional: a 6-9 activity fills the bottom-left quarter.
-    // PROBLEM 5: no chart legend — the activity list below the chart is the legend.
-    function renderClockChart(entries) {
-      if (typeof Chart === 'undefined') return;
-      const canvas = document.getElementById('activityClockChart');
-      if (!canvas) return;
-      if (activityClockChartInstance) activityClockChartInstance.destroy();
-
-      const isPM = statsClockHalf === 'PM';
-      document.getElementById('clockCardTitle').innerText = isPM ? 'PM CLOCK // 12PM – 12AM' : 'AM CLOCK // 12AM – 12PM';
-      const baseHour = isPM ? 12 : 0;
-
-      const wedgeLabels = [];
-      const wedgeColors = [];
-      for (let i = 0; i < 12; i++) {
-        const hour = baseHour + i;
-        const displayHour = hour % 12 === 0 ? 12 : hour % 12;
-        const suffix = hour < 12 ? 'AM' : 'PM';
-
-        let topEntry = null;
-        entries.forEach(entry => {
-          const secs = entry.hourSeconds ? entry.hourSeconds[hour] : 0;
-          if (secs > 0 && (!topEntry || secs > topEntry.secs)) topEntry = { entry, secs };
-        });
-
-        wedgeLabels.push(topEntry ? `${displayHour}${suffix} — ${topEntry.entry.name} (${Math.round(topEntry.secs / 60)}m)` : `${displayHour}${suffix} — untracked`);
-        wedgeColors.push(topEntry ? resolveEntryColor(topEntry.entry) : 'rgba(128,128,150,0.18)');
-      }
-
-      activityClockChartInstance = new Chart(canvas.getContext('2d'), {
-        type: 'pie',
-        data: { labels: wedgeLabels, datasets: [{ data: new Array(12).fill(1), backgroundColor: wedgeColors, borderWidth: 1 }] },
-        options: {
-          responsive: true,
-          animation: { duration: 450 },
-          rotation: 0, // Chart.js pie/doughnut 0° = 12 o'clock, drawn clockwise — matches real clock hour positions
-          plugins: {
-            legend: { display: false }, // PROBLEM 5: legend removed — activity list below is the legend
-            tooltip: { callbacks: { label: ctx => ctx.label, title: () => '' } }
-          }
-        }
-      });
-    }
-
-    // PROBLEM 9: editable nickname (display name) and username
-    function editProfileField(field) {
-      const isName = field === 'displayName';
-      const label = isName ? 'Enter your display name:' : 'Enter your username (with or without @):';
-      const current = isName ? userProfile.displayName : userProfile.username.replace(/^@/, '');
-      const input = prompt(label, current);
-      if (input === null) return;
-      const trimmed = input.trim();
-      if (!trimmed) { showToast('That field can\'t be empty.'); return; }
-
-      if (isName) {
-        userProfile.displayName = trimmed;
-      } else {
-        userProfile.username = trimmed.startsWith('@') ? trimmed : `@${trimmed}`;
-      }
-      renderProfileIdentity();
-      showToast('Profile updated!');
-    }
-
-    function renderProfileIdentity() {
-      const nameEl = document.getElementById('profileDisplayNameEl');
-      const userEl = document.getElementById('profileUsernameEl');
-      if (nameEl) nameEl.innerText = `${userProfile.displayName} ✏️`;
-      if (userEl) userEl.innerText = `ID // ${userProfile.username} ✏️`;
-    }
-
-    function shareProfile() {
-      if (navigator.share) {
-        navigator.share({
-          title: `${userProfile.displayName} - Life Engine ID`,
-          text: 'Check out my Archetype Identity Record on My 24h Life Engine!',
-          url: window.location.href,
-        }).catch(() => {});
-      } else {
-        navigator.clipboard.writeText(window.location.href);
-        showToast("Profile ID Link copied to clipboard!");
-      }
-    }
-
-    // PROBLEM 10: leveling in the identity matrix / skill web is slowed down —
-    // lowered the per-hour multiplier so attributes (and archetype unlocks) climb more gradually.
-    function calculateIdentityMatrix() {
-      const totals = { Intellect: 0, Creativity: 0, Discipline: 0, Empathy: 0 };
-
-      growthTasks.forEach(task => {
-        const hoursLogged = task.secondsLogged / 3600;
-        if (task.skills) {
-          task.skills.forEach(skill => {
-            if (totals[skill.name] !== undefined) {
-              totals[skill.name] += skill.stars * hoursLogged * 3;
+        /* ==========================================================================
+           NAVIGATION & TAB SWITCHING
+           ========================================================================== */
+        function switchTab(tabId) {
+            document.querySelectorAll('.view-pane').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`view-${tabId}`).classList.add('active');
+            event.currentTarget.classList.add('active');
+
+            if (tabId === 'stats') {
+                renderClockCharts();
             }
-          });
         }
-      });
 
-      const sortedAttributes = Object.keys(totals).sort((a, b) => totals[b] - totals[a]);
-      const dominant = sortedAttributes[0];
-      const auxiliary = sortedAttributes[1];
+        /* ==========================================================================
+           THEME TOGGLE
+           ========================================================================== */
+        const themeBtn = document.getElementById('theme-toggle');
+        themeBtn.addEventListener('click', () => {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.body.setAttribute('data-theme', newTheme);
+            themeBtn.textContent = newTheme === 'light' ? '☀️' : '🌙';
+            renderClockCharts();
+        });
 
-      const lookupKey = `${dominant}-${auxiliary}`;
-      const archetypeInfo = ARCHETYPE_TABLE[lookupKey] || { name: 'Pattern Master', house: 'House of Tacticians' };
+        /* ==========================================================================
+           DECK & CARD MANAGEMENT
+           ========================================================================== */
+        function renderDeck() {
+            const container = document.getElementById('activity-deck-container');
+            container.innerHTML = '';
 
-      return { totals, dominant, auxiliary, archetype: archetypeInfo.name, house: archetypeInfo.house };
-    }
-
-    function togglePrivacySetting(key) {
-      privacySettings[key] = document.getElementById(`privacyShow${key.charAt(0).toUpperCase() + key.slice(1)}`).checked;
-      renderProfileTab();
-    }
-
-    // PROBLEM 3: Friends rendering + add/view/remove
-    function renderFriendsRail() {
-      const rail = document.getElementById('friendsRail');
-      rail.innerHTML = '';
-      document.getElementById('friendsCountLabel').innerText = `${friendsList.length} FRIEND${friendsList.length === 1 ? '' : 'S'}`;
-
-      friendsList.forEach(friend => {
-        const chip = document.createElement('div');
-        chip.className = 'friend-chip';
-        chip.onclick = () => openFriendProfileModal(friend.id);
-        chip.innerHTML = `
-          <div class="friend-chip-avatar" style="--card-color:${friend.color};">${friend.icon}</div>
-          <div class="friend-chip-name">${friend.name}</div>
-        `;
-        rail.appendChild(chip);
-      });
-
-      const addChip = document.createElement('div');
-      addChip.className = 'friend-chip';
-      addChip.onclick = () => openAddFriendModal();
-      addChip.innerHTML = `<div class="friend-chip-add">+</div><div class="friend-chip-name">Add</div>`;
-      rail.appendChild(addChip);
-    }
-
-    function openAddFriendModal() {
-      const list = document.getElementById('discoverUsersList');
-      list.innerHTML = '';
-
-      if (discoverableUsers.length === 0) {
-        list.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding:12px 0;">No more users to discover right now.</div>`;
-      }
-
-      // PROBLEM 6: the row itself opens that user's full profile info sheet; the button just adds.
-      discoverableUsers.forEach(user => {
-        const row = document.createElement('div');
-        row.className = 'discover-user-row';
-        row.style.cursor = 'pointer';
-        row.onclick = () => openUserProfileModal(user.id);
-        row.innerHTML = `
-          <div class="discover-user-left">
-            <div class="discover-user-avatar" style="--card-color:${user.color};">${user.icon}</div>
-            <div>
-              <div class="discover-user-name">${user.name}</div>
-              <div class="discover-user-sub">${user.username} · ${user.archetype}</div>
-            </div>
-          </div>
-          <button class="btn-add-small" onclick="event.stopPropagation(); addFriend('${user.id}')">+ ADD</button>
-        `;
-        list.appendChild(row);
-      });
-
-      document.getElementById('addFriendModal').classList.add('active');
-    }
-
-    function closeAddFriendModal(e, force = false) {
-      if (force || (e && e.target.id === 'addFriendModal')) {
-        document.getElementById('addFriendModal').classList.remove('active');
-      }
-    }
-
-    function addFriend(userId) {
-      const idx = discoverableUsers.findIndex(u => u.id === userId);
-      if (idx === -1) return;
-      const [user] = discoverableUsers.splice(idx, 1);
-      friendsList.push(user);
-      showToast(`${user.name} added as a friend!`);
-      openAddFriendModal();
-      renderFriendsRail();
-      if (document.getElementById('friendProfileModal').classList.contains('active') && activeFriendId === userId) {
-        openUserProfileModal(userId);
-      }
-    }
-
-    function addFriendFromProfile() {
-      if (!activeFriendId) return;
-      addFriend(activeFriendId);
-    }
-
-    // PROBLEM 6: view ANY user's profile — friend or not-yet-friend — as a full info sheet
-    function openUserProfileModal(userId) {
-      const friend = friendsList.find(u => u.id === userId);
-      const user = friend || discoverableUsers.find(u => u.id === userId);
-      if (!user) return;
-      activeFriendId = userId;
-      const isFriend = Boolean(friend);
-
-      document.getElementById('friendProfileCard').style.setProperty('--modal-color', user.color);
-      document.getElementById('friendProfileName').innerText = user.name;
-      document.getElementById('friendProfileIcon').innerText = user.icon;
-      document.getElementById('friendProfileUsername').innerText = user.username;
-      document.getElementById('friendProfileArchetype').innerText = user.archetype;
-      document.getElementById('friendProfileHouse').innerText = user.house;
-
-      document.getElementById('friendRemoveBtn').style.display = isFriend ? 'flex' : 'none';
-      document.getElementById('friendAddBtn').style.display = isFriend ? 'none' : 'flex';
-
-      const totals = user.totals || { Intellect: 0, Creativity: 0, Discipline: 0, Empathy: 0 };
-      const grandTotal = Object.values(totals).reduce((a, b) => a + b, 0) || 1;
-      const attrColors = {
-        Intellect: 'var(--color-intellect)', Creativity: 'var(--color-creativity)',
-        Discipline: 'var(--color-discipline)', Empathy: 'var(--color-empathy)'
-      };
-      const track = document.getElementById('friendPersonalityBarTrack');
-      const legend = document.getElementById('friendPersonalityLegend');
-      track.innerHTML = '';
-      legend.innerHTML = '';
-      Object.keys(totals).forEach(attr => {
-        const pct = ((totals[attr] / grandTotal) * 100).toFixed(1);
-        const seg = document.createElement('div');
-        seg.className = 'personality-segment';
-        seg.style.width = `${pct}%`;
-        seg.style.background = attrColors[attr];
-        track.appendChild(seg);
-        const legItem = document.createElement('div');
-        legItem.className = 'legend-item';
-        legItem.innerHTML = `<div class="legend-dot" style="background:${attrColors[attr]};"></div><span>${attr}: ${pct}%</span>`;
-        legend.appendChild(legItem);
-      });
-
-      const topList = document.getElementById('friendTopActivitiesList');
-      topList.innerHTML = '';
-      (user.topActivities || []).forEach(act => {
-        const cardWrapper = document.createElement('div');
-        cardWrapper.className = 'trading-card-outer';
-        cardWrapper.style.setProperty('--card-color', act.color);
-        cardWrapper.innerHTML = `
-          <div class="trading-card-top-bar"><span class="trading-card-hp-tag">-${act.hpCost} HP</span></div>
-          <div class="trading-card-halftone"><div class="trading-card-icon">${act.icon}</div></div>
-          <div class="trading-card-banner">
-            <div class="trading-card-name">${act.name}</div>
-            <div class="trading-card-timer-hero">${act.hours.toFixed(1)}h</div>
-          </div>`;
-        topList.appendChild(cardWrapper);
-      });
-
-      const houseScores = {
-        'House of Tacticians': totals.Intellect, 'House of Artisans': totals.Creativity,
-        'House of Monks': totals.Discipline, 'House of Beacons': totals.Empathy
-      };
-      const houseList = document.getElementById('friendHouseDistributionList');
-      houseList.innerHTML = '';
-      Object.keys(houseScores).forEach(h => {
-        const hPct = ((houseScores[h] / grandTotal) * 100).toFixed(1);
-        const row = document.createElement('div');
-        row.style.display = 'flex';
-        row.style.justifyContent = 'space-between';
-        row.innerHTML = `<span>${h}</span><span style="font-weight:700; color:var(--neon-cyan);">${hPct}%</span>`;
-        houseList.appendChild(row);
-      });
-
-      document.getElementById('friendProfileModal').classList.add('active');
-    }
-
-    // Kept as an alias so existing friend-chip calls keep working
-    function openFriendProfileModal(friendId) { openUserProfileModal(friendId); }
-
-    function closeFriendProfileModal(e, force = false) {
-      if (force || (e && e.target.id === 'friendProfileModal')) {
-        document.getElementById('friendProfileModal').classList.remove('active');
-        activeFriendId = null;
-      }
-    }
-
-    function removeFriend() {
-      if (!activeFriendId) return;
-      const idx = friendsList.findIndex(f => f.id === activeFriendId);
-      if (idx === -1) return;
-      const [removed] = friendsList.splice(idx, 1);
-      discoverableUsers.push(removed);
-      closeFriendProfileModal(null, true);
-      renderFriendsRail();
-      showToast(`${removed.name} removed from friends.`);
-    }
-
-    // PROBLEM 5: Doodle profile photo
-    function openDoodleModal() {
-      document.getElementById('doodleModal').classList.add('active');
-      setTimeout(initDoodleCanvas, 0);
-    }
-
-    function closeDoodleModal(e, force = false) {
-      if (force || (e && e.target.id === 'doodleModal')) {
-        document.getElementById('doodleModal').classList.remove('active');
-      }
-    }
-
-    function initDoodleCanvas() {
-      const canvas = document.getElementById('doodleCanvas');
-      doodleCtx = canvas.getContext('2d');
-
-      const swatchRow = document.getElementById('doodleSwatchRow');
-      swatchRow.innerHTML = '';
-      DOODLE_COLORS.forEach(c => {
-        const sw = document.createElement('div');
-        sw.className = 'doodle-swatch' + (c.hex === doodleColor ? ' selected' : '');
-        sw.style.background = c.hex;
-        sw.style.border = c.hex === '#ffffff' ? '3px solid var(--card-border)' : sw.style.border;
-        sw.title = c.name;
-        sw.onclick = () => selectDoodleColor(c.hex, sw);
-        swatchRow.appendChild(sw);
-      });
-
-      if (!canvas.dataset.initialized) {
-        doodleCtx.fillStyle = '#ffffff';
-        doodleCtx.fillRect(0, 0, canvas.width, canvas.height);
-        canvas.dataset.initialized = 'true';
-
-        canvas.addEventListener('pointerdown', doodlePointerDown);
-        canvas.addEventListener('pointermove', doodlePointerMove);
-        window.addEventListener('pointerup', doodlePointerUp);
-      }
-    }
-
-    function selectDoodleColor(hex, el) {
-      doodleColor = hex;
-      document.querySelectorAll('.doodle-swatch').forEach(s => s.classList.remove('selected'));
-      el.classList.add('selected');
-    }
-
-    function setDoodleTool(tool) {
-      doodleTool = tool;
-      document.getElementById('toolPencilBtn').classList.toggle('selected-tool', tool === 'pencil');
-      document.getElementById('toolFillBtn').classList.toggle('selected-tool', tool === 'fill');
-      document.getElementById('toolEraserBtn').classList.toggle('selected-tool', tool === 'eraser');
-    }
-
-    function getCanvasPoint(canvas, evt) {
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      return { x: (evt.clientX - rect.left) * scaleX, y: (evt.clientY - rect.top) * scaleY };
-    }
-
-    function doodlePointerDown(evt) {
-      const canvas = document.getElementById('doodleCanvas');
-      if (doodleTool === 'fill') {
-        doodleCtx.fillStyle = doodleColor;
-        doodleCtx.fillRect(0, 0, canvas.width, canvas.height);
-        return;
-      }
-      doodleDrawing = true;
-      doodleLastPoint = getCanvasPoint(canvas, evt);
-      drawDoodleDot(doodleLastPoint);
-    }
-
-    function doodlePointerMove(evt) {
-      if (!doodleDrawing) return;
-      const canvas = document.getElementById('doodleCanvas');
-      const point = getCanvasPoint(canvas, evt);
-      drawDoodleLine(doodleLastPoint, point);
-      doodleLastPoint = point;
-    }
-
-    function doodlePointerUp() {
-      doodleDrawing = false;
-      doodleLastPoint = null;
-    }
-
-    function drawDoodleDot(point) {
-      const strokeColor = doodleTool === 'eraser' ? '#ffffff' : doodleColor;
-      const strokeWidth = doodleTool === 'eraser' ? 34 : 16;
-      doodleCtx.fillStyle = strokeColor;
-      doodleCtx.beginPath();
-      doodleCtx.arc(point.x, point.y, strokeWidth / 2, 0, Math.PI * 2);
-      doodleCtx.fill();
-    }
-
-    function drawDoodleLine(from, to) {
-      const strokeColor = doodleTool === 'eraser' ? '#ffffff' : doodleColor;
-      const strokeWidth = doodleTool === 'eraser' ? 34 : 16;
-      doodleCtx.strokeStyle = strokeColor;
-      doodleCtx.lineWidth = strokeWidth;
-      doodleCtx.lineCap = 'round';
-      doodleCtx.lineJoin = 'round';
-      doodleCtx.beginPath();
-      doodleCtx.moveTo(from.x, from.y);
-      doodleCtx.lineTo(to.x, to.y);
-      doodleCtx.stroke();
-    }
-
-    function clearDoodle() {
-      const canvas = document.getElementById('doodleCanvas');
-      doodleCtx.fillStyle = '#ffffff';
-      doodleCtx.fillRect(0, 0, canvas.width, canvas.height);
-    }
-
-    function saveDoodle() {
-      const canvas = document.getElementById('doodleCanvas');
-      profileAvatarDataUrl = canvas.toDataURL('image/png');
-      const avatarEl = document.getElementById('profileAvatarEl');
-      avatarEl.style.backgroundImage = `url(${profileAvatarDataUrl})`;
-      avatarEl.innerText = '';
-      closeDoodleModal(null, true);
-      showToast('ID photo updated!');
-    }
-
-    function renderProfileTab() {
-      renderProfileIdentity();
-      const matrix = calculateIdentityMatrix();
-
-      document.getElementById('profileArchetypeBadge').style.display = privacySettings.archetype ? 'block' : 'none';
-      document.getElementById('profileArchetypeBadge').innerText = matrix.archetype.toUpperCase();
-      document.getElementById('profileHouseTitle').innerText = matrix.house;
-
-      document.getElementById('profileLiveSignal').style.display = privacySettings.live ? 'block' : 'none';
-
-      const grandTotal = Object.values(matrix.totals).reduce((a, b) => a + b, 0) || 1;
-      const track = document.getElementById('personalityBarTrack');
-      const legend = document.getElementById('personalityLegend');
-      track.innerHTML = '';
-      legend.innerHTML = '';
-
-      const attrColors = {
-        Intellect: 'var(--color-intellect)',
-        Creativity: 'var(--color-creativity)',
-        Discipline: 'var(--color-discipline)',
-        Empathy: 'var(--color-empathy)'
-      };
-
-      Object.keys(matrix.totals).forEach(attr => {
-        const pct = ((matrix.totals[attr] / grandTotal) * 100).toFixed(1);
-
-        const seg = document.createElement('div');
-        seg.className = 'personality-segment';
-        seg.style.width = `${pct}%`;
-        seg.style.background = attrColors[attr];
-        track.appendChild(seg);
-
-        const legItem = document.createElement('div');
-        legItem.className = 'legend-item';
-        legItem.innerHTML = `<div class="legend-dot" style="background:${attrColors[attr]};"></div><span>${attr}: ${pct}%</span>`;
-        legend.appendChild(legItem);
-      });
-
-      document.getElementById('radarChart').style.display = privacySettings.radar ? 'block' : 'none';
-      if (privacySettings.radar) renderRadarChart(matrix.totals);
-
-      const top3Container = document.getElementById('topActivitiesCard');
-      top3Container.style.display = privacySettings.top3 ? 'block' : 'none';
-
-      const top3List = document.getElementById('topActivitiesList');
-      top3List.innerHTML = '';
-
-      const sortedActivities = [...growthTasks].sort((a, b) => b.secondsLogged - a.secondsLogged).slice(0, 3);
-      sortedActivities.forEach(act => {
-        const color = act.customColor || GROWTH_CATEGORIES[act.category]?.color;
-        const categoryTag = GROWTH_CATEGORIES[act.category]?.name.toUpperCase() || 'ACTIVITY';
-
-        const cardWrapper = document.createElement('div');
-        cardWrapper.className = 'trading-card-outer';
-        cardWrapper.style.setProperty('--card-color', color);
-        cardWrapper.onclick = () => openCardModal(act);
-
-        cardWrapper.innerHTML = `
-          <div class="trading-card-top-bar">
-            <span class="trading-card-hp-tag">-${act.hpCost} HP</span>
-          </div>
-          <div class="trading-card-halftone">
-            <span class="trading-card-category-tag">${categoryTag}</span>
-            <div class="trading-card-icon">${act.icon}</div>
-          </div>
-          <div class="trading-card-banner">
-            <div class="trading-card-name">${act.name}</div>
-            <div class="trading-card-timer-hero">${(act.secondsLogged / 3600).toFixed(1)}h</div>
-          </div>
-        `;
-        top3List.appendChild(cardWrapper);
-      });
-
-      renderFriendsRail();
-
-      const houseList = document.getElementById('houseDistributionList');
-      houseList.innerHTML = '';
-
-      const houseScores = {
-        'House of Tacticians': matrix.totals.Intellect,
-        'House of Artisans': matrix.totals.Creativity,
-        'House of Monks': matrix.totals.Discipline,
-        'House of Beacons': matrix.totals.Empathy
-      };
-
-      Object.keys(houseScores).forEach(h => {
-        const hPct = ((houseScores[h] / grandTotal) * 100).toFixed(1);
-        const row = document.createElement('div');
-        row.style.display = 'flex';
-        row.style.justifyContent = 'space-between';
-        row.innerHTML = `<span>${h}</span><span style="font-weight:700; color:var(--neon-cyan);">${hPct}%</span>`;
-        houseList.appendChild(row);
-      });
-    }
-
-    let radarChartInstance = null;
-    function renderRadarChart(totals) {
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const gridColor = isDark ? 'rgba(0, 240, 255, 0.2)' : 'rgba(0, 180, 216, 0.25)';
-      const ctx = document.getElementById('radarChart').getContext('2d');
-
-      if (radarChartInstance) radarChartInstance.destroy();
-      radarChartInstance = new Chart(ctx, {
-        type: 'radar',
-        data: {
-          labels: ['Intellect', 'Creativity', 'Discipline', 'Empathy'],
-          datasets: [{
-            data: [totals.Intellect, totals.Creativity, totals.Discipline, totals.Empathy],
-            backgroundColor: 'rgba(230, 0, 115, 0.2)',
-            borderColor: '#e60073',
-            pointBackgroundColor: '#00b4d8'
-          }]
-        },
-        options: {
-          animation: false,
-          scales: { r: { angleLines: { color: gridColor }, grid: { color: gridColor }, ticks: { display: false } } },
-          plugins: { legend: { display: false } }
+            state.cards.forEach(card => {
+                const isSelected = state.activeTask && state.activeTask.id === card.id;
+                const el = document.createElement('div');
+                el.className = `activity-card ${isSelected ? 'active' : ''}`;
+                el.innerHTML = `
+                    <div class="activity-card-header">
+                        <div class="activity-name">${card.name}</div>
+                        <span class="intensity-badge intensity-${card.intensity}">${card.intensity}</span>
+                    </div>
+                    <div class="skills-list">
+                        <span class="skill-tag">★ ${card.stars} ${card.skill}</span>
+                        <span class="skill-tag">${card.category}</span>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top:4px; justify-content:center;" onclick="selectCardForSession('${card.id}')">
+                        ${isSelected ? 'Selected' : 'Equip Task'}
+                    </button>
+                `;
+                container.appendChild(el);
+            });
         }
-      });
-    }
 
-    renderProfileIdentity();
-    updateUI();
-  </script>
+        function handleCreateCard(e) {
+            e.preventDefault();
+            const name = document.getElementById('card-name-input').value;
+            const category = document.getElementById('card-cat-input').value;
+            const intensity = document.getElementById('card-intensity-input').value;
+            const skill = document.getElementById('card-primary-skill').value;
+
+            const newCard = {
+                id: Date.now().toString(),
+                name,
+                category,
+                intensity,
+                skill,
+                stars: Math.floor(Math.random() * 3) + 3
+            };
+
+            state.cards.push(newCard);
+            renderDeck();
+            e.target.reset();
+        }
+
+        function selectCardForSession(id) {
+            const card = state.cards.find(c => c.id === id);
+            if (!card) return;
+
+            if (state.isTimerRunning) {
+                stopActiveSession();
+            }
+
+            state.activeTask = card;
+            document.getElementById('active-task-name').textContent = card.name;
+            document.getElementById('active-task-sub').textContent = `Category: ${card.category} | Primary: ${card.skill}`;
+            
+            const badge = document.getElementById('active-session-badge');
+            badge.textContent = card.intensity;
+            badge.className = `intensity-badge intensity-${card.intensity}`;
+
+            renderDeck();
+        }
+
+        /* ==========================================================================
+           TIMER & SKILL POPPING / HP DEPLETION LOGIC (Problem 4 Solutions)
+           ========================================================================== */
+        function toggleActiveSession() {
+            if (!state.activeTask) {
+                alert('Please select an activity card from your deck first!');
+                return;
+            }
+
+            if (state.isTimerRunning) {
+                pauseActiveSession();
+            } else {
+                startActiveSession();
+            }
+        }
+
+        function startActiveSession() {
+            state.isTimerRunning = true;
+            document.getElementById('btn-toggle-timer').textContent = 'PAUSE';
+
+            // Main 1s Timer Loop
+            state.timerInterval = setInterval(() => {
+                state.elapsedSeconds++;
+                updateTimerDisplay();
+
+                // HP Depletion logic every 10 minutes (600 seconds)
+                if (state.elapsedSeconds % 600 === 0) {
+                    depleteHpForActiveTask();
+                }
+            }, 1000);
+
+            // Skill Popping Feature Loop (Random 10-20 seconds)
+            scheduleNextSkillPop();
+        }
+
+        function pauseActiveSession() {
+            state.isTimerRunning = false;
+            document.getElementById('btn-toggle-timer').textContent = 'RESUME';
+            clearInterval(state.timerInterval);
+            clearTimeout(state.popFXInterval);
+        }
+
+        function stopActiveSession() {
+            if (state.elapsedSeconds > 0 && state.activeTask) {
+                // Save log segment for clock chart
+                const durationHours = state.elapsedSeconds / 3600;
+                const now = new Date();
+                const endHourFloat = now.getHours() + (now.getMinutes() / 60);
+                const startHourFloat = Math.max(0, endHourFloat - durationHours);
+
+                state.logs.push({
+                    name: state.activeTask.name,
+                    category: state.activeTask.category,
+                    startHour: startHourFloat,
+                    durationHours: durationHours
+                });
+            }
+
+            pauseActiveSession();
+            state.elapsedSeconds = 0;
+            updateTimerDisplay();
+            document.getElementById('btn-toggle-timer').textContent = 'START';
+        }
+
+        function updateTimerDisplay() {
+            const hrs = String(Math.floor(state.elapsedSeconds / 3600)).padStart(2, '0');
+            const mins = String(Math.floor((state.elapsedSeconds % 3600) / 60)).padStart(2, '0');
+            const secs = String(state.elapsedSeconds % 60).padStart(2, '0');
+            document.getElementById('session-timer-display').textContent = `${hrs}:${mins}:${secs}`;
+        }
+
+        // Logic for HP Depletion based on Intensity
+        // HARD = -12 HP/hr (-2 HP per 10 mins)
+        // MID  = -6 HP/hr  (-1 HP per 10 mins)
+        // EASY = -3 HP/hr  (-0.5 HP per 10 mins)
+        function depleteHpForActiveTask() {
+            if (!state.activeTask) return;
+            
+            let hpLoss = 1;
+            if (state.activeTask.intensity === 'HARD') hpLoss = 2;
+            else if (state.activeTask.intensity === 'MID') hpLoss = 1;
+            else if (state.activeTask.intensity === 'EASY') hpLoss = 0.5;
+
+            state.hp = Math.max(0, state.hp - hpLoss);
+            updateHpUI();
+            triggerPopText(`-${hpLoss} HP`, '#FF0055');
+        }
+
+        function restoreHP(amount) {
+            state.hp = Math.min(state.maxHp, state.hp + amount);
+            updateHpUI();
+            triggerPopText(`+${amount} HP`, '#00FF66');
+        }
+
+        function updateHpUI() {
+            const pct = (state.hp / state.maxHp) * 100;
+            document.getElementById('header-hp-fill').style.width = `${pct}%`;
+            document.getElementById('header-hp-text').textContent = `${Math.ceil(state.hp)}/${state.maxHp}`;
+            document.getElementById('recovery-hp-fill').style.width = `${pct}%`;
+            document.getElementById('recovery-hp-text').textContent = `${Math.ceil(state.hp)} / ${state.maxHp}`;
+        }
+
+        // Skill Popping Feature
+        function scheduleNextSkillPop() {
+            if (!state.isTimerRunning) return;
+
+            // Random delay between 10 to 20 seconds
+            const randomDelay = Math.floor(Math.random() * 10000) + 10000;
+
+            state.popFXInterval = setTimeout(() => {
+                if (state.isTimerRunning && state.activeTask) {
+                    popRandomSkillGain();
+                    scheduleNextSkillPop();
+                }
+            }, randomDelay);
+        }
+
+        function popRandomSkillGain() {
+            const primarySkill = state.activeTask.skill;
+            const secondarySkills = ['Intellect', 'Creativity', 'Discipline', 'Empathy'].filter(s => s !== primarySkill);
+            
+            // Alternates randomly, weighted toward card's main skill
+            const selectedSkill = Math.random() < 0.7 ? primarySkill : secondarySkills[Math.floor(Math.random() * secondarySkills.length)];
+            const gainAmount = selectedSkill === primarySkill ? state.activeTask.stars : 1;
+
+            state.skills[selectedSkill] += gainAmount;
+            updateProfileStatsUI();
+
+            const colors = {
+                Intellect: '#00F0FF',
+                Creativity: '#FF0055',
+                Discipline: '#FFB800',
+                Empathy: '#00FF66'
+            };
+
+            triggerPopText(`+${gainAmount} ${selectedSkill}`, colors[selectedSkill] || '#00F0FF');
+        }
+
+        function triggerPopText(text, color) {
+            const container = document.getElementById('fx-canvas-container');
+            const pop = document.createElement('div');
+            pop.className = 'pop-text';
+            pop.textContent = text;
+            pop.style.color = color;
+
+            // Random position near screen center / top region
+            const x = Math.random() * (window.innerWidth * 0.6) + (window.innerWidth * 0.2);
+            const y = Math.random() * (window.innerHeight * 0.4) + (window.innerHeight * 0.3);
+
+            pop.style.left = `${x}px`;
+            pop.style.top = `${y}px`;
+
+            container.appendChild(pop);
+            setTimeout(() => pop.remove(), 1800);
+        }
+
+        function updateProfileStatsUI() {
+            document.getElementById('stat-intellect').textContent = `LVL ${state.skills.Intellect}`;
+            document.getElementById('stat-creativity').textContent = `LVL ${state.skills.Creativity}`;
+            document.getElementById('stat-discipline').textContent = `LVL ${state.skills.Discipline}`;
+            document.getElementById('stat-empathy').textContent = `LVL ${state.skills.Empathy}`;
+        }
+
+        /* ==========================================================================
+           CLOCK CHARTS REFACTOR (Problem 3 Solution)
+           ========================================================================== */
+        let amChartInstance = null;
+        let pmChartInstance = null;
+
+        function buildClockDataset(isPM) {
+            const startOffset = isPM ? 12 : 0;
+            const endOffset = isPM ? 24 : 12;
+
+            // Filter logs falling inside this 12-hour window
+            const windowLogs = state.logs.filter(l => l.startHour < endOffset && (l.startHour + l.durationHours) > startOffset);
+
+            const slices = [];
+            const colors = [];
+            const labels = [];
+
+            let currentPointer = startOffset;
+
+            windowLogs.sort((a, b) => a.startHour - b.startHour);
+
+            windowLogs.forEach(log => {
+                const effectiveStart = Math.max(currentPointer, log.startHour);
+                const effectiveEnd = Math.min(endOffset, log.startHour + log.durationHours);
+
+                if (effectiveStart > currentPointer) {
+                    // Unused time gap slice
+                    slices.push(effectiveStart - currentPointer);
+                    colors.push('transparent');
+                    labels.push('Unlogged / Rest');
+                }
+
+                if (effectiveEnd > effectiveStart) {
+                    // Active activity slice (Proportional to exact duration)
+                    slices.push(effectiveEnd - effectiveStart);
+                    colors.push('#00F0FF');
+                    labels.push(log.name);
+                    currentPointer = effectiveEnd;
+                }
+            });
+
+            // Remaining unused slice up to 12 hours
+            if (currentPointer < endOffset) {
+                slices.push(endOffset - currentPointer);
+                colors.push('transparent');
+                labels.push('Unlogged / Rest');
+            }
+
+            return { slices, colors, labels };
+        }
+
+        function renderClockCharts() {
+            const isLight = document.body.getAttribute('data-theme') === 'light';
+            const ringBorderColor = isLight ? '#CBD5E1' : '#2A3447';
+
+            // AM Chart
+            const amData = buildClockDataset(false);
+            const ctxAM = document.getElementById('amClockChart').getContext('2d');
+            if (amChartInstance) amChartInstance.destroy();
+
+            amChartInstance = new Chart(ctxAM, {
+                type: 'doughnut',
+                data: {
+                    labels: amData.labels,
+                    datasets: [{
+                        data: amData.slices,
+                        backgroundColor: amData.colors,
+                        borderColor: ringBorderColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => `${ctx.label}: ${(ctx.raw * 60).toFixed(0)} mins`
+                            }
+                        }
+                    }
+                }
+            });
+
+            // PM Chart
+            const pmData = buildClockDataset(true);
+            const ctxPM = document.getElementById('pmClockChart').getContext('2d');
+            if (pmChartInstance) pmChartInstance.destroy();
+
+            pmChartInstance = new Chart(ctxPM, {
+                type: 'doughnut',
+                data: {
+                    labels: pmData.labels,
+                    datasets: [{
+                        data: pmData.slices,
+                        backgroundColor: pmData.colors,
+                        borderColor: ringBorderColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => `${ctx.label}: ${(ctx.raw * 60).toFixed(0)} mins`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        /* ==========================================================================
+           AVATAR DOODLE CANVAS
+           ========================================================================== */
+        const avatarCanvas = document.getElementById('avatar-canvas');
+        const ctx = avatarCanvas.getContext('2d');
+        let isDrawing = false;
+
+        function initAvatarCanvas() {
+            ctx.strokeStyle = '#00F0FF';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+
+            avatarCanvas.addEventListener('mousedown', startDraw);
+            avatarCanvas.addEventListener('mousemove', draw);
+            avatarCanvas.addEventListener('mouseup', endDraw);
+            avatarCanvas.addEventListener('mouseleave', endDraw);
+        }
+
+        function startDraw(e) {
+            isDrawing = true;
+            ctx.beginPath();
+            ctx.moveTo(e.offsetX, e.offsetY);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+        }
+
+        function endDraw() {
+            isDrawing = false;
+        }
+
+        function clearAvatarCanvas() {
+            ctx.clearRect(0, 0, avatarCanvas.width, avatarCanvas.height);
+        }
+
+        /* ==========================================================================
+           INITIALIZATION
+           ========================================================================== */
+        window.addEventListener('DOMContentLoaded', () => {
+            renderDeck();
+            updateHpUI();
+            initAvatarCanvas();
+            renderClockCharts();
+        });
+    </script>
 </body>
 </html>
