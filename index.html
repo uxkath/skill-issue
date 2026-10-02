@@ -197,12 +197,6 @@
       background: var(--card-bg); border: 1px solid var(--neon-cyan); box-shadow: var(--glow-intensity);
       border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 12px; position: relative;
     }
-    .hero-deck-section::before {
-      content: ''; position: absolute; top: -10px; right: 16px;
-      font-size: 0.65rem; background: var(--bg); color: var(--neon-cyan);
-      padding: 0 8px; border: 1px solid var(--neon-cyan); letter-spacing: 1px;
-    }
-
     .hero-deck-header { font-family: var(--font-serif); font-size: 1.42rem; color: var(--text); display: flex; align-items: center; gap: 8px; }
     .hero-slots-scroll { display: flex; gap: 14px; overflow-x: auto; scrollbar-width: none; padding: 8px 3px; }
     .hero-slots-scroll::-webkit-scrollbar { display: none; }
@@ -357,8 +351,9 @@
     .date-picker-bar button { font-size: 1.2rem; }
     .timeline-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
     .timeline-list { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; overflow: hidden; }
-    .timeline-item { position: relative; background: transparent; border: none; border-bottom: 1px solid var(--card-border); border-left: 5px solid var(--nav-pink); padding: 13px 14px 14px 16px; border-radius: 0; display: flex; flex-direction:column; align-items:stretch; gap:7px; font-size: 0.9rem; }
+    .timeline-item { position: relative; background: transparent; border: none; border-bottom: 1px solid var(--card-border); padding: 13px 14px 14px 14px; border-radius: 0; display: flex; flex-direction:column; align-items:stretch; gap:7px; font-size: 0.9rem; }
     .timeline-item:last-child { border-bottom:none; }
+    .timeline-item { border-left:0 !important; }
     .timeline-item-top { display:flex; justify-content:space-between; align-items:center; gap:10px; min-width:0; }
     .timeline-item-name { display:flex; align-items:center; gap:7px; min-width:0; font-family:var(--font-mono); font-weight:700; }
     .timeline-item-name span:last-child { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -1027,14 +1022,19 @@
             <div class="photo-clip"></div>
             <div class="profile-avatar" id="profileAvatarEl" onclick="openDoodleModal()">⚡</div>
             <div class="profile-avatar-edit-hint">SKETCH</div>
-            <div class="profile-live-badge" id="profileLiveSignal" title="Live Signal Active"></div>
           </div>
           <div class="profile-identity-info">
             <div class="profile-display-name" id="profileDisplayNameEl">Alex Vance</div>
             <div class="profile-username" id="profileUsernameEl">ID // @alex_vance2026</div>
             <div class="profile-archetype-tag" id="profileArchetypeBadge">ZENITH CRAFTSMAN</div>
           </div>
-          <div class="profile-header-actions"><button class="profile-edit-btn" onclick="editProfile()">EDIT PROFILE</button><button class="profile-edit-btn" onclick="shareProfile()">SHARE ID</button></div>
+          <div class="profile-settings-wrap">
+            <button class="profile-settings-btn" onclick="toggleProfileSettings(event)" aria-label="Profile settings">⋯</button>
+            <div class="profile-settings-menu" id="profileSettingsMenu">
+              <button onclick="editProfile(); toggleProfileSettings();">EDIT PROFILE</button>
+              <button onclick="shareProfile(); toggleProfileSettings();">SHARE ID</button>
+            </div>
+          </div>
         </div>
 
         <!-- Folder Section 1: Identity Matrix -->
@@ -1346,12 +1346,12 @@
     ];
 
     let recoveryTasks = [
-      { id: 'sleep', name: 'Sleep & Rest', icon: '🌙', type: 'timer', secondsLogged: 0, hpCost: -30, skills: [{ name: 'Discipline', stars: 4 }, { name: 'Intellect', stars: 3 }] },
-      { id: 'mind', name: 'Mind Reset', icon: '🧘', type: 'timer', secondsLogged: 0, hpCost: -15, skills: [{ name: 'Empathy', stars: 4 }, { name: 'Discipline', stars: 4 }] },
-      { id: 'shower', name: 'Shower', icon: '🚿', type: 'count', dailyTarget: 1, dailyCount: 0, hpPerCount: 5, hpCost: -5, skills: [{ name: 'Discipline', stars: 2 }] },
-      { id: 'brush-teeth', name: 'Brush Teeth', icon: '🪥', type: 'count', dailyTarget: 3, dailyCount: 0, hpPerCount: 2, hpCost: -2, skills: [{ name: 'Discipline', stars: 2 }] },
-      { id: 'hydration', name: 'Hydration', icon: '🥛', type: 'fluid', targetML: 2700, containerML: 500, currentML: 1250, hpCost: -10, skills: [{ name: 'Discipline', stars: 3 }, { name: 'Intellect', stars: 2 }] },
-      { id: 'nutrition', name: 'Nutrition', icon: '🥗', type: 'meal', mealsCompleted: 0, mealsCalories: [null, null, null, null, null], hpCost: -15, skills: [{ name: 'Discipline', stars: 4 }, { name: 'Creativity', stars: 2 }] }
+      { id: 'sleep', name: 'Sleep & Rest', icon: '🌙', type: 'timer', secondsLogged: 0, hpCost: -30, hpPerHour: 3.75, skills: [{ name: 'Discipline', stars: 4 }, { name: 'Intellect', stars: 3 }] },
+      { id: 'mind', name: 'Mind Reset', icon: '🧘', type: 'timer', secondsLogged: 0, hpCost: -15, hpPerHour: 15, skills: [{ name: 'Empathy', stars: 4 }, { name: 'Discipline', stars: 4 }] },
+      { id: 'shower', name: 'Shower', icon: '🚿', type: 'count', dailyTarget: 1, dailyCount: 0, hpPerCount: 10, hpCost: -10, skills: [{ name: 'Discipline', stars: 2 }] },
+      { id: 'brush-teeth', name: 'Brush Teeth', icon: '🪥', type: 'count', dailyTarget: 3, dailyCount: 0, hpPerCount: 4, hpCost: -4, skills: [{ name: 'Discipline', stars: 2 }] },
+      { id: 'hydration', name: 'Hydration', icon: '🥛', type: 'fluid', targetML: 2700, containerML: 500, currentML: 1250, recoveryHpTotal: 20, hpCost: -20, skills: [{ name: 'Discipline', stars: 3 }, { name: 'Intellect', stars: 2 }] },
+      { id: 'nutrition', name: 'Nutrition', icon: '🥗', type: 'meal', mealsCompleted: 0, mealsCalories: [null, null, null, null, null], recoveryHpPerMeal: 6, hpCost: -30, skills: [{ name: 'Discipline', stars: 4 }, { name: 'Creativity', stars: 2 }] }
     ];
 
     // PROBLEM 3/6: friends + discoverable users data, with identity-matrix totals and top activities
@@ -1443,7 +1443,7 @@
     // This does not change the UI. It only saves/restores the app state.
     const LOCAL_SAVE_KEY = 'skillIssueAppState_v1';
     const LOCAL_BACKUP_KEY = 'skillIssueAppBackup_v1';
-    const DATA_SCHEMA_VERSION = 1;
+    const DATA_SCHEMA_VERSION = 2;
 
     function buildAppState() {
       syncDeckHalf();
@@ -1537,6 +1537,12 @@
         delete nutrition.targetML; delete nutrition.containerML; delete nutrition.currentML;
       }
       recoveryTasks.forEach(task => {
+        if (task.id === 'shower' && (!Number.isFinite(task.hpPerCount) || task.hpPerCount < 10)) task.hpPerCount = 10;
+        if (task.id === 'brush-teeth' && (!Number.isFinite(task.hpPerCount) || task.hpPerCount < 4)) task.hpPerCount = 4;
+        if (task.id === 'hydration' && (!Number.isFinite(task.recoveryHpTotal) || task.recoveryHpTotal < 20)) { task.recoveryHpTotal = 20; task.hpCost = -20; }
+        if (task.id === 'nutrition' && (!Number.isFinite(task.recoveryHpPerMeal) || task.recoveryHpPerMeal < 6)) { task.recoveryHpPerMeal = 6; task.hpCost = -30; }
+        if (task.id === 'sleep' && !Number.isFinite(task.hpPerHour)) task.hpPerHour = 3.75;
+        if (task.id === 'mind' && !Number.isFinite(task.hpPerHour)) task.hpPerHour = 15;
         if (task.dailyTarget) ensureRecoveryDay(task);
         if (task.id === 'nutrition') {
           task.type = 'meal';
@@ -1707,6 +1713,13 @@
       if (elapsedSeconds <= 0) return 0;
 
       task.secondsLogged = Math.max(0, Number(task.secondsLogged) || 0) + elapsedSeconds;
+      if (task.type === 'timer' && recoveryTasks.some(r => r.id === task.id)) {
+        const hpRate = Number(task.hpPerHour || Math.abs(task.hpCost || 0));
+        currentHP = Math.min(100, currentHP + (hpRate * elapsedSeconds / 3600));
+      } else if (growthTasks.some(t => t.id === task.id)) {
+        const tier = getHpTier(Number(task.hpCost) || 0);
+        currentHP = Math.max(0, currentHP - (tier.perHour * elapsedSeconds / 3600));
+      }
       // Record each elapsed second into the correct local date/hour so timers
       // that run while the app is closed still appear in Log History correctly.
       for (let i = 1; i <= elapsedSeconds; i++) {
@@ -1952,22 +1965,88 @@
     }
 
     let dragTaskId=null; let dragPointerId=null;
-    function beginTaskDrag(taskId, event){ dragTaskId=taskId; if(event?.dataTransfer){event.dataTransfer.effectAllowed='move'; event.dataTransfer.setData('text/plain',taskId);} }
+    let longPressTimer=null; let longPressDragEl=null; let longPressStartX=0; let longPressStartY=0; let longPressActive=false;
+
+    function beginTaskDrag(taskId, event) {
+      dragTaskId = taskId;
+      if (event?.dataTransfer) { event.dataTransfer.effectAllowed='move'; event.dataTransfer.setData('text/plain', taskId); }
+    }
     function allowTaskDrop(event){ event.preventDefault(); event.currentTarget.classList.add('drag-over'); }
     function clearTaskDrop(event){ event.currentTarget.classList.remove('drag-over'); }
     function dropTaskToCategory(category,event){ event.preventDefault(); clearTaskDrop(event); if(!dragTaskId)return; const task=growthTasks.find(t=>t.id===dragTaskId); if(!task)return; task.category=category; task.customColor=GROWTH_CATEGORIES[category]?.color; saveAppState(); updateUI(); dragTaskId=null; showToast(`${task.name} moved to ${GROWTH_CATEGORIES[category].name}.`); }
     function dropTaskToDeck(event){ event.preventDefault(); clearTaskDrop(event); if(!dragTaskId)return; const task=growthTasks.find(t=>t.id===dragTaskId); if(!task)return; if(!heroDeckSlots.some(t=>t.id===task.id)) heroDeckSlots.push(task); syncDeckHalf(); saveAppState(); renderHeroSlots(); updateUI(); dragTaskId=null; showToast(`${task.name} equipped.`); }
     function dropTaskInDeck(index,event){ event.preventDefault(); clearTaskDrop(event); if(!dragTaskId)return; const from=heroDeckSlots.findIndex(t=>t.id===dragTaskId); const to=index; if(from>=0 && from!==to){ const [m]=heroDeckSlots.splice(from,1); heroDeckSlots.splice(to,0,m); syncDeckHalf(); saveAppState(); renderHeroSlots(); } dragTaskId=null; }
-    function dropTaskInRail(category,index,event){ event.preventDefault(); clearTaskDrop(event); if(!dragTaskId)return; const task=growthTasks.find(t=>t.id===dragTaskId); if(!task)return; const same=growthTasks.filter(t=>t.category===category); const current=same.findIndex(t=>t.id===dragTaskId); task.category=category; task.customColor=GROWTH_CATEGORIES[category]?.color; const arr=growthTasks; const oldIndex=arr.indexOf(task); arr.splice(oldIndex,1); const target=same[Math.min(index,same.length-1)]; const newIndex=target?arr.indexOf(target):arr.length; arr.splice(newIndex<0?arr.length:newIndex,0,task); saveAppState(); updateUI(); dragTaskId=null; }
+    function dropTaskInRail(category,index,event){ event.preventDefault(); clearTaskDrop(event); if(!dragTaskId)return; const task=growthTasks.find(t=>t.id===dragTaskId); if(!task)return; const same=growthTasks.filter(t=>t.category===category); task.category=category; task.customColor=GROWTH_CATEGORIES[category]?.color; const arr=growthTasks; const oldIndex=arr.indexOf(task); arr.splice(oldIndex,1); const target=same[Math.min(index,same.length-1)]; const newIndex=target?arr.indexOf(target):arr.length; arr.splice(newIndex<0?arr.length:newIndex,0,task); saveAppState(); updateUI(); dragTaskId=null; }
+
+    function cancelLongPressDrag() {
+      clearTimeout(longPressTimer); longPressTimer=null;
+      if (longPressDragEl) longPressDragEl.classList.remove('long-press-dragging');
+      longPressDragEl=null; longPressActive=false; dragTaskId=null;
+    }
+
+    function startLongPressDrag(el, taskId, event) {
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+      clearTimeout(longPressTimer); longPressDragEl=el; dragTaskId=taskId; dragPointerId=event.pointerId;
+      longPressStartX=event.clientX; longPressStartY=event.clientY; longPressActive=false;
+      longPressTimer=setTimeout(()=>{ longPressActive=true; el.classList.add('long-press-dragging'); try { el.setPointerCapture(dragPointerId); } catch(e) {} if (navigator.vibrate) navigator.vibrate(25); },2000);
+    }
+
+    function moveLongPressDrag(el, event) {
+      if (event.pointerId !== dragPointerId) return;
+      const dx=event.clientX-longPressStartX, dy=event.clientY-longPressStartY;
+      if (!longPressActive) {
+        if (Math.hypot(dx,dy)>12) { clearTimeout(longPressTimer); longPressTimer=null; longPressDragEl=null; dragTaskId=null; }
+        return;
+      }
+      event.preventDefault();
+      const target=document.elementFromPoint(event.clientX,event.clientY);
+      document.querySelectorAll('.drag-over').forEach(x=>x.classList.remove('drag-over'));
+      const rail=target?.closest('.rail-container');
+      const deckSlot=target?.closest('.deck-slot-wrapper');
+      const card=target?.closest('.trading-card-outer');
+      if (rail || deckSlot || card) (deckSlot||card||rail).classList.add('drag-over');
+    }
+
+    function endLongPressDrag(event) {
+      if (event.pointerId !== dragPointerId) return;
+      clearTimeout(longPressTimer); longPressTimer=null;
+      if (!longPressActive) { longPressDragEl=null; dragTaskId=null; return; }
+      const target=document.elementFromPoint(event.clientX,event.clientY);
+      const rail=target?.closest('.rail-container');
+      const deckSlot=target?.closest('.deck-slot-wrapper');
+      const deckContainer=target?.closest('#heroSlotsContainer');
+      const card=target?.closest('.trading-card-outer');
+      if (deckSlot || deckContainer) {
+        const index=deckSlot ? [...document.querySelectorAll('#heroSlotsContainer .deck-slot-wrapper')].indexOf(deckSlot) : heroDeckSlots.length;
+        if (heroDeckSlots.some(t => t.id === dragTaskId)) dropTaskInDeck(Math.max(0,index), {preventDefault(){}, currentTarget:deckSlot || deckContainer});
+        else dropTaskToDeck({preventDefault(){}, currentTarget:deckContainer || deckSlot});
+      } else if (rail) {
+        const cat=rail.id.replace(/^rail/,'').toLowerCase();
+        const index=card ? [...rail.querySelectorAll('.trading-card-outer')].indexOf(card) : growthTasks.filter(t=>t.category===cat).length;
+        dropTaskInRail(cat, Math.max(0,index), {preventDefault(){}, currentTarget:rail});
+      }
+      document.querySelectorAll('.drag-over').forEach(x=>x.classList.remove('drag-over'));
+      if (longPressDragEl) longPressDragEl.classList.remove('long-press-dragging');
+      longPressDragEl=null; longPressActive=false; dragTaskId=null; dragPointerId=null;
+    }
+
+    function bindLongPressDrag(el, taskId) {
+      el.draggable=false;
+      el.addEventListener('pointerdown', e=>startLongPressDrag(el,taskId,e));
+      el.addEventListener('pointermove', e=>moveLongPressDrag(el,e));
+      el.addEventListener('pointerup', endLongPressDrag);
+      el.addEventListener('pointercancel', cancelLongPressDrag);
+    }
+
     function renderHeroSlots() {
       const container = document.getElementById('heroSlotsContainer');
-      container.ondragover=allowTaskDrop; container.ondragleave=clearTaskDrop; container.ondrop=dropTaskToDeck;
+      
       container.innerHTML = '';
       const totalSlotsToRender = Math.max(4, heroDeckSlots.length + 1);
 
       for (let i = 0; i < totalSlotsToRender; i++) {
         const slotWrapper = document.createElement('div');
-        slotWrapper.className = 'deck-slot-wrapper'; slotWrapper.ondragover=allowTaskDrop; slotWrapper.ondragleave=clearTaskDrop; slotWrapper.ondrop=(e)=>dropTaskInDeck(i,e);
+        slotWrapper.className = 'deck-slot-wrapper';
 
         if (i < heroDeckSlots.length) {
           const task = heroDeckSlots[i];
@@ -1976,7 +2055,7 @@
           const activeClass = task.isPlaying ? 'is-active-running' : '';
 
           slotWrapper.innerHTML = `
-            <div draggable="true" ondragstart="beginTaskDrag('${task.id}', event)" class="trading-card-outer draggable-activity ${activeClass}" style="--card-color: ${color}; width:100%; height:100%;" onclick="openCardModal(growthTasks.find(t=>t.id==='${task.id}'))">
+            <div class="trading-card-outer draggable-activity ${activeClass}" style="--card-color: ${color}; width:100%; height:100%;" onclick="openCardModal(growthTasks.find(t=>t.id==='${task.id}'))">
               <button style="position:absolute; top:4px; right:6px; z-index:20; background:none; border:none; color:var(--text); font-size:1rem; cursor:pointer;" onclick="removeFromPlayDeck(${i}, event)">✕</button>
               <div class="trading-card-top-bar">
                 <span class="trading-card-hp-tag">-${task.hpCost} HP</span>
@@ -2012,7 +2091,7 @@
       Object.keys(GROWTH_CATEGORIES).forEach(cat => {
         const railEl = document.getElementById(`rail${cat.charAt(0).toUpperCase() + cat.slice(1)}`);
         if (!railEl) return;
-        railEl.ondragover=allowTaskDrop; railEl.ondragleave=clearTaskDrop; railEl.ondrop=(e)=>dropTaskToCategory(cat,e);
+
         railEl.innerHTML = '';
         const railTitle = document.getElementById(`railTitle${cat.charAt(0).toUpperCase() + cat.slice(1)}`);
         if (railTitle) railTitle.innerText = GROWTH_CATEGORIES[cat].name;
@@ -2024,11 +2103,7 @@
           const categoryTag = GROWTH_CATEGORIES[cat]?.name.toUpperCase() || 'ACTIVITY';
           const wrapper = document.createElement('div');
           wrapper.className = 'trading-card-outer draggable-activity';
-          wrapper.draggable = true;
-          wrapper.ondragstart = (e)=>beginTaskDrag(task.id,e);
-          wrapper.ondragover = allowTaskDrop;
-          wrapper.ondragleave = clearTaskDrop;
-          wrapper.ondrop = (e)=>dropTaskInRail(cat, catTasks.indexOf(task), e);
+
           if (task.isPlaying) wrapper.classList.add('is-active-running');
           wrapper.style.setProperty('--card-color', color);
           wrapper.onclick = () => openCardModal(task);
@@ -2047,6 +2122,7 @@
             </div>
           `;
           railEl.appendChild(wrapper);
+          bindLongPressDrag(wrapper, task.id);
         });
 
         const emptyAddCard = document.createElement('div');
@@ -2217,8 +2293,41 @@
             ${editDeleteSquares}
             ${mainButtonArea}
           </div>
+          <button class="manual-time-btn" onclick="addManualTime('${task.id}')">＋ MANUAL TIME</button>
         </div>
       `;
+    }
+
+    function addManualTime(taskId) {
+      const task = growthTasks.concat(recoveryTasks).find(t => t.id === taskId);
+      if (!task || task.type === 'count' || task.type === 'meal' || task.type === 'fluid') {
+        showToast('Manual time is only for time-based activities.');
+        return;
+      }
+      const raw = prompt(`Add recorded time for "${task.name}". Enter a number followed by s, m, or h (example: 30s, 5m, 1.5h):`, '5m');
+      if (raw === null) return;
+      const match = String(raw).trim().match(/^([0-9]+(?:\.[0-9]+)?)\s*(s|sec|secs|m|min|mins|h|hr|hrs)$/i);
+      if (!match) { showToast('Use a value like 30s, 5m, or 1.5h.'); return; }
+      const value = Number(match[1]);
+      const unit = match[2].toLowerCase();
+      const multiplier = unit.startsWith('h') ? 3600 : unit.startsWith('m') ? 60 : 1;
+      const seconds = Math.max(0, Math.round(value * multiplier));
+      if (!seconds) { showToast('Time must be greater than zero.'); return; }
+      task.secondsLogged = Math.max(0, Number(task.secondsLogged) || 0) + seconds;
+      if (task.type === 'timer' && recoveryTasks.some(r => r.id === task.id)) {
+        const hpRate = Number(task.hpPerHour || Math.abs(task.hpCost || 0));
+        currentHP = Math.min(100, currentHP + (hpRate * seconds / 3600));
+      } else if (growthTasks.some(t => t.id === task.id)) {
+        const tier = getHpTier(Number(task.hpCost) || 0);
+        currentHP = Math.max(0, currentHP - (tier.perHour * seconds / 3600));
+      }
+      let remaining = seconds;
+      const now = Date.now();
+      for (let i = 0; i < remaining; i++) recordActivityTimeAt(task, new Date(now - (remaining - 1 - i) * 1000));
+      saveAppState();
+      updateUI();
+      renderModalInteractiveBody(recoveryTasks.some(r => r.id === taskId));
+      showToast(`${formatFlexibleDuration(seconds)} manually recorded.`);
     }
 
     function activateTaskTimer(taskId) {
@@ -2276,7 +2385,8 @@
       const current = Math.max(0, Math.min(5, Number(activeSelectedTask.mealsCompleted) || 0));
       const nextMeals = index < current ? index : index + 1;
       activeSelectedTask.mealsCompleted = nextMeals;
-      currentHP = Math.min(100, currentHP + (nextMeals > current ? 3 : -3));
+      const mealGain = Number(activeSelectedTask.recoveryHpPerMeal || 6);
+      currentHP = Math.min(100, currentHP + (nextMeals > current ? mealGain : -mealGain));
       if (!Array.isArray(activeSelectedTask.mealsCalories)) activeSelectedTask.mealsCalories = [null,null,null,null,null];
       while (activeSelectedTask.mealsCalories.length < 5) activeSelectedTask.mealsCalories.push(null);
       saveAppState();
@@ -2303,10 +2413,16 @@
     function setFluidLevel(tumblerIndex) {
       if (!activeSelectedTask) return;
       const t = activeSelectedTask;
-      const currentFill = t.currentML - (tumblerIndex * t.containerML);
+      const before = Number(t.currentML) || 0;
+      const currentFill = before - (tumblerIndex * t.containerML);
       if (currentFill >= t.containerML) t.currentML = tumblerIndex * t.containerML + (t.containerML / 2);
       else if (currentFill >= (t.containerML / 2)) t.currentML = tumblerIndex * t.containerML;
-      else t.currentML = (tumblerIndex + 1) * t.containerML;
+      else t.currentML = Math.min(t.targetML, (tumblerIndex + 1) * t.containerML);
+      const after = Number(t.currentML) || 0;
+      const totalGain = Number(t.recoveryHpTotal || Math.abs(t.hpCost || 0));
+      currentHP = Math.max(0, Math.min(100, currentHP + ((after - before) / Math.max(1, Number(t.targetML) || 1)) * totalGain));
+      updateHealthDisplay();
+      saveAppState();
       openCardModal(t, true);
     }
 
@@ -2571,7 +2687,6 @@
       entries.forEach(entry => {
         const item=document.createElement('div'); item.className='timeline-item';
         const color=resolveEntryColor(entry); const pct=Math.max(0,Math.min(100,(entry.seconds/totalRecordedSeconds)*100));
-        item.style.borderLeftColor=color;
         item.innerHTML=`<div class="timeline-item-top"><div class="timeline-item-name"><span>${entry.icon}</span><span>${entry.name}</span></div><div class="timeline-item-time">${formatFlexibleDuration(entry.seconds)}</div></div><div class="timeline-progress"><div class="timeline-progress-fill" style="width:${pct}%;background:${color};"></div></div>`;
         list.appendChild(item);
       });
@@ -2735,6 +2850,17 @@
       });
     }
 
+    function toggleProfileSettings(event) {
+      if (event) event.stopPropagation();
+      const menu = document.getElementById('profileSettingsMenu');
+      if (menu) menu.classList.toggle('show');
+    }
+    document.addEventListener('click', (event) => {
+      const menu = document.getElementById('profileSettingsMenu');
+      const wrap = document.querySelector('.profile-settings-wrap');
+      if (menu && wrap && !wrap.contains(event.target)) menu.classList.remove('show');
+    });
+
     // PROBLEM 9: editable nickname (display name) and username
     function editProfile() {
       const name = prompt('Nickname / display name:', userProfile.displayName);
@@ -2799,7 +2925,7 @@
         if (task.skills) {
           task.skills.forEach(skill => {
             if (totals[skill.name] !== undefined) {
-              totals[skill.name] += skill.stars * hoursLogged * 3;
+              totals[skill.name] += skill.stars * hoursLogged * 6;
             }
           });
         }
@@ -3269,7 +3395,19 @@
   .deck-mode-switch button { border:0; background:transparent; color:var(--text-muted); font-family:var(--font-mono); font-size:.68rem; font-weight:800; padding:5px 8px; border-radius:6px; cursor:pointer; }
   .deck-mode-switch button.active { background:var(--neon-cyan); color:#fff; }
   .hero-deck-header { justify-content:space-between; }
-  .draggable-activity { touch-action:none; user-select:none; }
+  .draggable-activity { touch-action:pan-x pan-y; user-select:none; cursor:pointer; }
+  .draggable-activity.long-press-dragging { opacity:.65; outline:2px dashed var(--neon-cyan); outline-offset:3px; }
+  .drag-placeholder { opacity:.25; outline:2px dashed var(--neon-cyan); }
+  .profile-settings-wrap { position:relative; margin-left:auto; }
+  .profile-settings-btn { width:34px; height:34px; border:1px solid var(--card-border); background:var(--card-bg); color:var(--text); border-radius:9px; font-family:var(--font-mono); font-size:1.15rem; cursor:pointer; }
+  .profile-settings-menu { position:absolute; top:40px; right:0; z-index:30; min-width:145px; padding:6px; background:var(--card-bg); border:1px solid var(--neon-cyan); border-radius:10px; box-shadow:var(--glow-intensity); display:none; }
+  .profile-settings-menu.show { display:flex; flex-direction:column; gap:4px; }
+  .profile-settings-menu button { border:0; background:transparent; color:var(--text); text-align:left; padding:9px 10px; border-radius:7px; font-family:var(--font-mono); font-size:.68rem; cursor:pointer; }
+  .profile-settings-menu button:hover { background:var(--nav-pink-bg); }
+  .manual-time-btn { border:1px solid var(--card-border); background:transparent; color:var(--text-muted); border-radius:8px; padding:6px 9px; font-family:var(--font-mono); font-size:.62rem; cursor:pointer; }
+  .vitality-warning { margin-top:10px; }
+  @media (max-width:767px) { .rail-container { touch-action:pan-x; } .view { touch-action:pan-y; } }
+
   .drag-over { outline:2px dashed var(--neon-cyan); outline-offset:3px; }
   .recovery-count-grid { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:4px; }
   .recovery-silhouette { width:45px; height:45px; display:flex; align-items:center; justify-content:center; font-size:1.7rem; border:2px dotted var(--color-recovery); border-radius:50%; filter:grayscale(1); opacity:.45; cursor:pointer; }
