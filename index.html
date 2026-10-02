@@ -1348,7 +1348,7 @@
     let recoveryTasks = [
       { id: 'sleep', name: 'Sleep & Rest', icon: '🌙', type: 'timer', secondsLogged: 0, hpCost: -30, hpPerHour: 3.75, skills: [{ name: 'Discipline', stars: 4 }, { name: 'Intellect', stars: 3 }] },
       { id: 'mind', name: 'Mind Reset', icon: '🧘', type: 'timer', secondsLogged: 0, hpCost: -15, hpPerHour: 15, skills: [{ name: 'Empathy', stars: 4 }, { name: 'Discipline', stars: 4 }] },
-      { id: 'shower', name: 'Shower', icon: '🚿', type: 'count', dailyTarget: 1, dailyCount: 0, hpPerCount: 10, hpCost: -10, skills: [{ name: 'Discipline', stars: 2 }] },
+      { id: 'shower', name: 'Shower', icon: '🚿', type: 'count', dailyTarget: 2, dailyCount: 0, hpPerCount: 10, hpCost: -10, skills: [{ name: 'Discipline', stars: 2 }] },
       { id: 'brush-teeth', name: 'Brush Teeth', icon: '🪥', type: 'count', dailyTarget: 3, dailyCount: 0, hpPerCount: 4, hpCost: -4, skills: [{ name: 'Discipline', stars: 2 }] },
       { id: 'hydration', name: 'Hydration', icon: '🥛', type: 'fluid', targetML: 2700, containerML: 500, currentML: 1250, recoveryHpTotal: 20, hpCost: -20, skills: [{ name: 'Discipline', stars: 3 }, { name: 'Intellect', stars: 2 }] },
       { id: 'nutrition', name: 'Nutrition', icon: '🥗', type: 'meal', mealsCompleted: 0, mealsCalories: [null, null, null, null, null], recoveryHpPerMeal: 6, hpCost: -30, skills: [{ name: 'Discipline', stars: 4 }, { name: 'Creativity', stars: 2 }] }
@@ -1538,6 +1538,8 @@
       }
       recoveryTasks.forEach(task => {
         if (task.id === 'shower' && (!Number.isFinite(task.hpPerCount) || task.hpPerCount < 10)) task.hpPerCount = 10;
+        if (task.id === 'shower') task.dailyTarget = 2;
+        if (task.id === 'brush-teeth') task.dailyTarget = 3;
         if (task.id === 'brush-teeth' && (!Number.isFinite(task.hpPerCount) || task.hpPerCount < 4)) task.hpPerCount = 4;
         if (task.id === 'hydration' && (!Number.isFinite(task.recoveryHpTotal) || task.recoveryHpTotal < 20)) { task.recoveryHpTotal = 20; task.hpCost = -20; }
         if (task.id === 'nutrition' && (!Number.isFinite(task.recoveryHpPerMeal) || task.recoveryHpPerMeal < 6)) { task.recoveryHpPerMeal = 6; task.hpCost = -30; }
@@ -1558,6 +1560,7 @@
           if (!Number.isFinite(task.timerStartedAt)) task.timerStartedAt = Date.now() - ((task.secondsLogged || 0) * 1000);
           if (!Number.isFinite(task.timerBaseSeconds)) task.timerBaseSeconds = task.secondsLogged || 0;
           if (!Number.isFinite(task.timerLastCountedAt)) task.timerLastCountedAt = task.timerStartedAt;
+          if (!Number.isFinite(task.timerHpLastAppliedAt)) task.timerHpLastAppliedAt = task.timerStartedAt;
         } else {
           delete task.timerStartedAt;
           delete task.timerBaseSeconds;
@@ -1709,19 +1712,31 @@
     function updateRunningTask(task, nowMs = Date.now()) {
       if (!task || !task.isPlaying) return 0;
       if (!Number.isFinite(task.timerLastCountedAt)) task.timerLastCountedAt = nowMs;
+      if (!Number.isFinite(task.timerHpLastAppliedAt)) task.timerHpLastAppliedAt = task.timerStartedAt || task.timerLastCountedAt;
       const elapsedSeconds = Math.max(0, Math.floor((nowMs - task.timerLastCountedAt) / 1000));
       if (elapsedSeconds <= 0) return 0;
 
       task.secondsLogged = Math.max(0, Number(task.secondsLogged) || 0) + elapsedSeconds;
+
+      // HP follows the hourly rate continuously. The visual HP popup is emitted
+      // every 10 minutes using exactly 1/6 of that hourly rate.
+      let hpRatePerHour = 0;
       if (task.type === 'timer' && recoveryTasks.some(r => r.id === task.id)) {
-        const hpRate = Number(task.hpPerHour || Math.abs(task.hpCost || 0));
-        currentHP = Math.min(100, currentHP + (hpRate * elapsedSeconds / 3600));
+        hpRatePerHour = Number(task.hpPerHour || 0);
       } else if (growthTasks.some(t => t.id === task.id)) {
-        const tier = getHpTier(Number(task.hpCost) || 0);
-        currentHP = Math.max(0, currentHP - (tier.perHour * elapsedSeconds / 3600));
+        hpRatePerHour = -getHpTier(Number(task.hpCost) || 0).perHour;
       }
-      // Record each elapsed second into the correct local date/hour so timers
-      // that run while the app is closed still appear in Log History correctly.
+      if (hpRatePerHour) {
+        currentHP = Math.max(0, Math.min(100, currentHP + hpRatePerHour * elapsedSeconds / 3600));
+        const hpElapsed = Math.max(0, nowMs - task.timerHpLastAppliedAt);
+        const chunks = Math.floor(hpElapsed / 600000);
+        if (chunks > 0) {
+          triggerHealthPop((hpRatePerHour / 6) * chunks);
+          task.timerHpLastAppliedAt += chunks * 600000;
+        }
+        updateHealthDisplay();
+      }
+
       for (let i = 1; i <= elapsedSeconds; i++) {
         const stamp = new Date(task.timerLastCountedAt + i * 1000);
         recordActivityTimeAt(task, stamp);
@@ -1817,27 +1832,19 @@
       setTimeout(() => popEl.remove(), 4000);
     }
 
-    function triggerHealthPop() {
-      currentHP = Math.min(100, currentHP + 0.02);
-      updateHealthDisplay();
-
+    function triggerHealthPop(delta) {
+      const amount = Number(delta) || 0;
+      if (!amount) return;
       const popEl = document.createElement('div');
       popEl.className = 'skill-pop-particle';
-      popEl.innerText = '+.02% HP';
-
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const popColors = isDark
-        ? ['#00e5ff', '#00ff66']
-        : ['#007a93', '#008a3b'];
-
-      popEl.style.color = popColors[Math.floor(Math.random() * popColors.length)];
-
-      const randomX = Math.floor(Math.random() * (window.innerWidth - 140)) + 20;
-      const randomY = Math.floor(Math.random() * (window.innerHeight - 250)) + 120;
-
+      const sign = amount > 0 ? '+' : '';
+      const shown = Math.abs(amount) >= 1 ? Math.abs(amount).toFixed(2).replace(/\.00$/,'') : Math.abs(amount).toFixed(2).replace(/0$/,'');
+      popEl.innerText = `${sign}${shown}% HP`;
+      popEl.style.color = amount > 0 ? 'var(--color-recovery)' : 'var(--nav-pink)';
+      const randomX = Math.floor(Math.random() * Math.max(1, window.innerWidth - 140)) + 20;
+      const randomY = Math.floor(Math.random() * Math.max(1, window.innerHeight - 250)) + 120;
       popEl.style.left = `${randomX}px`;
       popEl.style.top = `${randomY}px`;
-
       document.body.appendChild(popEl);
       setTimeout(() => popEl.remove(), 4000);
     }
@@ -1905,7 +1912,6 @@
       if (!heroDeckSlots.some(t => t.id === taskId)) {
         heroDeckSlots.push(task);
         syncDeckHalf();
-        currentHP = Math.max(0, currentHP - task.hpCost);
         updateHealthDisplay();
         showToast(`${task.name} added to deck!`);
       } else {
@@ -1980,7 +1986,7 @@
 
     function cancelLongPressDrag() {
       clearTimeout(longPressTimer); longPressTimer=null;
-      if (longPressDragEl) longPressDragEl.classList.remove('long-press-dragging');
+      if (longPressDragEl) { longPressDragEl.classList.remove('long-press-dragging'); longPressDragEl.style.transform=''; }
       longPressDragEl=null; longPressActive=false; dragTaskId=null;
     }
 
@@ -1988,7 +1994,7 @@
       if (event.pointerType === 'mouse' && event.button !== 0) return;
       clearTimeout(longPressTimer); longPressDragEl=el; dragTaskId=taskId; dragPointerId=event.pointerId;
       longPressStartX=event.clientX; longPressStartY=event.clientY; longPressActive=false;
-      longPressTimer=setTimeout(()=>{ longPressActive=true; el.classList.add('long-press-dragging'); try { el.setPointerCapture(dragPointerId); } catch(e) {} if (navigator.vibrate) navigator.vibrate(25); },2000);
+      longPressTimer=setTimeout(()=>{ longPressActive=true; el.classList.add('long-press-dragging'); try { el.setPointerCapture(dragPointerId); } catch(e) {} if (navigator.vibrate) navigator.vibrate(25); },1500);
     }
 
     function moveLongPressDrag(el, event) {
@@ -1999,6 +2005,11 @@
         return;
       }
       event.preventDefault();
+      if (longPressDragEl) {
+        const tx = event.clientX - longPressStartX;
+        const ty = event.clientY - longPressStartY;
+        longPressDragEl.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(1.035)`;
+      }
       const target=document.elementFromPoint(event.clientX,event.clientY);
       document.querySelectorAll('.drag-over').forEach(x=>x.classList.remove('drag-over'));
       const rail=target?.closest('.rail-container');
@@ -2026,7 +2037,7 @@
         dropTaskInRail(cat, Math.max(0,index), {preventDefault(){}, currentTarget:rail});
       }
       document.querySelectorAll('.drag-over').forEach(x=>x.classList.remove('drag-over'));
-      if (longPressDragEl) longPressDragEl.classList.remove('long-press-dragging');
+      if (longPressDragEl) { longPressDragEl.classList.remove('long-press-dragging'); longPressDragEl.style.transform=''; }
       longPressDragEl=null; longPressActive=false; dragTaskId=null; dragPointerId=null;
     }
 
@@ -2058,7 +2069,7 @@
             <div class="trading-card-outer draggable-activity ${activeClass}" style="--card-color: ${color}; width:100%; height:100%;" onclick="openCardModal(growthTasks.find(t=>t.id==='${task.id}'))">
               <button style="position:absolute; top:4px; right:6px; z-index:20; background:none; border:none; color:var(--text); font-size:1rem; cursor:pointer;" onclick="removeFromPlayDeck(${i}, event)">✕</button>
               <div class="trading-card-top-bar">
-                <span class="trading-card-hp-tag">-${task.hpCost} HP</span>
+                <span class="trading-card-hp-tag">-${getHpTier(Number(task.hpCost)||0).perHour} HP/H</span>
               </div>
               <div class="trading-card-halftone">
                 <span class="trading-card-category-tag">${categoryTag}</span>
@@ -2110,7 +2121,7 @@
 
           wrapper.innerHTML = `
             <div class="trading-card-top-bar">
-              <span class="trading-card-hp-tag">-${task.hpCost} HP</span>
+              <span class="trading-card-hp-tag">-${getHpTier(Number(task.hpCost)||0).perHour} HP/H</span>
             </div>
             <div class="trading-card-halftone">
                <span class="trading-card-category-tag">${categoryTag}</span>
@@ -2139,11 +2150,17 @@
         const wrapper = document.createElement('div');
         wrapper.className = 'matrix-card-wrapper';
         wrapper.onclick = () => openCardModal(t, true);
-        let subVal = t.type === 'timer' ? formatTime(t.secondsLogged) : (t.type === 'meal' ? `${t.mealsCompleted || 0} / 5 MEALS` : t.type === 'count' ? `${t.dailyCount || 0} / ${t.dailyTarget || 1}` : `${t.currentML || 0} / ${t.targetML || 0} mL`);
+        let subVal = t.type === 'timer' ? formatTime(t.secondsLogged) : (t.type === 'meal' ? `${t.mealsCompleted || 0} / 5 MEALS` : t.type === 'count' ? `${t.dailyCount || 0} / ${t.dailyTarget || 1}` : `${Math.min(6, Math.ceil((Number(t.currentML)||0) / Math.max(1,(Number(t.targetML)||2700)/6)))} / 6`);
         let visual = `<div>${t.icon}</div>`;
         if (t.type === 'count') {
           const target=t.dailyTarget||1, count=t.dailyCount||0;
           visual=`<div class="recovery-count-grid">${Array.from({length:target},(_,i)=>`<div class="recovery-silhouette ${i<count?'filled':''}">${t.icon}</div>`).join('')}</div>`;
+        } else if (t.type === 'meal') {
+          const count=t.mealsCompleted||0;
+          visual=`<div class="recovery-count-grid">${Array.from({length:5},(_,i)=>`<div class="recovery-silhouette ${i<count?'filled':''}">${t.icon}</div>`).join('')}</div>`;
+        } else if (t.type === 'fluid') {
+          const units=6, filled=Math.min(units, Math.ceil((Number(t.currentML)||0)/Math.max(1,(Number(t.targetML)||2700)/units)));
+          visual=`<div class="recovery-count-grid">${Array.from({length:units},(_,i)=>`<div class="recovery-silhouette ${i<filled?'filled':''}">${t.icon}</div>`).join('')}</div>`;
         }
         wrapper.innerHTML = `<div class="matrix-card">${visual}<div style="font-family:var(--font-serif); text-align:center;">${t.name}</div><div style="font-family:var(--font-mono); color:var(--color-recovery); font-weight:700;">${subVal}</div></div>`;
         recGrid.appendChild(wrapper);
@@ -2186,7 +2203,18 @@
       document.getElementById('modalIcon').innerText = task.icon;
       document.getElementById('modalTitle').innerText = task.name;
       document.getElementById('modalCategory').innerText = categoryLabel;
-      document.getElementById('modalHpBadge').innerText = task.hpCost > 0 ? `-${task.hpCost} HP` : `+${Math.abs(task.hpCost)} HP`;
+      if (!isRecovery) {
+        const tier = getHpTier(Number(task.hpCost) || 0);
+        document.getElementById('modalHpBadge').innerText = `-${tier.perHour} HP/H`;
+      } else if (task.type === 'timer') {
+        document.getElementById('modalHpBadge').innerText = `+${Number(task.hpPerHour || 0)} HP/H`;
+      } else if (task.id === 'hydration') {
+        document.getElementById('modalHpBadge').innerText = '+20 HP/DAY';
+      } else if (task.id === 'nutrition') {
+        document.getElementById('modalHpBadge').innerText = '+6 HP/MEAL';
+      } else {
+        document.getElementById('modalHpBadge').innerText = `+${Number(task.hpPerCount || 0)} HP/COUNT`;
+      }
 
       const skillsContainer = document.getElementById('modalSkillsContainer');
       skillsContainer.innerHTML = '';
@@ -2217,8 +2245,8 @@
         body.innerHTML = `
           <div class="meal-tracker">
             <div class="meal-tracker-label">MEALS // ${task.mealsCompleted || 0} OF 5</div>
-            <div class="meal-bowl-grid">
-              ${meals.map(i => `<div class="meal-bowl-wrap" onclick="toggleMeal(${i})"><div class="meal-bowl ${i < (task.mealsCompleted || 0) ? 'filled' : ''}"><span>${i < (task.mealsCompleted || 0) ? '✓' : ''}</span></div><div class="meal-label">MEAL ${i+1}</div></div>`).join('')}
+            <div class="recovery-count-grid">
+              ${meals.map(i => `<div class="recovery-silhouette ${i < (task.mealsCompleted || 0) ? 'filled' : ''}" onclick="toggleMeal(${i})">${task.icon}</div>`).join('')}
             </div>
             <div class="meal-calorie-list">
               ${meals.map(i => `<label>MEAL ${i+1}<input type="number" min="0" inputmode="numeric" placeholder="calories" value="${calories[i] ?? ''}" onchange="setMealCalories(${i}, this.value)"></label>`).join('')}
@@ -2236,25 +2264,14 @@
       }
 
       if (isRecovery && task.type === 'fluid') {
-        const numTumblers = Math.ceil(task.targetML / task.containerML);
-        let tumblersHTML = '<div class="tumbler-container">';
-        for (let i = 0; i < numTumblers; i++) {
-          const filledInTumbler = Math.max(0, Math.min(task.containerML, task.currentML - (i * task.containerML)));
-          const fillPct = (filledInTumbler / task.containerML) * 100;
-          tumblersHTML += `<div class="tumbler-item" onclick="setFluidLevel(${i})"><div class="tumbler-fill" style="height: ${fillPct}%;"></div></div>`;
-        }
-        tumblersHTML += '</div>';
-
+        const units=6;
+        const unitML=(Number(task.targetML)||2700)/units;
+        const filled=Math.min(units, Math.ceil((Number(task.currentML)||0)/Math.max(1,unitML)));
         body.innerHTML = `
-          <div style="text-align:center; font-size:0.9rem; color:var(--text-muted); margin-top:8px;">
-            Container:
-            <select onchange="updateContainerSize(this.value)" style="background:var(--card-bg); color:var(--text); border:1px solid var(--neon-cyan); border-radius:6px; padding:4px 6px;">
-              <option value="250" ${task.containerML === 250 ? 'selected' : ''}>250 mL Glass</option>
-              <option value="500" ${task.containerML === 500 ? 'selected' : ''}>500 mL Tumbler</option>
-            </select>
+          <div class="recovery-count-grid">
+            ${Array.from({length:units},(_,i)=>`<div class="recovery-silhouette ${i<filled?'filled':''}" onclick="toggleHydrationUnit(${i})">${task.icon}</div>`).join('')}
           </div>
-          ${tumblersHTML}
-          <div style="text-align:center; font-family:var(--font-mono); font-size:1.05rem; color:var(--color-recovery); font-weight:700;">${task.currentML} / ${task.targetML} mL</div>
+          <div style="text-align:center;font-family:var(--font-mono);font-weight:700;color:var(--color-recovery);">${filled} / ${units} TODAY</div>
         `;
         return;
       }
@@ -2313,21 +2330,41 @@
       const multiplier = unit.startsWith('h') ? 3600 : unit.startsWith('m') ? 60 : 1;
       const seconds = Math.max(0, Math.round(value * multiplier));
       if (!seconds) { showToast('Time must be greater than zero.'); return; }
+
+      const timeRaw = prompt(`What time did this ${formatFlexibleDuration(seconds)} happen? Enter a clock time, e.g. 2:30 PM or 14:30.`, '12:00 PM');
+      if (timeRaw === null) return;
+      const tm = String(timeRaw).trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+      if (!tm) { showToast('Enter a clock time like 2:30 PM or 14:30.'); return; }
+      let hour = Number(tm[1]);
+      const minute = Number(tm[2]);
+      if (minute > 59) { showToast('Minutes must be 00–59.'); return; }
+      const mer = tm[3] ? tm[3].toUpperCase() : null;
+      if (mer) {
+        if (hour < 1 || hour > 12) { showToast('For AM/PM, use an hour from 1–12.'); return; }
+        if (mer === 'AM' && hour === 12) hour = 0;
+        if (mer === 'PM' && hour !== 12) hour += 12;
+      } else if (hour > 23) {
+        showToast('For 24-hour time, use 00–23.'); return;
+      }
+
+      const now = new Date();
+      const endStamp = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour, minute, 0, 0);
       task.secondsLogged = Math.max(0, Number(task.secondsLogged) || 0) + seconds;
+
       if (task.type === 'timer' && recoveryTasks.some(r => r.id === task.id)) {
-        const hpRate = Number(task.hpPerHour || Math.abs(task.hpCost || 0));
+        const hpRate = Number(task.hpPerHour || 0);
         currentHP = Math.min(100, currentHP + (hpRate * seconds / 3600));
       } else if (growthTasks.some(t => t.id === task.id)) {
         const tier = getHpTier(Number(task.hpCost) || 0);
         currentHP = Math.max(0, currentHP - (tier.perHour * seconds / 3600));
       }
-      let remaining = seconds;
-      const now = Date.now();
-      for (let i = 0; i < remaining; i++) recordActivityTimeAt(task, new Date(now - (remaining - 1 - i) * 1000));
+
+      for (let i = seconds; i > 0; i--) recordActivityTimeAt(task, new Date(endStamp.getTime() - (i - 1) * 1000));
       saveAppState();
+      updateHealthDisplay();
       updateUI();
       renderModalInteractiveBody(recoveryTasks.some(r => r.id === taskId));
-      showToast(`${formatFlexibleDuration(seconds)} manually recorded.`);
+      showToast(`${formatFlexibleDuration(seconds)} recorded at ${timeRaw}.`);
     }
 
     function activateTaskTimer(taskId) {
@@ -2339,6 +2376,7 @@
         task.timerBaseSeconds = task.secondsLogged || 0;
         task.timerStartedAt = nowMs;
         task.timerLastCountedAt = nowMs;
+        task.timerHpLastAppliedAt = nowMs;
         saveAppState();
         document.getElementById('tcModalCard').classList.add('card-active-glow');
         renderModalInteractiveBody(recoveryTasks.some(r => r.id === taskId));
@@ -2354,6 +2392,7 @@
         delete task.timerStartedAt;
         delete task.timerBaseSeconds;
         delete task.timerLastCountedAt;
+        delete task.timerHpLastAppliedAt;
         saveAppState();
         document.getElementById('tcModalCard').classList.remove('card-active-glow');
         renderModalInteractiveBody(recoveryTasks.some(r => r.id === taskId));
@@ -2408,6 +2447,22 @@
       const gain=Number(activeSelectedTask.hpPerCount||0);
       currentHP=Math.min(100,currentHP + (index < current ? -gain : gain));
       updateHealthDisplay(); saveAppState(); updateUI(); renderModalInteractiveBody(true); checkVitalityThreshold();
+    }
+
+    function toggleHydrationUnit(index) {
+      if (!activeSelectedTask || activeSelectedTask.id !== 'hydration') return;
+      const task = activeSelectedTask;
+      const units = 6;
+      const unitML = (Number(task.targetML) || 2700) / units;
+      const beforeFilled = Math.min(units, Math.ceil((Number(task.currentML)||0) / Math.max(1, unitML)));
+      const nextFilled = index < beforeFilled ? index : Math.min(units, index + 1);
+      task.currentML = nextFilled * unitML;
+      const totalGain = Number(task.recoveryHpTotal || 20);
+      currentHP = Math.max(0, Math.min(100, currentHP + ((nextFilled - beforeFilled) * totalGain / units)));
+      updateHealthDisplay();
+      saveAppState();
+      updateUI();
+      renderModalInteractiveBody(true);
     }
 
     function setFluidLevel(tumblerIndex) {
@@ -3395,7 +3450,9 @@
   .deck-mode-switch button { border:0; background:transparent; color:var(--text-muted); font-family:var(--font-mono); font-size:.68rem; font-weight:800; padding:5px 8px; border-radius:6px; cursor:pointer; }
   .deck-mode-switch button.active { background:var(--neon-cyan); color:#fff; }
   .hero-deck-header { justify-content:space-between; }
-  .draggable-activity { touch-action:pan-x pan-y; user-select:none; cursor:pointer; }
+  .draggable-activity { touch-action:pan-x pan-y; user-select:none; cursor:pointer; will-change:transform; }
+  .draggable-activity.long-press-dragging { transition:none !important; z-index:100; box-shadow:0 12px 28px rgba(0,0,0,.28); }
+  .rail-container.dragging-active { overflow:visible; }
   .draggable-activity.long-press-dragging { opacity:.65; outline:2px dashed var(--neon-cyan); outline-offset:3px; }
   .drag-placeholder { opacity:.25; outline:2px dashed var(--neon-cyan); }
   .profile-settings-wrap { position:relative; margin-left:auto; }
@@ -3406,12 +3463,12 @@
   .profile-settings-menu button:hover { background:var(--nav-pink-bg); }
   .manual-time-btn { border:1px solid var(--card-border); background:transparent; color:var(--text-muted); border-radius:8px; padding:6px 9px; font-family:var(--font-mono); font-size:.62rem; cursor:pointer; }
   .vitality-warning { margin-top:10px; }
-  @media (max-width:767px) { .rail-container { touch-action:pan-x; } .view { touch-action:pan-y; } }
+  @media (max-width:767px) { .rail-container { touch-action:pan-x pan-y; overscroll-behavior-x:contain; overscroll-behavior-y:auto; } .view { touch-action:pan-y; } }
 
   .drag-over { outline:2px dashed var(--neon-cyan); outline-offset:3px; }
   .recovery-count-grid { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:4px; }
-  .recovery-silhouette { width:45px; height:45px; display:flex; align-items:center; justify-content:center; font-size:1.7rem; border:2px dotted var(--color-recovery); border-radius:50%; filter:grayscale(1); opacity:.45; cursor:pointer; }
-  .recovery-silhouette.filled { filter:none; opacity:1; border-style:solid; background:rgba(0,0,0,.03); }
+  .recovery-silhouette { width:45px; height:45px; display:flex; align-items:center; justify-content:center; font-size:1.7rem; filter:grayscale(1); opacity:.28; cursor:pointer; border:2px dotted var(--color-recovery); border-radius:12px; background:transparent; transition:opacity .18s ease, filter .18s ease, transform .18s ease; }
+  .recovery-silhouette.filled { filter:none; opacity:1; border-style:solid; background:rgba(0,0,0,.03); transform:scale(1.02); }
   .meal-bowl { width:45px; height:30px; border:2px dotted var(--color-recovery); border-radius:4px 4px 22px 22px; display:flex; align-items:center; justify-content:center; color:var(--color-recovery); }
   .meal-bowl.filled { border-style:solid; background:rgba(0,0,0,.04); }
   .vitality-warning { display:none; padding:9px 12px; border:1px solid var(--nav-pink); border-radius:10px; color:var(--nav-pink); font-family:var(--font-mono); font-size:.72rem; font-weight:800; text-align:center; }
