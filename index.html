@@ -99,7 +99,7 @@
     }
 
     /* PROBLEM 1: bump the root scale so every rem-based size in the app grows together */
-    html { font-size: 16px; }
+    html { font-size: 19px; }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-mono); }
 
@@ -297,15 +297,15 @@
       width: 44px; height: 44px; border-radius: 50%;
       background: var(--card-color, var(--neon-cyan)); border: 2px solid #ffffff; color: #ffffff;
       font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; justify-content: center;
-      cursor: pointer; outline: none; box-shadow: none; transition: transform 0.1s ease; margin-bottom: 2px;
+      cursor: pointer; outline: none; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: transform 0.1s ease; margin-bottom: 2px;
     }
     .trading-card-circle-btn-lg:active { transform: scale(0.92); }
 
     /* PROBLEM 6: rectangular "EQUIP TASK" button, replacing the circular + for adding a card to the deck */
     .trading-card-equip-btn {
       width: 100%; height: 26px; border-radius: 7px; margin-top: 3px;
-      background: var(--card-color, var(--neon-cyan)); border: none; color: #ffffff;
-      font-family: var(--font-mono); font-size: 0.58rem; font-weight: 800; letter-spacing: 0.6px;
+      background: var(--card-color, var(--neon-cyan)); border: 2px solid #ffffff; color: #ffffff;
+      font-family: var(--font-mono); font-size: 0.6rem; font-weight: 800; letter-spacing: 0.6px;
       display: flex; align-items: center; justify-content: center; cursor: pointer;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: transform 0.1s ease;
     }
@@ -339,19 +339,6 @@
     .tumbler-container { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 18px 0; }
     .tumbler-item { width: 50px; height: 80px; border: 1px solid var(--neon-cyan); border-radius: 5px 5px 12px 12px; position: relative; overflow: hidden; cursor: pointer; background: rgba(0,240,255,0.03); }
     .tumbler-fill { position: absolute; bottom: 0; left: 0; right: 0; background: var(--color-recovery); }
-    .meal-tracker { width:100%; }
-    .meal-tracker-label { text-align:center; font-family:var(--font-mono); font-size:0.78rem; color:var(--color-recovery); font-weight:700; margin:10px 0 12px; }
-    .meal-bowl-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; }
-    .meal-bowl-wrap { text-align:center; cursor:pointer; min-width:0; }
-    .meal-bowl { width:100%; max-width:52px; aspect-ratio:1.35; margin:auto; border:2px solid var(--color-recovery); border-radius:0 0 50% 50% / 0 0 65% 65%; display:flex; align-items:center; justify-content:center; background:var(--card-bg); position:relative; overflow:hidden; }
-    .meal-bowl::before { content:''; position:absolute; left:8%; right:8%; top:24%; height:2px; background:var(--color-recovery); border-radius:50%; opacity:.5; }
-    .meal-bowl.filled { background:var(--color-recovery); color:#fff; }
-    .meal-bowl span { position:relative; z-index:1; font-size:1rem; font-weight:800; }
-    .meal-label { font-family:var(--font-mono); font-size:0.48rem; margin-top:4px; color:var(--text-muted); }
-    .meal-calorie-list { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:12px; }
-    .meal-calorie-list label { display:flex; align-items:center; justify-content:space-between; gap:5px; font-family:var(--font-mono); font-size:0.52rem; color:var(--text-muted); }
-    .meal-calorie-list input { width:62px; background:var(--card-bg); color:var(--text); border:1px solid var(--card-border); border-radius:5px; padding:4px; font-family:var(--font-mono); font-size:0.58rem; }
-    .meal-calorie-note { text-align:center; font-size:0.55rem; color:var(--text-muted); margin-top:7px; }
 
     .date-picker-bar { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 13px 18px; border: 1px solid var(--neon-cyan); border-radius: 14px; font-family: var(--font-mono); font-size: 0.92rem; }
     .date-picker-bar button { font-size: 1.2rem; }
@@ -401,8 +388,8 @@
 
     .scrapbook-tape {
       position: absolute;
-      width: 64px;
-      height: 20px;
+      width: 82px;
+      height: 24px;
       background: rgba(255, 255, 255, 0.45);
       border: 1px dashed rgba(0, 0, 0, 0.15);
       backdrop-filter: blur(2px);
@@ -411,7 +398,7 @@
     }
     .tape-top-left { top: -10px; left: 22px; transform: rotate(-5deg); }
     .tape-top-right { top: -10px; right: 22px; transform: rotate(6deg); }
-    .tape-bottom-right { display:none; }
+    .tape-bottom-right { bottom: 12px; right: -12px; transform: rotate(-12deg); }
 
     .scrapbook-sticker {
       position: absolute;
@@ -449,10 +436,6 @@
       transition: transform 0.15s ease;
     }
     .profile-share-btn:active { transform: scale(0.94); }
-    .profile-share-btn-static { position: static; align-self: flex-end; margin-top: 2px; }
-    .backup-actions { display:flex; flex-direction:column; gap:8px; width:100%; }
-    .backup-action-btn { position:static; width:100%; background:var(--card-bg); border:1px solid var(--neon-cyan); color:var(--neon-cyan); padding:9px 12px; border-radius:10px; font-family:var(--font-mono); font-size:0.75rem; font-weight:700; cursor:pointer; }
-
 
     .profile-header-social {
       display: flex;
@@ -715,8 +698,7 @@
     .tc-stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 600; }
     .tc-stars-interactive { color: #ffb703; letter-spacing: 3px; font-size: 1.35rem; line-height: 1; cursor: pointer; user-select: none; }
 
-    .timer-display-modal { font-family: var(--font-mono); font-size: 3.1rem; font-weight: 500; letter-spacing: 0; text-align: center; color: var(--timer-color); margin: 4px 0; }
-    .modal-close-btn { position:absolute; top:-4px; right:0; width:30px; height:30px; border:1px solid var(--card-border); background:var(--card-bg); color:var(--text-muted); border-radius:50%; font-family:var(--font-mono); font-size:0.85rem; cursor:pointer; z-index:5; }
+    .timer-display-modal { font-family: var(--font-timer); font-size: 3.1rem; font-weight: 500; letter-spacing: 0; text-align: center; color: var(--timer-color); margin: 4px 0; }
 
     .tc-bottom-action-row { display: flex; gap: 10px; width: 100%; align-items: center; margin-top: 4px; }
 
@@ -789,38 +771,6 @@
     }
     .doodle-swatch.selected { border-color: var(--text); transform: scale(1.12); }
     .doodle-tool-row { display: flex; gap: 10px; justify-content: center; }
-
-    @media (max-width: 767px) {
-      .app-container { padding: 14px 12px 105px 12px; }
-      .top-bar-clean { margin-bottom: 12px; padding-bottom: 8px; }
-      .hero-deck-header, .rail-header { font-size: 1.2rem; }
-      .hero-slots-scroll, .rail-container { gap: 10px; }
-      .trading-card-outer, .deck-slot-wrapper, .empty-add-card { min-width: 145px; max-width: 145px; height: 220px; }
-      .trading-card-outer { padding: 6px; }
-      .trading-card-icon { font-size: 2.45rem; }
-      .trading-card-name { font-size: 0.78rem; }
-      .trading-card-timer-hero { font-size: 0.85rem; }
-      .matrix-card { height: 145px; padding: 14px 10px; }
-      .matrix-card > div:first-child { font-size: 2rem; }
-      .matrix-card > div:nth-child(2) { font-size: 1.05rem; }
-      .matrix-card > div:nth-child(3) { font-size: 0.72rem; }
-      .profile-card { padding: 24px 14px 18px; gap: 18px; }
-      .profile-avatar { width: 92px; height: 92px; font-size: 2.4rem; }
-      .folder-card-body { padding: 12px; }
-      .modal-card-wrapper { max-width: calc(100vw - 24px); }
-      .full-trading-card { padding: 14px; gap: 10px; }
-      .tc-title { font-size: 1.4rem; }
-      .tc-art-frame { height: 135px; }
-      .tc-art-icon { font-size: 3.6rem; }
-      .timer-display-modal { font-size: 2.4rem; }
-      .btn-dual-group-compact { height: 44px; }
-      .btn-action-pause-compact, .btn-action-stop-compact { font-size: 0.78rem; }
-      .bottom-nav-container { bottom: 14px; }
-      .bottom-nav { padding: 5px 7px; gap: 2px; }
-      .nav-btn { padding: 8px 10px; font-size: 0.72rem; }
-      .nav-btn span:first-child { font-size: 1rem; }
-    }
-
     /* ============================================================
        PROBLEM 1: DESKTOP / TABLET RESPONSIVE LAYOUT
        Nav moves to a left sidebar with labels; everything scales down.
@@ -1087,22 +1037,7 @@
           </div>
         </div>
 
-        <!-- Folder Section 5: Local Backup -->
-        <div class="folder-card-wrapper">
-          <div class="folder-tab-flap">Local Data Backup</div>
-          <div class="folder-card-body">
-            <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.5; margin-bottom:10px;">
-              Your data normally carries forward automatically when the app is updated. This backup is an extra safety copy kept on this device.
-            </div>
-            <div class="backup-actions">
-              <button class="backup-action-btn" onclick="createLocalBackup()">💾 CREATE BACKUP</button>
-              <button class="backup-action-btn" onclick="restoreLocalBackup()">↩️ RESTORE BACKUP</button>
-            </div>
-            <div id="backupStatusLabel" style="font-size:0.7rem; color:var(--text-muted); text-align:center; margin-top:8px;">No local backup yet.</div>
-          </div>
-        </div>
-
-        <button class="profile-share-btn profile-share-btn-static" onclick="shareProfile()"><span style="font-size:0.9rem;">📤</span> SHARE ID</button>
+        <button class="profile-share-btn" onclick="shareProfile()"><span style="font-size:0.9rem;">📤</span> SHARE ID</button>
 
       </div>
     </div>
@@ -1369,7 +1304,7 @@
       { id: 'shower', name: 'Shower', icon: '🚿', type: 'timer', secondsLogged: 0, hpCost: -5, skills: [{ name: 'Discipline', stars: 2 }] },
       { id: 'brush-teeth', name: 'Brush Teeth', icon: '🪥', type: 'timer', secondsLogged: 0, hpCost: -2, skills: [{ name: 'Discipline', stars: 2 }] },
       { id: 'hydration', name: 'Hydration', icon: '🥛', type: 'fluid', targetML: 2700, containerML: 500, currentML: 1250, hpCost: -10, skills: [{ name: 'Discipline', stars: 3 }, { name: 'Intellect', stars: 2 }] },
-      { id: 'nutrition', name: 'Nutrition', icon: '🥗', type: 'meal', mealsCompleted: 0, mealsCalories: [null, null, null, null, null], hpCost: -15, skills: [{ name: 'Discipline', stars: 4 }, { name: 'Creativity', stars: 2 }] }
+      { id: 'nutrition', name: 'Nutrition', icon: '🥗', type: 'fluid', targetML: 2000, containerML: 400, currentML: 800, hpCost: -15, skills: [{ name: 'Discipline', stars: 4 }, { name: 'Creativity', stars: 2 }] }
     ];
 
     // PROBLEM 3/6: friends + discoverable users data, with identity-matrix totals and top activities
@@ -1455,136 +1390,116 @@
     // LOCAL SAVE SYSTEM — keeps the app's personal data on this device.
     // This does not change the UI. It only saves/restores the app state.
     const LOCAL_SAVE_KEY = 'skillIssueAppState_v1';
-    const LOCAL_BACKUP_KEY = 'skillIssueAppBackup_v1';
-    const DATA_SCHEMA_VERSION = 1;
 
-    function buildAppState() {
-      return {
-        version: DATA_SCHEMA_VERSION,
-        growthTasks,
-        recoveryTasks,
-        friendsList,
-        discoverableUsers,
-        heroDeckIds: heroDeckSlots.map(task => task && task.id).filter(Boolean),
-        currentHP,
-        activityHistory,
-        privacySettings,
-        userProfile,
-        profileAvatarDataUrl,
-        theme: document.documentElement.getAttribute('data-theme') || 'light'
-      };
-    }
+    function recordActivityElapsed(task, fromMs, toMs) {
+      if (!task || toMs <= fromMs || !(task.type === 'timer' || !task.type)) return;
 
-    function writeStateToStorage(state) {
-      localStorage.setItem(LOCAL_SAVE_KEY, JSON.stringify(state));
-    }
+      let cursor = fromMs;
+      while (cursor < toMs) {
+        const cursorDate = new Date(cursor);
+        const nextHour = new Date(cursorDate);
+        nextHour.setMinutes(0, 0, 0);
+        nextHour.setHours(nextHour.getHours() + 1);
+        const segmentEnd = Math.min(toMs, nextHour.getTime());
+        const seconds = Math.max(0, Math.floor((segmentEnd - cursor) / 1000));
 
-    function readStateFromStorage(key) {
-      const raw = localStorage.getItem(key);
-      if (!raw) return null;
-      const parsed = JSON.parse(raw);
-      if (!parsed || typeof parsed !== 'object') return null;
-      return parsed;
-    }
-
-    function normalizeImportedState(state) {
-      // This is the compatibility layer. Future app versions should add
-      // migrations here instead of throwing away older saved data.
-      if (!state || typeof state !== 'object') throw new Error('Invalid backup data.');
-
-      const sourceVersion = Number(state.version || 1);
-      if (!Number.isFinite(sourceVersion) || sourceVersion < 1) {
-        throw new Error('This backup does not have a valid Skill Issue version.');
-      }
-      if (sourceVersion > DATA_SCHEMA_VERSION) {
-        throw new Error('This backup was made by a newer version of Skill Issue. Update the app first.');
-      }
-
-      // Version 1 is currently the original saved format. Keep this function
-      // as the permanent place for future v1 -> v2 -> v3 migrations.
-      return { ...state, version: DATA_SCHEMA_VERSION };
-    }
-
-    function applyAppState(state) {
-      state = normalizeImportedState(state);
-
-      if (Array.isArray(state.growthTasks)) growthTasks = state.growthTasks;
-      if (Array.isArray(state.recoveryTasks)) recoveryTasks = state.recoveryTasks;
-      if (Array.isArray(state.friendsList)) friendsList = state.friendsList;
-      if (Array.isArray(state.discoverableUsers)) discoverableUsers = state.discoverableUsers;
-      if (state.activityHistory && typeof state.activityHistory === 'object') activityHistory = state.activityHistory;
-      if (state.privacySettings && typeof state.privacySettings === 'object') {
-        privacySettings = { ...privacySettings, ...state.privacySettings };
-      }
-      if (state.userProfile && typeof state.userProfile === 'object') {
-        userProfile = { ...userProfile, ...state.userProfile };
-      }
-      if (typeof state.currentHP === 'number' && Number.isFinite(state.currentHP)) {
-        currentHP = Math.max(0, Math.min(100, state.currentHP));
-      }
-      if (typeof state.profileAvatarDataUrl === 'string' || state.profileAvatarDataUrl === null) {
-        profileAvatarDataUrl = state.profileAvatarDataUrl;
-      }
-
-      if (Array.isArray(state.heroDeckIds)) {
-        const allTasks = growthTasks.concat(recoveryTasks);
-        heroDeckSlots = state.heroDeckIds
-          .map(id => allTasks.find(task => task.id === id))
-          .filter(Boolean);
-      }
-
-      // Nutrition used to be stored as a liquid/mL tracker. Convert that old
-      // shape into the new five-meal tracker without discarding existing progress.
-      const nutrition = recoveryTasks.find(task => task.id === 'nutrition');
-      if (nutrition && nutrition.type === 'fluid') {
-        const inferredMeals = Math.max(0, Math.min(5, Math.round((Number(nutrition.currentML) || 0) / Math.max((Number(nutrition.targetML) || 2000) / 5, 1))));
-        nutrition.type = 'meal';
-        nutrition.mealsCompleted = Number.isFinite(nutrition.mealsCompleted) ? Math.max(0, Math.min(5, nutrition.mealsCompleted)) : inferredMeals;
-        nutrition.mealsCalories = Array.isArray(nutrition.mealsCalories) ? nutrition.mealsCalories.slice(0,5) : [null,null,null,null,null];
-        while (nutrition.mealsCalories.length < 5) nutrition.mealsCalories.push(null);
-        delete nutrition.targetML; delete nutrition.containerML; delete nutrition.currentML;
-      }
-      recoveryTasks.forEach(task => {
-        if (task.id === 'nutrition') {
-          task.type = 'meal';
-          task.mealsCompleted = Math.max(0, Math.min(5, Number(task.mealsCompleted) || 0));
-          task.mealsCalories = Array.isArray(task.mealsCalories) ? task.mealsCalories.slice(0,5) : [null,null,null,null,null];
-          while (task.mealsCalories.length < 5) task.mealsCalories.push(null);
+        if (seconds > 0) {
+          const key = getDateKey(cursorDate);
+          if (!activityHistory[key]) activityHistory[key] = {};
+          if (!activityHistory[key][task.id]) {
+            activityHistory[key][task.id] = {
+              id: task.id, name: task.name, icon: task.icon,
+              category: task.category || 'recovery',
+              color: task.customColor || 'var(--color-recovery)',
+              seconds: 0, amSeconds: 0, pmSeconds: 0,
+              hourSeconds: new Array(24).fill(0)
+            };
+          }
+          const entry = activityHistory[key][task.id];
+          const hour = cursorDate.getHours();
+          entry.seconds += seconds;
+          if (hour < 12) entry.amSeconds += seconds;
+          else entry.pmSeconds += seconds;
+          if (!entry.hourSeconds) entry.hourSeconds = new Array(24).fill(0);
+          entry.hourSeconds[hour] += seconds;
+          entry.name = task.name;
+          entry.icon = task.icon;
+          entry.category = task.category || 'recovery';
+          entry.color = task.customColor || entry.color || 'var(--color-recovery)';
         }
-      });
-
-      // Running timers use timestamps, so they continue correctly after reload.
-      growthTasks.concat(recoveryTasks).forEach(task => {
-        if (task.isPlaying) {
-          if (!Number.isFinite(task.timerStartedAt)) task.timerStartedAt = Date.now() - ((task.secondsLogged || 0) * 1000);
-          if (!Number.isFinite(task.timerBaseSeconds)) task.timerBaseSeconds = task.secondsLogged || 0;
-          if (!Number.isFinite(task.timerLastCountedAt)) task.timerLastCountedAt = task.timerStartedAt;
-        } else {
-          delete task.timerStartedAt;
-          delete task.timerBaseSeconds;
-          delete task.timerLastCountedAt;
-        }
-      });
-
-      if (state.theme === 'dark' || state.theme === 'light') {
-        document.documentElement.setAttribute('data-theme', state.theme);
+        cursor = segmentEnd;
       }
     }
 
-    function updateBackupStatusLabel(message) {
-      const el = document.getElementById('backupStatusLabel');
-      if (el) el.innerText = message;
+    function processTimerEffects(task, deltaSeconds) {
+      if (!task || deltaSeconds <= 0) return;
+
+      if (growthTasks.some(t => t.id === task.id)) {
+        if (task.skills && task.skills.length > 0) {
+          if (task._skillPopTarget === undefined) task._skillPopTarget = 15 + Math.floor(Math.random() * 11);
+          task._skillPopCounter = (task._skillPopCounter || 0) + deltaSeconds;
+          if (task._skillPopCounter >= task._skillPopTarget) {
+            triggerSkillPop(task);
+            task._skillPopCounter %= task._skillPopTarget;
+            task._skillPopTarget = 15 + Math.floor(Math.random() * 11);
+          }
+        }
+
+        task._depleteCounter = (task._depleteCounter || 0) + deltaSeconds;
+        while (task._depleteCounter >= 600) {
+          currentHP = Math.max(0, currentHP - getHpTier(task.hpCost).per10Min);
+          task._depleteCounter -= 600;
+        }
+        updateHealthDisplay();
+      }
+
+      if (task.id === 'sleep') {
+        sleepPopTimerCounter = (sleepPopTimerCounter || 0) + deltaSeconds;
+        if (sleepPopTimerCounter >= 20) {
+          triggerHealthPop();
+          sleepPopTimerCounter %= 20;
+        }
+      }
+    }
+
+    function updateRunningTask(task, nowMs = Date.now()) {
+      if (!task || !task.isPlaying) return;
+
+      if (!Number.isFinite(task.timerStartedAt)) {
+        task.timerStartedAt = nowMs - ((task.timerBaseSeconds || task.secondsLogged || 0) * 1000);
+      }
+      if (!Number.isFinite(task.timerBaseSeconds)) task.timerBaseSeconds = task.secondsLogged || 0;
+      if (!Number.isFinite(task.timerLastCountedAt)) task.timerLastCountedAt = task.timerStartedAt;
+
+      const elapsedSeconds = Math.max(0, Math.floor((nowMs - task.timerStartedAt) / 1000));
+      task.secondsLogged = Math.max(task.timerBaseSeconds, task.timerBaseSeconds + elapsedSeconds);
+
+      const countedUntilMs = task.timerStartedAt + elapsedSeconds * 1000;
+      if (countedUntilMs > task.timerLastCountedAt) {
+        const deltaSeconds = Math.floor((countedUntilMs - task.timerLastCountedAt) / 1000);
+        recordActivityElapsed(task, task.timerLastCountedAt, countedUntilMs);
+        processTimerEffects(task, deltaSeconds);
+        task.timerLastCountedAt = countedUntilMs;
+      }
     }
 
     function saveAppState() {
       try {
-        const state = buildAppState();
-        const previousRaw = localStorage.getItem(LOCAL_SAVE_KEY);
-
-        // Keep a rolling local safety copy of the previous valid state.
-        // This happens automatically; the user never has to export anything.
-        if (previousRaw) localStorage.setItem(LOCAL_BACKUP_KEY, previousRaw);
-        writeStateToStorage(state);
+        const state = {
+          version: 1,
+          growthTasks,
+          recoveryTasks,
+          friendsList,
+          discoverableUsers,
+          heroDeckIds: heroDeckSlots.map(task => task && task.id).filter(Boolean),
+          currentHP,
+          activityHistory,
+          privacySettings,
+          userProfile,
+          profileAvatarDataUrl,
+          theme: document.documentElement.getAttribute('data-theme') || 'light'
+        };
+        localStorage.setItem(LOCAL_SAVE_KEY, JSON.stringify(state));
       } catch (error) {
         console.warn('Skill Issue could not save local data:', error);
       }
@@ -1592,48 +1507,60 @@
 
     function loadAppState() {
       try {
-        const state = readStateFromStorage(LOCAL_SAVE_KEY);
-        if (!state) return false;
-        applyAppState(state);
+        const raw = localStorage.getItem(LOCAL_SAVE_KEY);
+        if (!raw) return false;
+
+        const state = JSON.parse(raw);
+        if (!state || state.version !== 1) return false;
+
+        if (Array.isArray(state.growthTasks)) growthTasks = state.growthTasks;
+        if (Array.isArray(state.recoveryTasks)) recoveryTasks = state.recoveryTasks;
+        if (Array.isArray(state.friendsList)) friendsList = state.friendsList;
+        if (Array.isArray(state.discoverableUsers)) discoverableUsers = state.discoverableUsers;
+        if (state.activityHistory && typeof state.activityHistory === 'object') activityHistory = state.activityHistory;
+        if (state.privacySettings && typeof state.privacySettings === 'object') {
+          privacySettings = { ...privacySettings, ...state.privacySettings };
+        }
+        if (state.userProfile && typeof state.userProfile === 'object') {
+          userProfile = { ...userProfile, ...state.userProfile };
+        }
+        if (typeof state.currentHP === 'number' && Number.isFinite(state.currentHP)) {
+          currentHP = Math.max(0, Math.min(100, state.currentHP));
+        }
+        if (typeof state.profileAvatarDataUrl === 'string' || state.profileAvatarDataUrl === null) {
+          profileAvatarDataUrl = state.profileAvatarDataUrl;
+        }
+
+        // Reconnect saved hero-deck cards to the restored task objects.
+        if (Array.isArray(state.heroDeckIds)) {
+          const allTasks = growthTasks.concat(recoveryTasks);
+          heroDeckSlots = state.heroDeckIds
+            .map(id => allTasks.find(task => task.id === id))
+            .filter(Boolean);
+        }
+
+        // Timers intentionally keep running across page closes/reloads.
+        // The timestamps above let us calculate the real elapsed time when the app opens again.
+        growthTasks.concat(recoveryTasks).forEach(task => {
+          if (task.isPlaying) {
+            if (!Number.isFinite(task.timerStartedAt)) task.timerStartedAt = Date.now() - ((task.secondsLogged || 0) * 1000);
+            if (!Number.isFinite(task.timerBaseSeconds)) task.timerBaseSeconds = task.secondsLogged || 0;
+            if (!Number.isFinite(task.timerLastCountedAt)) task.timerLastCountedAt = task.timerStartedAt;
+          } else {
+            delete task.timerStartedAt;
+            delete task.timerBaseSeconds;
+            delete task.timerLastCountedAt;
+          }
+        });
+
+        if (state.theme === 'dark' || state.theme === 'light') {
+          document.documentElement.setAttribute('data-theme', state.theme);
+        }
+
         return true;
       } catch (error) {
         console.warn('Skill Issue could not load local data:', error);
         return false;
-      }
-    }
-
-    function createLocalBackup() {
-      try {
-        const state = buildAppState();
-        localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(state));
-        updateBackupStatusLabel('Backup saved on this device just now.');
-        showToast('Local backup created.');
-      } catch (error) {
-        console.warn('Skill Issue could not create local backup:', error);
-        showToast('Could not create backup.');
-      }
-    }
-
-    function restoreLocalBackup() {
-      try {
-        const backup = readStateFromStorage(LOCAL_BACKUP_KEY);
-        if (!backup) {
-          showToast('No local backup is available yet.');
-          return;
-        }
-
-        const normalized = normalizeImportedState(backup);
-        const currentState = buildAppState();
-        localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(currentState));
-        applyAppState(normalized);
-        writeStateToStorage(buildAppState());
-        renderSavedLocalState();
-        updateUI();
-        updateBackupStatusLabel('Backup restored successfully.');
-        showToast('Backup restored.');
-      } catch (error) {
-        console.warn('Skill Issue could not restore local backup:', error);
-        showToast(error.message || 'Could not restore backup.');
       }
     }
 
@@ -1650,9 +1577,6 @@
 
       updateHealthDisplay();
       renderProfileIdentity();
-
-      const backupRaw = localStorage.getItem(LOCAL_BACKUP_KEY);
-      if (backupRaw) updateBackupStatusLabel('Automatic local backup is available.');
     }
 
     // Save a few times per minute while the app is open, and immediately when leaving.
@@ -1698,43 +1622,6 @@
       entry.name = task.name;
       entry.icon = task.icon;
       entry.category = task.category || 'recovery';
-    }
-
-    function updateRunningTask(task, nowMs = Date.now()) {
-      if (!task || !task.isPlaying) return 0;
-      if (!Number.isFinite(task.timerLastCountedAt)) task.timerLastCountedAt = nowMs;
-      const elapsedSeconds = Math.max(0, Math.floor((nowMs - task.timerLastCountedAt) / 1000));
-      if (elapsedSeconds <= 0) return 0;
-
-      task.secondsLogged = Math.max(0, Number(task.secondsLogged) || 0) + elapsedSeconds;
-      // Record each elapsed second into the correct local date/hour so timers
-      // that run while the app is closed still appear in Log History correctly.
-      for (let i = 1; i <= elapsedSeconds; i++) {
-        const stamp = new Date(task.timerLastCountedAt + i * 1000);
-        recordActivityTimeAt(task, stamp);
-      }
-      task.timerLastCountedAt += elapsedSeconds * 1000;
-      return elapsedSeconds;
-    }
-
-    function recordActivityTimeAt(task, stamp) {
-      const key = getDateKey(stamp);
-      if (!activityHistory[key]) activityHistory[key] = {};
-      if (!activityHistory[key][task.id]) {
-        activityHistory[key][task.id] = {
-          id: task.id, name: task.name, icon: task.icon,
-          category: task.category || 'recovery',
-          color: task.customColor || 'var(--color-recovery)', seconds: 0, amSeconds: 0, pmSeconds: 0,
-          hourSeconds: new Array(24).fill(0)
-        };
-      }
-      const entry = activityHistory[key][task.id];
-      const hour = stamp.getHours();
-      entry.seconds++;
-      if (hour < 12) entry.amSeconds++; else entry.pmSeconds++;
-      if (!entry.hourSeconds) entry.hourSeconds = new Array(24).fill(0);
-      entry.hourSeconds[hour]++;
-      entry.name = task.name; entry.icon = task.icon; entry.category = task.category || 'recovery';
     }
 
     setInterval(() => {
@@ -2009,7 +1896,7 @@
             </div>
             <div class="trading-card-banner">
               <div class="trading-card-name">${task.name}</div>
-              <div class="trading-card-equip-btn" onclick="addToPlayDeck('${task.id}', event)">EQUIP</div>
+              <div class="trading-card-equip-btn" onclick="addToPlayDeck('${task.id}', event)">EQUIP TASK</div>
             </div>
           `;
           railEl.appendChild(wrapper);
@@ -2028,7 +1915,7 @@
         const wrapper = document.createElement('div');
         wrapper.className = 'matrix-card-wrapper';
         wrapper.onclick = () => openCardModal(t, true);
-        let subVal = t.type === 'timer' ? formatTime(t.secondsLogged) : (t.type === 'meal' ? `${t.mealsCompleted || 0} / 5 MEALS` : `${t.currentML} / ${t.targetML} mL`);
+        let subVal = t.type === 'timer' ? formatTime(t.secondsLogged) : `${t.currentML} / ${t.targetML} mL`;
 
         wrapper.innerHTML = `
           <div class="matrix-card">
@@ -2101,24 +1988,6 @@
       const body = document.getElementById('modalInteractiveBody');
       body.innerHTML = '';
 
-      if (isRecovery && task.type === 'meal') {
-        const meals = Array.from({length:5}, (_,i) => i);
-        const calories = Array.isArray(task.mealsCalories) ? task.mealsCalories : [null,null,null,null,null];
-        while (calories.length < 5) calories.push(null);
-        body.innerHTML = `
-          <div class="meal-tracker">
-            <div class="meal-tracker-label">MEALS // ${task.mealsCompleted || 0} OF 5</div>
-            <div class="meal-bowl-grid">
-              ${meals.map(i => `<div class="meal-bowl-wrap" onclick="toggleMeal(${i})"><div class="meal-bowl ${i < (task.mealsCompleted || 0) ? 'filled' : ''}"><span>${i < (task.mealsCompleted || 0) ? '✓' : ''}</span></div><div class="meal-label">MEAL ${i+1}</div></div>`).join('')}
-            </div>
-            <div class="meal-calorie-list">
-              ${meals.map(i => `<label>MEAL ${i+1}<input type="number" min="0" inputmode="numeric" placeholder="calories" value="${calories[i] ?? ''}" onchange="setMealCalories(${i}, this.value)"></label>`).join('')}
-            </div>
-            <div class="meal-calorie-note">Calories are optional.</div>
-          </div>`;
-        return;
-      }
-
       if (isRecovery && task.type === 'fluid') {
         const numTumblers = Math.ceil(task.targetML / task.containerML);
         let tumblersHTML = '<div class="tumbler-container">';
@@ -2146,7 +2015,6 @@
       const isEquippedInDeck = heroDeckSlots.some(t => t.id === task.id);
 
       const timerDisplay = `<div class="timer-display-modal" id="modalTimerDisplay">${formatTime(task.secondsLogged)}</div>`;
-      const closeModalButton = `<button class="modal-close-btn" type="button" onclick="closeCardModal(null, true)" aria-label="Close activity">✕</button>`;
 
       let mainButtonArea = '';
       if (!task.isPlaying) {
@@ -2170,8 +2038,7 @@
       `;
 
       body.innerHTML = `
-        <div style="position:relative; display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:2px;">
-          ${closeModalButton}
+        <div style="display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:2px;">
           ${timerDisplay}
           <div class="tc-bottom-action-row">
             ${editDeleteSquares}
@@ -2227,24 +2094,6 @@
         updateUI();
         showToast(`${task.name} stopped and removed from the deck.`);
       }
-    }
-
-    function toggleMeal(index) {
-      if (!activeSelectedTask || activeSelectedTask.id !== 'nutrition') return;
-      const current = Math.max(0, Math.min(5, Number(activeSelectedTask.mealsCompleted) || 0));
-      activeSelectedTask.mealsCompleted = index < current ? index : index + 1;
-      if (!Array.isArray(activeSelectedTask.mealsCalories)) activeSelectedTask.mealsCalories = [null,null,null,null,null];
-      while (activeSelectedTask.mealsCalories.length < 5) activeSelectedTask.mealsCalories.push(null);
-      saveAppState();
-      updateUI();
-      renderModalInteractiveBody(true);
-    }
-
-    function setMealCalories(index, value) {
-      if (!activeSelectedTask || activeSelectedTask.id !== 'nutrition') return;
-      if (!Array.isArray(activeSelectedTask.mealsCalories)) activeSelectedTask.mealsCalories = [null,null,null,null,null];
-      activeSelectedTask.mealsCalories[index] = value === '' ? null : Math.max(0, Number(value));
-      saveAppState();
     }
 
     function setFluidLevel(tumblerIndex) {
@@ -2479,17 +2328,6 @@
       renderTimelineStats();
     }
 
-    function formatFlexibleDuration(totalSeconds) {
-      const seconds = Math.max(0, Math.round(Number(totalSeconds) || 0));
-      if (seconds < 60) return `${seconds}s`;
-      if (seconds < 3600) {
-        const minutes = seconds / 60;
-        return `${Number.isInteger(minutes) ? minutes : minutes.toFixed(1)}m`;
-      }
-      const hours = seconds / 3600;
-      return `${Number.isInteger(hours) ? hours : hours.toFixed(1)}h`;
-    }
-
     function resolveEntryColor(entry) {
       const raw = entry.color || GROWTH_CATEGORIES[entry.category]?.color || 'var(--neon-cyan)';
       if (raw.startsWith('var(')) {
@@ -2530,7 +2368,7 @@
         return;
       }
 
-      const totalRecordedSeconds = allEntries.reduce((sum, entry) => sum + (Number(entry.seconds) || 0), 0) || 1;
+      const maxSeconds = entries[0].seconds || 1;
       entries.forEach(entry => {
         const item = document.createElement('div');
         item.className = 'timeline-item';
@@ -2539,9 +2377,9 @@
           <div style="display:flex; align-items:center; min-width:0; flex:1;">
             <span style="font-size:1.15rem;">${entry.icon}</span>
             <span style="font-family:var(--font-mono); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-left:8px;">${entry.name}</span>
-            <span class="stats-bar-track"><span class="stats-bar-fill" style="width:${(entry.seconds / totalRecordedSeconds) * 100}%; background:${color};"></span></span>
+            <span class="stats-bar-track"><span class="stats-bar-fill" style="width:${(entry.seconds / maxSeconds) * 100}%; background:${color};"></span></span>
           </div>
-          <div style="font-family:var(--font-mono); color:var(--neon-cyan); font-weight:700; white-space:nowrap;">${formatFlexibleDuration(entry.seconds)}</div>
+          <div style="font-family:var(--font-mono); color:var(--neon-cyan); font-weight:700; white-space:nowrap;">${(entry.seconds / 3600).toFixed(2)}h</div>
         `;
         list.appendChild(item);
       });
@@ -2596,7 +2434,7 @@
               <span style="font-family:var(--font-mono); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${entry.name}</span>
             </div>
             <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-              <span style="font-family:var(--font-mono); color:var(--neon-cyan); font-weight:700; white-space:nowrap;">${formatFlexibleDuration(entry.seconds)}</span>
+              <span style="font-family:var(--font-mono); color:var(--neon-cyan); font-weight:700; white-space:nowrap;">${(entry.seconds / 3600).toFixed(2)}h</span>
               <button class="btn-square-icon" style="width:34px; height:34px; font-size:0.9rem;" title="Edit log" onclick="editLogEntry('${dateKey}','${entry.id}')">✏️</button>
               <button class="btn-square-icon danger" style="width:34px; height:34px; font-size:0.9rem;" title="Delete log" onclick="deleteLogEntry('${dateKey}','${entry.id}')">🗑️</button>
             </div>
@@ -2609,13 +2447,13 @@
     function editLogEntry(dateKey, taskId) {
       const entry = activityHistory[dateKey]?.[taskId];
       if (!entry) return;
-      const currentDisplay = formatFlexibleDuration(entry.seconds);
-      const input = prompt(`Edit logged time for "${entry.name}" on ${dateKey}. Enter a number in ${entry.seconds < 60 ? 'seconds' : entry.seconds < 3600 ? 'minutes' : 'hours'}:`, entry.seconds < 60 ? entry.seconds : entry.seconds < 3600 ? (entry.seconds / 60).toFixed(1) : (entry.seconds / 3600).toFixed(2));
+      const currentHours = (entry.seconds / 3600).toFixed(2);
+      const input = prompt(`Edit logged hours for "${entry.name}" on ${dateKey}:`, currentHours);
       if (input === null) return;
-      const numeric = parseFloat(input);
-      if (isNaN(numeric) || numeric < 0) { showToast('Please enter a valid, non-negative time.'); return; }
-      const multiplier = entry.seconds < 60 ? 1 : entry.seconds < 3600 ? 60 : 3600;
-      const newSeconds = Math.round(numeric * multiplier);
+      const newHours = parseFloat(input);
+      if (isNaN(newHours) || newHours < 0) { showToast('Please enter a valid, non-negative number of hours.'); return; }
+
+      const newSeconds = Math.round(newHours * 3600);
       const deltaSeconds = newSeconds - entry.seconds;
       const scale = entry.seconds > 0 ? newSeconds / entry.seconds : 0;
 
