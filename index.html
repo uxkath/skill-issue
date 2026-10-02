@@ -21,7 +21,7 @@
 
       --font-serif: 'Instrument Serif', serif;
       --font-mono: 'Geist Mono', monospace;
-      --font-timer: 'VT323', 'Geist Mono', monospace;
+      --font-timer: 'Geist Mono', monospace;
       --timer-color: #b35f00;
 
       --color-intellect: #008da8;
@@ -698,7 +698,7 @@
     .tc-stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 600; }
     .tc-stars-interactive { color: #ffb703; letter-spacing: 3px; font-size: 1.35rem; line-height: 1; cursor: pointer; user-select: none; }
 
-    .timer-display-modal { font-family: var(--font-timer); font-size: 3.6rem; font-weight: 400; letter-spacing: 2px; text-align: center; color: var(--timer-color); margin: 4px 0; }
+    .timer-display-modal { font-family: var(--font-timer); font-size: 3.1rem; font-weight: 500; letter-spacing: 0; text-align: center; color: var(--timer-color); margin: 4px 0; }
 
     .tc-bottom-action-row { display: flex; gap: 10px; width: 100%; align-items: center; margin-top: 4px; }
 
@@ -1387,6 +1387,203 @@
       }
     });
 
+    // LOCAL SAVE SYSTEM — keeps the app's personal data on this device.
+    // This does not change the UI. It only saves/restores the app state.
+    const LOCAL_SAVE_KEY = 'skillIssueAppState_v1';
+
+    function recordActivityElapsed(task, fromMs, toMs) {
+      if (!task || toMs <= fromMs || !(task.type === 'timer' || !task.type)) return;
+
+      let cursor = fromMs;
+      while (cursor < toMs) {
+        const cursorDate = new Date(cursor);
+        const nextHour = new Date(cursorDate);
+        nextHour.setMinutes(0, 0, 0);
+        nextHour.setHours(nextHour.getHours() + 1);
+        const segmentEnd = Math.min(toMs, nextHour.getTime());
+        const seconds = Math.max(0, Math.floor((segmentEnd - cursor) / 1000));
+
+        if (seconds > 0) {
+          const key = getDateKey(cursorDate);
+          if (!activityHistory[key]) activityHistory[key] = {};
+          if (!activityHistory[key][task.id]) {
+            activityHistory[key][task.id] = {
+              id: task.id, name: task.name, icon: task.icon,
+              category: task.category || 'recovery',
+              color: task.customColor || 'var(--color-recovery)',
+              seconds: 0, amSeconds: 0, pmSeconds: 0,
+              hourSeconds: new Array(24).fill(0)
+            };
+          }
+          const entry = activityHistory[key][task.id];
+          const hour = cursorDate.getHours();
+          entry.seconds += seconds;
+          if (hour < 12) entry.amSeconds += seconds;
+          else entry.pmSeconds += seconds;
+          if (!entry.hourSeconds) entry.hourSeconds = new Array(24).fill(0);
+          entry.hourSeconds[hour] += seconds;
+          entry.name = task.name;
+          entry.icon = task.icon;
+          entry.category = task.category || 'recovery';
+          entry.color = task.customColor || entry.color || 'var(--color-recovery)';
+        }
+        cursor = segmentEnd;
+      }
+    }
+
+    function processTimerEffects(task, deltaSeconds) {
+      if (!task || deltaSeconds <= 0) return;
+
+      if (growthTasks.some(t => t.id === task.id)) {
+        if (task.skills && task.skills.length > 0) {
+          if (task._skillPopTarget === undefined) task._skillPopTarget = 15 + Math.floor(Math.random() * 11);
+          task._skillPopCounter = (task._skillPopCounter || 0) + deltaSeconds;
+          if (task._skillPopCounter >= task._skillPopTarget) {
+            triggerSkillPop(task);
+            task._skillPopCounter %= task._skillPopTarget;
+            task._skillPopTarget = 15 + Math.floor(Math.random() * 11);
+          }
+        }
+
+        task._depleteCounter = (task._depleteCounter || 0) + deltaSeconds;
+        while (task._depleteCounter >= 600) {
+          currentHP = Math.max(0, currentHP - getHpTier(task.hpCost).per10Min);
+          task._depleteCounter -= 600;
+        }
+        updateHealthDisplay();
+      }
+
+      if (task.id === 'sleep') {
+        sleepPopTimerCounter = (sleepPopTimerCounter || 0) + deltaSeconds;
+        if (sleepPopTimerCounter >= 20) {
+          triggerHealthPop();
+          sleepPopTimerCounter %= 20;
+        }
+      }
+    }
+
+    function updateRunningTask(task, nowMs = Date.now()) {
+      if (!task || !task.isPlaying) return;
+
+      if (!Number.isFinite(task.timerStartedAt)) {
+        task.timerStartedAt = nowMs - ((task.timerBaseSeconds || task.secondsLogged || 0) * 1000);
+      }
+      if (!Number.isFinite(task.timerBaseSeconds)) task.timerBaseSeconds = task.secondsLogged || 0;
+      if (!Number.isFinite(task.timerLastCountedAt)) task.timerLastCountedAt = task.timerStartedAt;
+
+      const elapsedSeconds = Math.max(0, Math.floor((nowMs - task.timerStartedAt) / 1000));
+      task.secondsLogged = Math.max(task.timerBaseSeconds, task.timerBaseSeconds + elapsedSeconds);
+
+      const countedUntilMs = task.timerStartedAt + elapsedSeconds * 1000;
+      if (countedUntilMs > task.timerLastCountedAt) {
+        const deltaSeconds = Math.floor((countedUntilMs - task.timerLastCountedAt) / 1000);
+        recordActivityElapsed(task, task.timerLastCountedAt, countedUntilMs);
+        processTimerEffects(task, deltaSeconds);
+        task.timerLastCountedAt = countedUntilMs;
+      }
+    }
+
+    function saveAppState() {
+      try {
+        const state = {
+          version: 1,
+          growthTasks,
+          recoveryTasks,
+          friendsList,
+          discoverableUsers,
+          heroDeckIds: heroDeckSlots.map(task => task && task.id).filter(Boolean),
+          currentHP,
+          activityHistory,
+          privacySettings,
+          userProfile,
+          profileAvatarDataUrl,
+          theme: document.documentElement.getAttribute('data-theme') || 'light'
+        };
+        localStorage.setItem(LOCAL_SAVE_KEY, JSON.stringify(state));
+      } catch (error) {
+        console.warn('Skill Issue could not save local data:', error);
+      }
+    }
+
+    function loadAppState() {
+      try {
+        const raw = localStorage.getItem(LOCAL_SAVE_KEY);
+        if (!raw) return false;
+
+        const state = JSON.parse(raw);
+        if (!state || state.version !== 1) return false;
+
+        if (Array.isArray(state.growthTasks)) growthTasks = state.growthTasks;
+        if (Array.isArray(state.recoveryTasks)) recoveryTasks = state.recoveryTasks;
+        if (Array.isArray(state.friendsList)) friendsList = state.friendsList;
+        if (Array.isArray(state.discoverableUsers)) discoverableUsers = state.discoverableUsers;
+        if (state.activityHistory && typeof state.activityHistory === 'object') activityHistory = state.activityHistory;
+        if (state.privacySettings && typeof state.privacySettings === 'object') {
+          privacySettings = { ...privacySettings, ...state.privacySettings };
+        }
+        if (state.userProfile && typeof state.userProfile === 'object') {
+          userProfile = { ...userProfile, ...state.userProfile };
+        }
+        if (typeof state.currentHP === 'number' && Number.isFinite(state.currentHP)) {
+          currentHP = Math.max(0, Math.min(100, state.currentHP));
+        }
+        if (typeof state.profileAvatarDataUrl === 'string' || state.profileAvatarDataUrl === null) {
+          profileAvatarDataUrl = state.profileAvatarDataUrl;
+        }
+
+        // Reconnect saved hero-deck cards to the restored task objects.
+        if (Array.isArray(state.heroDeckIds)) {
+          const allTasks = growthTasks.concat(recoveryTasks);
+          heroDeckSlots = state.heroDeckIds
+            .map(id => allTasks.find(task => task.id === id))
+            .filter(Boolean);
+        }
+
+        // Timers intentionally keep running across page closes/reloads.
+        // The timestamps above let us calculate the real elapsed time when the app opens again.
+        growthTasks.concat(recoveryTasks).forEach(task => {
+          if (task.isPlaying) {
+            if (!Number.isFinite(task.timerStartedAt)) task.timerStartedAt = Date.now() - ((task.secondsLogged || 0) * 1000);
+            if (!Number.isFinite(task.timerBaseSeconds)) task.timerBaseSeconds = task.secondsLogged || 0;
+            if (!Number.isFinite(task.timerLastCountedAt)) task.timerLastCountedAt = task.timerStartedAt;
+          } else {
+            delete task.timerStartedAt;
+            delete task.timerBaseSeconds;
+            delete task.timerLastCountedAt;
+          }
+        });
+
+        if (state.theme === 'dark' || state.theme === 'light') {
+          document.documentElement.setAttribute('data-theme', state.theme);
+        }
+
+        return true;
+      } catch (error) {
+        console.warn('Skill Issue could not load local data:', error);
+        return false;
+      }
+    }
+
+    function renderSavedLocalState() {
+      const theme = document.documentElement.getAttribute('data-theme') || 'light';
+      const themeButton = document.getElementById('themeToggleBtn');
+      if (themeButton) themeButton.innerText = theme === 'dark' ? '🌙 DARK' : '☀️ LIGHT';
+
+      const avatarEl = document.getElementById('profileAvatarEl');
+      if (avatarEl && profileAvatarDataUrl) {
+        avatarEl.style.backgroundImage = `url(${profileAvatarDataUrl})`;
+        avatarEl.innerText = '';
+      }
+
+      updateHealthDisplay();
+      renderProfileIdentity();
+    }
+
+    // Save a few times per minute while the app is open, and immediately when leaving.
+    setInterval(saveAppState, 5000);
+    window.addEventListener('pagehide', saveAppState);
+    window.addEventListener('beforeunload', saveAppState);
+
     function getDateKey(date = new Date()) {
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -1429,11 +1626,11 @@
 
     setInterval(() => {
       let anyTaskActive = false;
+      const nowMs = Date.now();
 
       growthTasks.concat(recoveryTasks).forEach(task => {
         if (task.isPlaying) {
-          task.secondsLogged++;
-          if (task.type === 'timer' || !task.type) recordActivityTime(task);
+          updateRunningTask(task, nowMs);
           anyTaskActive = true;
 
           if (activeSelectedTask && activeSelectedTask.id === task.id) {
@@ -1449,44 +1646,8 @@
       });
 
       const bgOverlay = document.getElementById('calmingBgOverlay');
-      if (anyTaskActive) {
-        bgOverlay.classList.add('active');
-      } else {
-        bgOverlay.classList.remove('active');
-      }
-      // PROBLEM 4: skill popping (+N Attribute, one skill at a time, every ~15-25s) and
-      // tiered HP depletion (HARD -2/10min, MID -1/10min, EASY -0.5/10min) for running growth cards
-      growthTasks.forEach(task => {
-        if (!task.isPlaying) { task._skillPopCounter = 0; task._depleteCounter = 0; return; }
-
-        if (task.skills && task.skills.length > 0) {
-          if (task._skillPopTarget === undefined) task._skillPopTarget = 15 + Math.floor(Math.random() * 11);
-          task._skillPopCounter = (task._skillPopCounter || 0) + 1;
-          if (task._skillPopCounter >= task._skillPopTarget) {
-            triggerSkillPop(task);
-            task._skillPopCounter = 0;
-            task._skillPopTarget = 15 + Math.floor(Math.random() * 11);
-          }
-        }
-
-        task._depleteCounter = (task._depleteCounter || 0) + 1;
-        if (task._depleteCounter >= 600) {
-          currentHP = Math.max(0, currentHP - getHpTier(task.hpCost).per10Min);
-          updateHealthDisplay();
-          task._depleteCounter = 0;
-        }
-      });
-
-      const sleepTask = recoveryTasks.find(task => task.id === 'sleep');
-      if (sleepTask && sleepTask.isPlaying) {
-        sleepPopTimerCounter++;
-        if (sleepPopTimerCounter >= 20) {
-          triggerHealthPop();
-          sleepPopTimerCounter = 0;
-        }
-      } else {
-        sleepPopTimerCounter = 0;
-      }
+      if (anyTaskActive) bgOverlay.classList.add('active');
+      else bgOverlay.classList.remove('active');
     }, 1000);
 
     // PROBLEM 4: HP depletion tier by the card's HP cost — HARD/-12/hr, MID/-6/hr, EASY/-3/hr,
@@ -1571,6 +1732,7 @@
       const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', newTheme);
       document.getElementById('themeToggleBtn').innerText = newTheme === 'dark' ? '🌙 DARK' : '☀️ LIGHT';
+      saveAppState();
       if (document.getElementById('profileView').classList.contains('active')) renderProfileTab();
     }
 
@@ -1889,7 +2051,12 @@
     function activateTaskTimer(taskId) {
       const task = growthTasks.concat(recoveryTasks).find(t => t.id === taskId);
       if (task) {
+        const nowMs = Date.now();
         task.isPlaying = true;
+        task.timerBaseSeconds = task.secondsLogged || 0;
+        task.timerStartedAt = nowMs;
+        task.timerLastCountedAt = nowMs;
+        saveAppState();
         document.getElementById('tcModalCard').classList.add('card-active-glow');
         renderModalInteractiveBody(recoveryTasks.some(r => r.id === taskId));
         renderHeroSlots();
@@ -1899,7 +2066,12 @@
     function pauseTaskTimer(taskId) {
       const task = growthTasks.concat(recoveryTasks).find(t => t.id === taskId);
       if (task) {
+        updateRunningTask(task, Date.now());
         task.isPlaying = false;
+        delete task.timerStartedAt;
+        delete task.timerBaseSeconds;
+        delete task.timerLastCountedAt;
+        saveAppState();
         document.getElementById('tcModalCard').classList.remove('card-active-glow');
         renderModalInteractiveBody(recoveryTasks.some(r => r.id === taskId));
         renderHeroSlots();
@@ -1909,8 +2081,13 @@
     function stopTaskTimer(taskId) {
       const task = growthTasks.concat(recoveryTasks).find(t => t.id === taskId);
       if (task) {
+        updateRunningTask(task, Date.now());
         task.isPlaying = false;
+        delete task.timerStartedAt;
+        delete task.timerBaseSeconds;
+        delete task.timerLastCountedAt;
         heroDeckSlots = heroDeckSlots.filter(deckTask => deckTask.id !== taskId);
+        saveAppState();
         document.getElementById('tcModalCard').classList.remove('card-active-glow');
         closeCardModal(null, true);
         renderHeroSlots();
@@ -1936,10 +2113,6 @@
     }
 
     function closeCardModal(e, force = false) {
-      if (activeSelectedTask && activeSelectedTask.isPlaying && !force) {
-        showToast("Pause or Stop the activity timer before closing!");
-        return;
-      }
       if (force || (e && e.target.id === 'cardDetailModal')) {
         document.getElementById('cardDetailModal').classList.remove('active');
         activeSelectedTask = null;
@@ -2117,6 +2290,7 @@
       closeFormModal(null, true);
       creatingRecoveryCard = false;
       updateUI();
+      saveAppState();
     }
 
     function deleteCurrentCard() {
@@ -2127,6 +2301,7 @@
         closeCardModal(null, true);
         updateUI();
         showToast("Card deleted.");
+        saveAppState();
       }
     }
 
@@ -2408,6 +2583,7 @@
         userProfile.username = trimmed.startsWith('@') ? trimmed : `@${trimmed}`;
       }
       renderProfileIdentity();
+      saveAppState();
       showToast('Profile updated!');
     }
 
@@ -2459,6 +2635,7 @@
 
     function togglePrivacySetting(key) {
       privacySettings[key] = document.getElementById(`privacyShow${key.charAt(0).toUpperCase() + key.slice(1)}`).checked;
+      saveAppState();
       renderProfileTab();
     }
 
@@ -2530,6 +2707,7 @@
       showToast(`${user.name} added as a friend!`);
       openAddFriendModal();
       renderFriendsRail();
+      saveAppState();
       if (document.getElementById('friendProfileModal').classList.contains('active') && activeFriendId === userId) {
         openUserProfileModal(userId);
       }
@@ -2633,6 +2811,7 @@
       discoverableUsers.push(removed);
       closeFriendProfileModal(null, true);
       renderFriendsRail();
+      saveAppState();
       showToast(`${removed.name} removed from friends.`);
     }
 
@@ -2751,6 +2930,7 @@
     function saveDoodle() {
       const canvas = document.getElementById('doodleCanvas');
       profileAvatarDataUrl = canvas.toDataURL('image/png');
+      saveAppState();
       const avatarEl = document.getElementById('profileAvatarEl');
       avatarEl.style.backgroundImage = `url(${profileAvatarDataUrl})`;
       avatarEl.innerText = '';
@@ -2879,8 +3059,13 @@
       });
     }
 
+    const restoredLocalData = loadAppState();
+    renderSavedLocalState();
     renderProfileIdentity();
     updateUI();
+    if (restoredLocalData) {
+      showToast('Saved data restored from this device.');
+    }
   </script>
 </body>
 </html>
