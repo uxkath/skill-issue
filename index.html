@@ -698,7 +698,7 @@
     .tc-stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 600; }
     .tc-stars-interactive { color: #ffb703; letter-spacing: 3px; font-size: 1.35rem; line-height: 1; cursor: pointer; user-select: none; }
 
-    .timer-display-modal { font-family: var(--font-timer); font-size: 3.1rem; font-weight: 500; letter-spacing: 0; text-align: center; color: var(--timer-color); margin: 4px 0; }
+    .timer-display-modal { font-family: var(--font-mono); font-size: 3.1rem; font-weight: 500; letter-spacing: 0; text-align: center; color: var(--timer-color); margin: 4px 0; }
 
     .tc-bottom-action-row { display: flex; gap: 10px; width: 100%; align-items: center; margin-top: 4px; }
 
@@ -1034,6 +1034,21 @@
                 <input type="checkbox" id="privacyShowLive" checked onchange="togglePrivacySetting('live')">
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Folder Section 5: Local Backup -->
+        <div class="folder-card-wrapper">
+          <div class="folder-tab-flap">Local Data Backup</div>
+          <div class="folder-card-body">
+            <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.5; margin-bottom:10px;">
+              Your data normally carries forward automatically when the app is updated. This backup is an extra safety copy kept on this device.
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <button class="profile-share-btn" style="margin-top:0;" onclick="createLocalBackup()">💾 CREATE BACKUP</button>
+              <button class="profile-share-btn" style="margin-top:0;" onclick="restoreLocalBackup()">↩️ RESTORE BACKUP</button>
+            </div>
+            <div id="backupStatusLabel" style="font-size:0.7rem; color:var(--text-muted); text-align:center; margin-top:8px;">No local backup yet.</div>
           </div>
         </div>
 
@@ -1390,116 +1405,116 @@
     // LOCAL SAVE SYSTEM — keeps the app's personal data on this device.
     // This does not change the UI. It only saves/restores the app state.
     const LOCAL_SAVE_KEY = 'skillIssueAppState_v1';
+    const LOCAL_BACKUP_KEY = 'skillIssueAppBackup_v1';
+    const DATA_SCHEMA_VERSION = 1;
 
-    function recordActivityElapsed(task, fromMs, toMs) {
-      if (!task || toMs <= fromMs || !(task.type === 'timer' || !task.type)) return;
+    function buildAppState() {
+      return {
+        version: DATA_SCHEMA_VERSION,
+        growthTasks,
+        recoveryTasks,
+        friendsList,
+        discoverableUsers,
+        heroDeckIds: heroDeckSlots.map(task => task && task.id).filter(Boolean),
+        currentHP,
+        activityHistory,
+        privacySettings,
+        userProfile,
+        profileAvatarDataUrl,
+        theme: document.documentElement.getAttribute('data-theme') || 'light'
+      };
+    }
 
-      let cursor = fromMs;
-      while (cursor < toMs) {
-        const cursorDate = new Date(cursor);
-        const nextHour = new Date(cursorDate);
-        nextHour.setMinutes(0, 0, 0);
-        nextHour.setHours(nextHour.getHours() + 1);
-        const segmentEnd = Math.min(toMs, nextHour.getTime());
-        const seconds = Math.max(0, Math.floor((segmentEnd - cursor) / 1000));
+    function writeStateToStorage(state) {
+      localStorage.setItem(LOCAL_SAVE_KEY, JSON.stringify(state));
+    }
 
-        if (seconds > 0) {
-          const key = getDateKey(cursorDate);
-          if (!activityHistory[key]) activityHistory[key] = {};
-          if (!activityHistory[key][task.id]) {
-            activityHistory[key][task.id] = {
-              id: task.id, name: task.name, icon: task.icon,
-              category: task.category || 'recovery',
-              color: task.customColor || 'var(--color-recovery)',
-              seconds: 0, amSeconds: 0, pmSeconds: 0,
-              hourSeconds: new Array(24).fill(0)
-            };
-          }
-          const entry = activityHistory[key][task.id];
-          const hour = cursorDate.getHours();
-          entry.seconds += seconds;
-          if (hour < 12) entry.amSeconds += seconds;
-          else entry.pmSeconds += seconds;
-          if (!entry.hourSeconds) entry.hourSeconds = new Array(24).fill(0);
-          entry.hourSeconds[hour] += seconds;
-          entry.name = task.name;
-          entry.icon = task.icon;
-          entry.category = task.category || 'recovery';
-          entry.color = task.customColor || entry.color || 'var(--color-recovery)';
+    function readStateFromStorage(key) {
+      const raw = localStorage.getItem(key);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object') return null;
+      return parsed;
+    }
+
+    function normalizeImportedState(state) {
+      // This is the compatibility layer. Future app versions should add
+      // migrations here instead of throwing away older saved data.
+      if (!state || typeof state !== 'object') throw new Error('Invalid backup data.');
+
+      const sourceVersion = Number(state.version || 1);
+      if (!Number.isFinite(sourceVersion) || sourceVersion < 1) {
+        throw new Error('This backup does not have a valid Skill Issue version.');
+      }
+      if (sourceVersion > DATA_SCHEMA_VERSION) {
+        throw new Error('This backup was made by a newer version of Skill Issue. Update the app first.');
+      }
+
+      // Version 1 is currently the original saved format. Keep this function
+      // as the permanent place for future v1 -> v2 -> v3 migrations.
+      return { ...state, version: DATA_SCHEMA_VERSION };
+    }
+
+    function applyAppState(state) {
+      state = normalizeImportedState(state);
+
+      if (Array.isArray(state.growthTasks)) growthTasks = state.growthTasks;
+      if (Array.isArray(state.recoveryTasks)) recoveryTasks = state.recoveryTasks;
+      if (Array.isArray(state.friendsList)) friendsList = state.friendsList;
+      if (Array.isArray(state.discoverableUsers)) discoverableUsers = state.discoverableUsers;
+      if (state.activityHistory && typeof state.activityHistory === 'object') activityHistory = state.activityHistory;
+      if (state.privacySettings && typeof state.privacySettings === 'object') {
+        privacySettings = { ...privacySettings, ...state.privacySettings };
+      }
+      if (state.userProfile && typeof state.userProfile === 'object') {
+        userProfile = { ...userProfile, ...state.userProfile };
+      }
+      if (typeof state.currentHP === 'number' && Number.isFinite(state.currentHP)) {
+        currentHP = Math.max(0, Math.min(100, state.currentHP));
+      }
+      if (typeof state.profileAvatarDataUrl === 'string' || state.profileAvatarDataUrl === null) {
+        profileAvatarDataUrl = state.profileAvatarDataUrl;
+      }
+
+      if (Array.isArray(state.heroDeckIds)) {
+        const allTasks = growthTasks.concat(recoveryTasks);
+        heroDeckSlots = state.heroDeckIds
+          .map(id => allTasks.find(task => task.id === id))
+          .filter(Boolean);
+      }
+
+      // Running timers use timestamps, so they continue correctly after reload.
+      growthTasks.concat(recoveryTasks).forEach(task => {
+        if (task.isPlaying) {
+          if (!Number.isFinite(task.timerStartedAt)) task.timerStartedAt = Date.now() - ((task.secondsLogged || 0) * 1000);
+          if (!Number.isFinite(task.timerBaseSeconds)) task.timerBaseSeconds = task.secondsLogged || 0;
+          if (!Number.isFinite(task.timerLastCountedAt)) task.timerLastCountedAt = task.timerStartedAt;
+        } else {
+          delete task.timerStartedAt;
+          delete task.timerBaseSeconds;
+          delete task.timerLastCountedAt;
         }
-        cursor = segmentEnd;
+      });
+
+      if (state.theme === 'dark' || state.theme === 'light') {
+        document.documentElement.setAttribute('data-theme', state.theme);
       }
     }
 
-    function processTimerEffects(task, deltaSeconds) {
-      if (!task || deltaSeconds <= 0) return;
-
-      if (growthTasks.some(t => t.id === task.id)) {
-        if (task.skills && task.skills.length > 0) {
-          if (task._skillPopTarget === undefined) task._skillPopTarget = 15 + Math.floor(Math.random() * 11);
-          task._skillPopCounter = (task._skillPopCounter || 0) + deltaSeconds;
-          if (task._skillPopCounter >= task._skillPopTarget) {
-            triggerSkillPop(task);
-            task._skillPopCounter %= task._skillPopTarget;
-            task._skillPopTarget = 15 + Math.floor(Math.random() * 11);
-          }
-        }
-
-        task._depleteCounter = (task._depleteCounter || 0) + deltaSeconds;
-        while (task._depleteCounter >= 600) {
-          currentHP = Math.max(0, currentHP - getHpTier(task.hpCost).per10Min);
-          task._depleteCounter -= 600;
-        }
-        updateHealthDisplay();
-      }
-
-      if (task.id === 'sleep') {
-        sleepPopTimerCounter = (sleepPopTimerCounter || 0) + deltaSeconds;
-        if (sleepPopTimerCounter >= 20) {
-          triggerHealthPop();
-          sleepPopTimerCounter %= 20;
-        }
-      }
-    }
-
-    function updateRunningTask(task, nowMs = Date.now()) {
-      if (!task || !task.isPlaying) return;
-
-      if (!Number.isFinite(task.timerStartedAt)) {
-        task.timerStartedAt = nowMs - ((task.timerBaseSeconds || task.secondsLogged || 0) * 1000);
-      }
-      if (!Number.isFinite(task.timerBaseSeconds)) task.timerBaseSeconds = task.secondsLogged || 0;
-      if (!Number.isFinite(task.timerLastCountedAt)) task.timerLastCountedAt = task.timerStartedAt;
-
-      const elapsedSeconds = Math.max(0, Math.floor((nowMs - task.timerStartedAt) / 1000));
-      task.secondsLogged = Math.max(task.timerBaseSeconds, task.timerBaseSeconds + elapsedSeconds);
-
-      const countedUntilMs = task.timerStartedAt + elapsedSeconds * 1000;
-      if (countedUntilMs > task.timerLastCountedAt) {
-        const deltaSeconds = Math.floor((countedUntilMs - task.timerLastCountedAt) / 1000);
-        recordActivityElapsed(task, task.timerLastCountedAt, countedUntilMs);
-        processTimerEffects(task, deltaSeconds);
-        task.timerLastCountedAt = countedUntilMs;
-      }
+    function updateBackupStatusLabel(message) {
+      const el = document.getElementById('backupStatusLabel');
+      if (el) el.innerText = message;
     }
 
     function saveAppState() {
       try {
-        const state = {
-          version: 1,
-          growthTasks,
-          recoveryTasks,
-          friendsList,
-          discoverableUsers,
-          heroDeckIds: heroDeckSlots.map(task => task && task.id).filter(Boolean),
-          currentHP,
-          activityHistory,
-          privacySettings,
-          userProfile,
-          profileAvatarDataUrl,
-          theme: document.documentElement.getAttribute('data-theme') || 'light'
-        };
-        localStorage.setItem(LOCAL_SAVE_KEY, JSON.stringify(state));
+        const state = buildAppState();
+        const previousRaw = localStorage.getItem(LOCAL_SAVE_KEY);
+
+        // Keep a rolling local safety copy of the previous valid state.
+        // This happens automatically; the user never has to export anything.
+        if (previousRaw) localStorage.setItem(LOCAL_BACKUP_KEY, previousRaw);
+        writeStateToStorage(state);
       } catch (error) {
         console.warn('Skill Issue could not save local data:', error);
       }
@@ -1507,60 +1522,48 @@
 
     function loadAppState() {
       try {
-        const raw = localStorage.getItem(LOCAL_SAVE_KEY);
-        if (!raw) return false;
-
-        const state = JSON.parse(raw);
-        if (!state || state.version !== 1) return false;
-
-        if (Array.isArray(state.growthTasks)) growthTasks = state.growthTasks;
-        if (Array.isArray(state.recoveryTasks)) recoveryTasks = state.recoveryTasks;
-        if (Array.isArray(state.friendsList)) friendsList = state.friendsList;
-        if (Array.isArray(state.discoverableUsers)) discoverableUsers = state.discoverableUsers;
-        if (state.activityHistory && typeof state.activityHistory === 'object') activityHistory = state.activityHistory;
-        if (state.privacySettings && typeof state.privacySettings === 'object') {
-          privacySettings = { ...privacySettings, ...state.privacySettings };
-        }
-        if (state.userProfile && typeof state.userProfile === 'object') {
-          userProfile = { ...userProfile, ...state.userProfile };
-        }
-        if (typeof state.currentHP === 'number' && Number.isFinite(state.currentHP)) {
-          currentHP = Math.max(0, Math.min(100, state.currentHP));
-        }
-        if (typeof state.profileAvatarDataUrl === 'string' || state.profileAvatarDataUrl === null) {
-          profileAvatarDataUrl = state.profileAvatarDataUrl;
-        }
-
-        // Reconnect saved hero-deck cards to the restored task objects.
-        if (Array.isArray(state.heroDeckIds)) {
-          const allTasks = growthTasks.concat(recoveryTasks);
-          heroDeckSlots = state.heroDeckIds
-            .map(id => allTasks.find(task => task.id === id))
-            .filter(Boolean);
-        }
-
-        // Timers intentionally keep running across page closes/reloads.
-        // The timestamps above let us calculate the real elapsed time when the app opens again.
-        growthTasks.concat(recoveryTasks).forEach(task => {
-          if (task.isPlaying) {
-            if (!Number.isFinite(task.timerStartedAt)) task.timerStartedAt = Date.now() - ((task.secondsLogged || 0) * 1000);
-            if (!Number.isFinite(task.timerBaseSeconds)) task.timerBaseSeconds = task.secondsLogged || 0;
-            if (!Number.isFinite(task.timerLastCountedAt)) task.timerLastCountedAt = task.timerStartedAt;
-          } else {
-            delete task.timerStartedAt;
-            delete task.timerBaseSeconds;
-            delete task.timerLastCountedAt;
-          }
-        });
-
-        if (state.theme === 'dark' || state.theme === 'light') {
-          document.documentElement.setAttribute('data-theme', state.theme);
-        }
-
+        const state = readStateFromStorage(LOCAL_SAVE_KEY);
+        if (!state) return false;
+        applyAppState(state);
         return true;
       } catch (error) {
         console.warn('Skill Issue could not load local data:', error);
         return false;
+      }
+    }
+
+    function createLocalBackup() {
+      try {
+        const state = buildAppState();
+        localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(state));
+        updateBackupStatusLabel('Backup saved on this device just now.');
+        showToast('Local backup created.');
+      } catch (error) {
+        console.warn('Skill Issue could not create local backup:', error);
+        showToast('Could not create backup.');
+      }
+    }
+
+    function restoreLocalBackup() {
+      try {
+        const backup = readStateFromStorage(LOCAL_BACKUP_KEY);
+        if (!backup) {
+          showToast('No local backup is available yet.');
+          return;
+        }
+
+        const normalized = normalizeImportedState(backup);
+        const currentState = buildAppState();
+        localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(currentState));
+        applyAppState(normalized);
+        writeStateToStorage(buildAppState());
+        renderSavedLocalState();
+        updateUI();
+        updateBackupStatusLabel('Backup restored successfully.');
+        showToast('Backup restored.');
+      } catch (error) {
+        console.warn('Skill Issue could not restore local backup:', error);
+        showToast(error.message || 'Could not restore backup.');
       }
     }
 
@@ -1577,6 +1580,9 @@
 
       updateHealthDisplay();
       renderProfileIdentity();
+
+      const backupRaw = localStorage.getItem(LOCAL_BACKUP_KEY);
+      if (backupRaw) updateBackupStatusLabel('Automatic local backup is available.');
     }
 
     // Save a few times per minute while the app is open, and immediately when leaving.
